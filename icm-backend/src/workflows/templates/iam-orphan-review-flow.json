@@ -1,0 +1,139 @@
+{
+  "name": "Uncorrelated Account — IAM Decision",
+  "description": "Notify IAM with a per-email review portal link, schedule reminders (1h/3h/6h/12h), wait for portal decision, route by ASSIGN/DELETE/DISABLE/IGNORE, audit the decision source, and complete the queue task.",
+  "enabled": true,
+  "tags": ["IAM_ORPHAN_REVIEW", "DATA_HYGIENE"],
+  "trigger": {
+    "type": "UncorrelatedAccountIAMDecision",
+    "filter": {}
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "UncorrelatedAccountIAMDecision",
+      "label": "Uncorrelated Account — IAM Decision",
+      "position": { "x": 280, "y": 0 },
+      "config": {
+        "description": "Fires when IAM review is started from Data Hygiene or Orphan Accounts."
+      }
+    },
+    {
+      "id": "getContext",
+      "type": "GetOrphanContext",
+      "label": "Get Orphan Context",
+      "position": { "x": 280, "y": 100 },
+      "config": {}
+    },
+    {
+      "id": "reminderSchedule",
+      "type": "OrphanReminderSchedule",
+      "label": "Orphan Reminder Schedule",
+      "position": { "x": 280, "y": 200 },
+      "config": {
+        "reminderPhases": "1h,3h,6h,12h",
+        "checkpointNodeId": "checkDecision"
+      }
+    },
+    {
+      "id": "sendEmail",
+      "type": "SendEmail",
+      "label": "Send Action Email",
+      "position": { "x": 280, "y": 300 },
+      "config": {
+        "includeReviewPortal": true,
+        "reviewPortalSource": "initial-action-email",
+        "to": "$.config.iamTeamEmail",
+        "from": "$.config.workflowFromEmail",
+        "subject": "IAM Review Required: {{$.trigger.accountName}} on {{$.trigger.applicationName}}",
+        "body": "IAM Team,\n\nAn uncorrelated (orphan) account requires your decision.\n\nAccount: {{$.trigger.accountName}}\nEmail: {{$.steps.getContext.userEmail}}\nApplication: {{$.trigger.applicationName}}\nRisk Level: {{$.trigger.riskLevel}}\nDetected At: {{$.trigger.detectedAt}}\n\nReview and record your decision (no login required):\n{{$.config.reviewPortalUrl}}\n\nAccount ID: {{$.trigger.orphanId}}"
+      }
+    },
+    {
+      "id": "waitDecision",
+      "type": "WaitForIAMDecision",
+      "label": "Wait for Portal Decision",
+      "position": { "x": 280, "y": 400 },
+      "config": {}
+    },
+    {
+      "id": "checkDecision",
+      "type": "IamDecisionTaken",
+      "label": "IAM Decision Taken?",
+      "position": { "x": 280, "y": 520 },
+      "config": {
+        "branchLabelTrue": "Decision taken",
+        "branchLabelFalse": "Still waiting"
+      }
+    },
+    {
+      "id": "routeDecision",
+      "type": "Switch",
+      "label": "Route IAM Decision",
+      "position": { "x": 180, "y": 640 },
+      "config": {
+        "field": "$.trigger.iamDecision",
+        "defaultBranch": "default",
+        "cases": [
+          { "value": "ASSIGN", "branch": "ASSIGN" },
+          { "value": "DELETE", "branch": "DELETE" },
+          { "value": "DISABLE", "branch": "DISABLE" },
+          { "value": "IGNORE", "branch": "IGNORE" }
+        ]
+      }
+    },
+    {
+      "id": "auditDecision",
+      "type": "AuditLog",
+      "label": "Audit IAM Decision",
+      "position": { "x": 80, "y": 760 },
+      "config": {
+        "action": "IAM_ORPHAN_REVIEW",
+        "outcome": "SUCCESS",
+        "message": "IAM decision {{$.trigger.iamDecision}} for {{$.trigger.accountName}} on {{$.trigger.applicationName}}. Source: {{$.trigger.decisionSource}} (step {{$.trigger.decisionStepLabel}}). Email job: {{$.trigger.decisionEmailJobId}}."
+      }
+    },
+    {
+      "id": "updateQueue",
+      "type": "UpdateQueueTask",
+      "label": "Complete Queue Task",
+      "position": { "x": 80, "y": 880 },
+      "config": {
+        "status": "COMPLETED",
+        "description": "IAM orphan decision recorded from review portal."
+      }
+    },
+    {
+      "id": "endSuccess",
+      "type": "EndSuccess",
+      "label": "Decision Recorded",
+      "position": { "x": 80, "y": 1000 },
+      "config": { "description": "IAM decision recorded successfully." }
+    },
+    {
+      "id": "endWaiting",
+      "type": "EndWaiting",
+      "label": "Still Awaiting Decision",
+      "position": { "x": 480, "y": 640 },
+      "config": {
+        "waitReason": "IAM_DECISION",
+        "description": "Still waiting for IAM decision in portal."
+      }
+    }
+  ],
+  "edges": [
+    { "from": "trigger", "to": "getContext" },
+    { "from": "getContext", "to": "reminderSchedule" },
+    { "from": "reminderSchedule", "to": "sendEmail" },
+    { "from": "sendEmail", "to": "waitDecision" },
+    { "from": "waitDecision", "to": "checkDecision" },
+    { "from": "checkDecision", "to": "routeDecision", "branch": "true" },
+    { "from": "checkDecision", "to": "endWaiting", "branch": "false" },
+    { "from": "routeDecision", "to": "auditDecision", "branch": "ASSIGN" },
+    { "from": "routeDecision", "to": "auditDecision", "branch": "DELETE" },
+    { "from": "routeDecision", "to": "auditDecision", "branch": "DISABLE" },
+    { "from": "routeDecision", "to": "auditDecision", "branch": "IGNORE" },
+    { "from": "routeDecision", "to": "auditDecision", "branch": "default" },
+    { "from": "auditDecision", "to": "updateQueue" },
+    { "from": "updateQueue", "to": "endSuccess" }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "name": "Access Revoke — Human-in-the-loop (Option 1)",
+  "description": "Human-in-the-loop access revoke. Creates an internal ticket, notifies the user and manager, then waits and re-reads the ticket on a schedule. When the ticket is CLOSED, the queue task is completed and the certification is finalized as REVOKED. Every step is editable on the canvas.",
+  "enabled": true,
+  "tags": ["CERTIFICATION_REVOKE"],
+  "trigger": {
+    "type": "CertificationSignedOff",
+    "filter": { "decision": "Revoke" }
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "CertificationSignedOff",
+      "label": "Certification Signed Off",
+      "position": { "x": 280, "y": 0 },
+      "config": {
+        "filterDecision": "Revoke",
+        "description": "Fires when a reviewer signs off a revoke decision. Trigger data comes from the queue task."
+      }
+    },
+    {
+      "id": "createTicket",
+      "type": "CreateTicket",
+      "label": "Create Ticket (Internal)",
+      "position": { "x": 280, "y": 120 },
+      "config": {
+        "provider": "internal",
+        "title": "Access Revoke: {{$.trigger.identityName}} — {{$.trigger.entitlementName}}",
+        "priority": "MEDIUM",
+        "assignedTeam": "Identity Team",
+        "identityName": "$.trigger.identityName",
+        "identityEmail": "$.trigger.identityEmail",
+        "managerName": "$.trigger.managerName",
+        "managerEmail": "$.trigger.managerEmail",
+        "applicationName": "$.trigger.applicationName",
+        "entitlementName": "$.trigger.entitlementName",
+        "reviewerName": "$.trigger.reviewerName",
+        "reviewDate": "$.trigger.reviewDate",
+        "comments": "$.trigger.comment",
+        "description": "Please revoke \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} for {{$.trigger.identityName}} (manager {{$.trigger.managerName}}). Close this ticket once access is removed. Reviewer: {{$.trigger.reviewerName}}."
+      }
+    },
+    {
+      "id": "emailUser",
+      "type": "SendEmail",
+      "label": "Notify User",
+      "position": { "x": 120, "y": 240 },
+      "config": {
+        "to": "$.trigger.identityEmail",
+        "from": "$.config.workflowFromEmail",
+        "subject": "Access Revocation Requested: {{$.trigger.entitlementName}}",
+        "body": "Hello {{$.trigger.identityName}},\n\nYour access \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} is being revoked following certification {{$.trigger.campaignName}}.\n\nTicket: {{$.steps.createTicket.ticketId}}\n\nIf you believe this is an error, contact your manager {{$.trigger.managerName}}."
+      }
+    },
+    {
+      "id": "emailManager",
+      "type": "SendEmail",
+      "label": "Notify Manager",
+      "position": { "x": 120, "y": 360 },
+      "config": {
+        "to": "$.trigger.managerEmail",
+        "from": "$.config.workflowFromEmail",
+        "subject": "Reportee Access Revocation: {{$.trigger.identityName}}",
+        "body": "Hello {{$.trigger.managerName}},\n\n{{$.trigger.identityName}} has \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} scheduled for revocation following certification {{$.trigger.campaignName}}.\n\nTicket: {{$.steps.createTicket.ticketId}}"
+      }
+    },
+    {
+      "id": "waitTicket",
+      "type": "Scheduler",
+      "label": "Wait, then re-check ticket",
+      "position": { "x": 120, "y": 480 },
+      "config": {
+        "scheduleType": "relativeDelay",
+        "delayValue": 6,
+        "delayUnit": "hours",
+        "resumeWorkflow": true,
+        "nextStepId": "getTicket"
+      }
+    },
+    {
+      "id": "getTicket",
+      "type": "GetTicket",
+      "label": "Get Ticket",
+      "position": { "x": 120, "y": 600 },
+      "config": {
+        "provider": "internal",
+        "ticketId": "$.steps.createTicket.ticketId"
+      }
+    },
+    {
+      "id": "ticketClosed",
+      "type": "CompareStrings",
+      "label": "Ticket Closed?",
+      "position": { "x": 120, "y": 720 },
+      "config": {
+        "left": "$.steps.getTicket.closed",
+        "right": "true",
+        "branchLabelTrue": "Closed",
+        "branchLabelFalse": "Still open"
+      }
+    },
+    {
+      "id": "updateQueue",
+      "type": "UpdateQueueTask",
+      "label": "Complete Queue Task",
+      "position": { "x": 20, "y": 840 },
+      "config": {
+        "status": "COMPLETED",
+        "description": "Marks the remediation queue task COMPLETED; certification is finalized as REVOKED on workflow success."
+      }
+    },
+    {
+      "id": "auditSuccess",
+      "type": "AuditLog",
+      "label": "Audit Evidence",
+      "position": { "x": 20, "y": 960 },
+      "config": {
+        "action": "ACCESS_REVOKE_WORKFLOW",
+        "outcome": "SUCCESS",
+        "message": "Access revoke confirmed (ticket {{$.steps.createTicket.ticketId}} closed) for {{$.trigger.identityName}} / {{$.trigger.entitlementName}}."
+      }
+    },
+    {
+      "id": "endSuccess",
+      "type": "EndSuccess",
+      "label": "End — Success",
+      "position": { "x": 20, "y": 1080 },
+      "config": {}
+    },
+    {
+      "id": "endWaiting",
+      "type": "EndWaiting",
+      "label": "End — Waiting (ticket still open)",
+      "position": { "x": 320, "y": 840 },
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "from": "trigger", "to": "createTicket" },
+    { "from": "createTicket", "to": "emailUser" },
+    { "from": "emailUser", "to": "emailManager" },
+    { "from": "emailManager", "to": "waitTicket" },
+    { "from": "waitTicket", "to": "getTicket" },
+    { "from": "getTicket", "to": "ticketClosed" },
+    { "from": "ticketClosed", "to": "updateQueue", "branch": "true" },
+    { "from": "ticketClosed", "to": "endWaiting", "branch": "false" },
+    { "from": "updateQueue", "to": "auditSuccess" },
+    { "from": "auditSuccess", "to": "endSuccess" }
+  ]
+}

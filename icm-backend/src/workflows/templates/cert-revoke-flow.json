@@ -1,0 +1,202 @@
+{
+  "name": "Certification Revoke - Enterprise",
+  "description": "Orchestrates certification revoke decisions: verify current access, queue provisioning when access is still present, raise an ITSM ticket, and wait. Re-verification (scheduled / on ticket close) finalizes the run as removed or escalates to IAM. The workflow never deletes IGA state directly.",
+  "enabled": true,
+  "tags": ["CERTIFICATION_REVOKE"],
+  "trigger": {
+    "type": "CertificationSignedOff",
+    "filter": { "decision": "Revoke" }
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "CertificationSignedOff",
+      "label": "Certification Signed Off",
+      "position": { "x": 250, "y": 0 },
+      "config": {
+        "filterDecision": "Revoke",
+        "description": "Fires when reviewer signs off a certification item. No additional approval in workflow."
+      }
+    },
+    {
+      "id": "compareRevoke",
+      "type": "CompareStrings",
+      "label": "Decision = Revoke?",
+      "position": { "x": 250, "y": 100 },
+      "config": {
+        "left": "$.trigger.decision",
+        "right": "Revoke"
+      }
+    },
+    {
+      "id": "getItem",
+      "type": "GetCertificationItem",
+      "label": "Get Certification Item",
+      "position": { "x": 150, "y": 220 },
+      "config": {}
+    },
+    {
+      "id": "verify",
+      "type": "VerifyAccessRemoved",
+      "label": "Verify Access Removed",
+      "position": { "x": 150, "y": 320 },
+      "config": {
+        "identityId": "$.trigger.identityId",
+        "entitlementId": "$.trigger.entitlementId",
+        "entitlementName": "$.trigger.entitlementName",
+        "description": "Read-only check of the live identity entitlement view. Re-run on schedule / ticket close."
+      }
+    },
+    {
+      "id": "stillPresent",
+      "type": "CompareStrings",
+      "label": "Access Still Present?",
+      "position": { "x": 150, "y": 420 },
+      "config": {
+        "left": "$.steps.verify.stillPresent",
+        "right": "true",
+        "branchLabelTrue": "Still present",
+        "branchLabelFalse": "Removed"
+      }
+    },
+    {
+      "id": "escalate",
+      "type": "CompareStrings",
+      "label": "Escalate (ticket closed, still present)?",
+      "position": { "x": 360, "y": 540 },
+      "config": {
+        "left": "$.trigger.escalateOnStillPresent",
+        "right": "true",
+        "branchLabelTrue": "Escalate to IAM",
+        "branchLabelFalse": "Queue / keep waiting"
+      }
+    },
+    {
+      "id": "revokeAccess",
+      "type": "RevokeAccess",
+      "label": "Revoke Access (queue provisioning)",
+      "position": { "x": 250, "y": 660 },
+      "config": {
+        "identityId": "$.trigger.identityId",
+        "entitlementId": "$.trigger.entitlementId",
+        "entitlementName": "$.trigger.entitlementName",
+        "description": "Enqueues a provisioning request to remove the entitlement. Does not mutate IGA state directly."
+      }
+    },
+    {
+      "id": "createTicket",
+      "type": "CreateTicket",
+      "label": "Create ITSM Ticket",
+      "position": { "x": 250, "y": 760 },
+      "config": {
+        "title": "Cert Revoke: {{$.trigger.identityName}} — {{$.trigger.entitlementName}}",
+        "priority": "HIGH",
+        "assignee": "{{$.config.iamTeamEmail}}",
+        "description": "Certification decision was Revoke. Provisioning request queued to remove \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} for {{$.trigger.identityName}}. Awaiting removal + verification. Portal: {{$.steps.verify.portalLink}}"
+      }
+    },
+    {
+      "id": "endWaiting",
+      "type": "EndWaiting",
+      "label": "Waiting on Provisioning / ITSM",
+      "position": { "x": 250, "y": 860 },
+      "config": {
+        "description": "Execution parked. Scheduler re-verifies access removal; ITSM ticket status is tracked until closed."
+      }
+    },
+    {
+      "id": "emailIam",
+      "type": "SendEmail",
+      "label": "Notify IAM Team",
+      "position": { "x": 520, "y": 660 },
+      "config": {
+        "to": "{{$.config.iamTeamEmail}}",
+        "subject": "Access Revocation Failed — {{$.trigger.identityName}}",
+        "body": "IAM Team,\n\nAccess revocation could not be confirmed after the ITSM ticket was closed.\n\nUser: {{$.trigger.identityName}}\nApplication: {{$.trigger.applicationName}}\nAccess: {{$.trigger.entitlementName}}\nCampaign: {{$.trigger.campaignName}}\n\nAccess is still present. Manual remediation required.\n\nPortal: {{$.steps.verify.portalLink}}"
+      }
+    },
+    {
+      "id": "auditFailure",
+      "type": "AuditLog",
+      "label": "Audit Evidence (Failure)",
+      "position": { "x": 520, "y": 760 },
+      "config": {
+        "action": "CERT_REVOKE_FAILURE",
+        "outcome": "FAILURE",
+        "message": "Revocation not confirmed for {{$.trigger.identityName}} / {{$.trigger.entitlementName}} after ticket close"
+      }
+    },
+    {
+      "id": "endFailure",
+      "type": "EndFailure",
+      "label": "End Failure",
+      "position": { "x": 520, "y": 860 },
+      "config": {}
+    },
+    {
+      "id": "emailUser",
+      "type": "SendEmail",
+      "label": "Notify User",
+      "position": { "x": -80, "y": 540 },
+      "config": {
+        "to": "$.trigger.identityEmail",
+        "subject": "Access Revoked: {{$.trigger.entitlementName}} on {{$.trigger.applicationName}}",
+        "body": "Hello {{$.trigger.identityName}},\n\nYour access \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} was revoked per certification campaign {{$.trigger.campaignName}}.\n\nIf you believe this is an error, contact your manager or IAM team."
+      }
+    },
+    {
+      "id": "emailManager",
+      "type": "SendEmail",
+      "label": "Notify Manager",
+      "position": { "x": -80, "y": 640 },
+      "config": {
+        "to": "$.trigger.managerEmail",
+        "subject": "Reportee Access Revoked: {{$.trigger.identityName}}",
+        "body": "Manager,\n\n{{$.trigger.identityName}} had \"{{$.trigger.entitlementName}}\" revoked on {{$.trigger.applicationName}} following certification {{$.trigger.campaignName}}."
+      }
+    },
+    {
+      "id": "auditSuccess",
+      "type": "AuditLog",
+      "label": "Audit Evidence (Success)",
+      "position": { "x": -80, "y": 740 },
+      "config": {
+        "action": "CERT_REVOKE_SUCCESS",
+        "outcome": "SUCCESS",
+        "message": "Certification revoke confirmed removed for {{$.trigger.identityName}} / {{$.trigger.entitlementName}}"
+      }
+    },
+    {
+      "id": "endSuccess",
+      "type": "EndSuccess",
+      "label": "End Success",
+      "position": { "x": -80, "y": 840 },
+      "config": {}
+    },
+    {
+      "id": "endNoOp",
+      "type": "EndSuccess",
+      "label": "End (No Revoke)",
+      "position": { "x": 450, "y": 220 },
+      "config": { "description": "Decision was not Revoke — workflow exits without provisioning." }
+    }
+  ],
+  "edges": [
+    { "from": "trigger", "to": "compareRevoke" },
+    { "from": "compareRevoke", "to": "getItem", "branch": "true" },
+    { "from": "compareRevoke", "to": "endNoOp", "branch": "false" },
+    { "from": "getItem", "to": "verify" },
+    { "from": "verify", "to": "stillPresent" },
+    { "from": "stillPresent", "to": "escalate", "branch": "true" },
+    { "from": "stillPresent", "to": "emailUser", "branch": "false" },
+    { "from": "escalate", "to": "emailIam", "branch": "true" },
+    { "from": "escalate", "to": "revokeAccess", "branch": "false" },
+    { "from": "revokeAccess", "to": "createTicket" },
+    { "from": "createTicket", "to": "endWaiting" },
+    { "from": "emailIam", "to": "auditFailure" },
+    { "from": "auditFailure", "to": "endFailure" },
+    { "from": "emailUser", "to": "emailManager" },
+    { "from": "emailManager", "to": "auditSuccess" },
+    { "from": "auditSuccess", "to": "endSuccess" }
+  ]
+}

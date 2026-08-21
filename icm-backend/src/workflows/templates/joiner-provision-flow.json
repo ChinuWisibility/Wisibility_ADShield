@@ -1,0 +1,76 @@
+{
+  "name": "Joiner Provision — Approval",
+  "description": "Joiner ENSURE_ACCOUNT: wait for approval, then compile ADD_ACCOUNT plan/task. Rejection cancels without creating an executable task.",
+  "enabled": true,
+  "tags": ["JOINER"],
+  "trigger": {
+    "type": "JoinerDetected",
+    "filter": {}
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "JoinerDetected",
+      "label": "Joiner Detected",
+      "position": { "x": 280, "y": 0 },
+      "config": {
+        "description": "Fires when a Joiner provisioning request is created after HRMS insert + rule match."
+      }
+    },
+    {
+      "id": "waitApproval",
+      "type": "WaitForJoinerApproval",
+      "label": "Await Joiner Approval",
+      "position": { "x": 280, "y": 120 },
+      "config": {
+        "checkpointNodeId": "checkDecision"
+      }
+    },
+    {
+      "id": "checkDecision",
+      "type": "CheckJoinerDecision",
+      "label": "Approved?",
+      "position": { "x": 280, "y": 240 },
+      "config": {
+        "branchLabelTrue": "Approved",
+        "branchLabelFalse": "Rejected"
+      }
+    },
+    {
+      "id": "provision",
+      "type": "ProvisionJoinerAccount",
+      "label": "Compile Plan + ADD_ACCOUNT Task",
+      "position": { "x": 120, "y": 360 },
+      "config": {}
+    },
+    {
+      "id": "reject",
+      "type": "RejectJoinerRequest",
+      "label": "Reject Joiner Request",
+      "position": { "x": 440, "y": 360 },
+      "config": {}
+    },
+    {
+      "id": "endOk",
+      "type": "EndSuccess",
+      "label": "End Success",
+      "position": { "x": 120, "y": 480 },
+      "config": {}
+    },
+    {
+      "id": "endFail",
+      "type": "EndFailure",
+      "label": "End Failure",
+      "position": { "x": 440, "y": 480 },
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "trigger", "target": "waitApproval" },
+    { "id": "e2", "source": "waitApproval", "target": "checkDecision" },
+    { "id": "e3", "source": "checkDecision", "target": "provision", "sourceHandle": "true" },
+    { "id": "e4", "source": "checkDecision", "target": "reject", "sourceHandle": "false" },
+    { "id": "e5", "source": "provision", "target": "endOk" },
+    { "id": "e6", "source": "reject", "target": "endFail" }
+  ]
+}

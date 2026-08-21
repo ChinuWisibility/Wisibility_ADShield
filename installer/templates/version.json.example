@@ -1,0 +1,7 @@
+{
+  "productVersion": "1.0.0",
+  "schemaVersion": 1,
+  "installerVersion": "1.0.0",
+  "nodeVersion": "22.x",
+  "mongoVersion": "8.x"
+}

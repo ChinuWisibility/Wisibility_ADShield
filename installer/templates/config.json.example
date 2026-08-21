@@ -1,0 +1,33 @@
+{
+  "server": {
+    "port": 8081,
+    "host": "0.0.0.0"
+  },
+  "database": {
+    "uri": "mongodb://127.0.0.1:27017",
+    "name": "IGA-V3"
+  },
+  "paths": {
+    "uploads": "C:\\ProgramData\\ADSecurity\\uploads",
+    "license": "C:\\ProgramData\\ADSecurity\\license\\license.lic.json",
+    "logs": "C:\\ProgramData\\ADSecurity\\logs",
+    "backups": "C:\\ProgramData\\ADSecurity\\backups",
+    "data": "C:\\ProgramData\\ADSecurity"
+  },
+  "security": {
+    "jwtSecret": "",
+    "jwtExpiresIn": "24h",
+    "adminPassword": "",
+    "forceAdminPasswordReset": true,
+    "ldapRejectUnauthorized": true
+  },
+  "smtp": {
+    "host": "",
+    "port": 465,
+    "user": "",
+    "pass": ""
+  },
+  "cors": {
+    "origins": []
+  }
+}

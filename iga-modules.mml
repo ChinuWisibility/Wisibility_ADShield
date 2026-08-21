@@ -1,0 +1,267 @@
+{
+  "version": "0.1",
+  "selectedElementId": null,
+  "isPristine": false,
+  "notes": [],
+  "tables": [
+    {
+      "id": "col-user",
+      "tableName": "users",
+      "x": 50,
+      "y": 50,
+      "fields": [
+        { "id": "user-f1", "name": "_id",       "type": "objectId", "PK": true,  "isNN": true,  "isArray": false },
+        { "id": "user-f2", "name": "firstName",  "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "user-f3", "name": "lastName",   "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "user-f4", "name": "email",      "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "user-f5", "name": "password",   "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "user-f6", "name": "role",       "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "user-f7", "name": "isActive",   "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "user-f8", "name": "createdAt",  "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "user-f9", "name": "updatedAt",  "type": "date",     "PK": false, "isNN": false, "isArray": false }
+      ]
+    },
+    {
+      "id": "col-tenant",
+      "tableName": "tenants",
+      "x": 450,
+      "y": 50,
+      "fields": [
+        { "id": "ten-f1", "name": "_id",              "type": "objectId", "PK": true,  "isNN": true,  "isArray": false },
+        { "id": "ten-f2", "name": "name",             "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "ten-f3", "name": "code",             "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "ten-f4", "name": "subscriptionTier", "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "ten-f5", "name": "isActive",         "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "ten-f6", "name": "createdBy",        "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "ten-f7", "name": "updatedBy",        "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "ten-f8", "name": "createdAt",        "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "ten-f9", "name": "updatedAt",        "type": "date",     "PK": false, "isNN": false, "isArray": false }
+      ]
+    },
+    {
+      "id": "col-app",
+      "tableName": "applications",
+      "x": 900,
+      "y": 50,
+      "fields": [
+        { "id": "app-f1",  "name": "_id",                  "type": "objectId", "PK": true,  "isNN": true,  "isArray": false },
+        { "id": "app-f2",  "name": "name",                 "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "app-f3",  "name": "description",          "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f4",  "name": "tenantId",             "type": "objectId", "PK": false, "isNN": true,  "isArray": false },
+        { "id": "app-f5",  "name": "type",                 "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f6",  "name": "owner",                "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f7",  "name": "ownerEmail",           "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f8",  "name": "status",               "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f9",  "name": "riskLevel",            "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f10", "name": "riskJustification",    "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f11", "name": "complianceFrameworks", "type": "string",   "PK": false, "isNN": false, "isArray": true  },
+        { "id": "app-f12", "name": "dataClassification",   "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f13", "name": "integrationType",      "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f14", "name": "connectorType",        "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        {
+          "id": "app-f15", "name": "connectionConfig", "type": "object", "PK": false, "isNN": false, "isArray": false,
+          "children": []
+        },
+        { "id": "app-f16", "name": "autoUploadSchedule",   "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f17", "name": "autoUploadTime",       "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        {
+          "id": "app-f18", "name": "userMappings", "type": "object", "PK": false, "isNN": false, "isArray": true,
+          "children": [
+            { "id": "app-f18a", "name": "csvColumn",     "type": "string",  "PK": false, "isNN": true,  "isArray": false },
+            { "id": "app-f18b", "name": "standardField", "type": "string",  "PK": false, "isNN": true,  "isArray": false },
+            { "id": "app-f18c", "name": "dataType",      "type": "string",  "PK": false, "isNN": false, "isArray": false },
+            { "id": "app-f18d", "name": "isSensitive",   "type": "boolean", "PK": false, "isNN": false, "isArray": false }
+          ]
+        },
+        {
+          "id": "app-f19", "name": "entitlementMappings", "type": "object", "PK": false, "isNN": false, "isArray": true,
+          "children": [
+            { "id": "app-f19a", "name": "csvColumn",     "type": "string",  "PK": false, "isNN": true,  "isArray": false },
+            { "id": "app-f19b", "name": "standardField", "type": "string",  "PK": false, "isNN": true,  "isArray": false },
+            { "id": "app-f19c", "name": "dataType",      "type": "string",  "PK": false, "isNN": false, "isArray": false },
+            { "id": "app-f19d", "name": "isSensitive",   "type": "boolean", "PK": false, "isNN": false, "isArray": false }
+          ]
+        },
+        { "id": "app-f20", "name": "totalUsers",        "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f21", "name": "entitlementCount",  "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f22", "name": "totalAccounts",     "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f23", "name": "lastAggregation",   "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f24", "name": "lastUpload",        "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f25", "name": "tags",              "type": "string",   "PK": false, "isNN": false, "isArray": true  },
+        { "id": "app-f26", "name": "icon",              "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f27", "name": "color",             "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f28", "name": "createdBy",         "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f29", "name": "updatedBy",         "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f30", "name": "createdAt",         "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "app-f31", "name": "updatedAt",         "type": "date",     "PK": false, "isNN": false, "isArray": false }
+      ]
+    },
+    {
+      "id": "col-identity",
+      "tableName": "sod_user_identities",
+      "x": 450,
+      "y": 500,
+      "fields": [
+        { "id": "idn-f1",  "name": "_id",                   "type": "objectId", "PK": true,  "isNN": true,  "isArray": false },
+        { "id": "idn-f2",  "name": "displayName",           "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "idn-f3",  "name": "firstName",             "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f4",  "name": "lastName",              "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f5",  "name": "email",                 "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "idn-f6",  "name": "employeeId",            "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f7",  "name": "department",            "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f8",  "name": "title",                 "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f9",  "name": "manager",               "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f10", "name": "managerId",             "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f11", "name": "managerEmail",          "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f12", "name": "lifecycleState",        "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f13", "name": "identityType",          "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f14", "name": "startDate",             "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f15", "name": "endDate",               "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f16", "name": "lastLogin",             "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f17", "name": "riskScore",             "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f18", "name": "riskLevel",             "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        {
+          "id": "idn-f19", "name": "riskFactors", "type": "object", "PK": false, "isNN": false, "isArray": true,
+          "children": [
+            { "id": "idn-f19a", "name": "factor",      "type": "string", "PK": false, "isNN": false, "isArray": false },
+            { "id": "idn-f19b", "name": "score",       "type": "int",    "PK": false, "isNN": false, "isArray": false },
+            { "id": "idn-f19c", "name": "description", "type": "string", "PK": false, "isNN": false, "isArray": false }
+          ]
+        },
+        { "id": "idn-f20", "name": "totalAccounts",         "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f21", "name": "totalEntitlements",     "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f22", "name": "totalRoles",            "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f23", "name": "totalViolations",       "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f24", "name": "sourceApplication",     "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f25", "name": "sourceApplicationName", "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f26", "name": "isCorrelated",          "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f27", "name": "identityProfile",       "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f28", "name": "location",              "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f29", "name": "country",               "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f30", "name": "phoneNumber",           "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f31", "name": "costCenter",            "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f32", "name": "division",              "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f33", "name": "tenantId",              "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f34", "name": "attributes",            "type": "object",   "PK": false, "isNN": false, "isArray": false, "children": [] },
+        { "id": "idn-f35", "name": "isActive",              "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f36", "name": "isNHI",                 "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f37", "name": "createdBy",             "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f38", "name": "createdAt",             "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "idn-f39", "name": "updatedAt",             "type": "date",     "PK": false, "isNN": false, "isArray": false }
+      ]
+    },
+    {
+      "id": "col-profile",
+      "tableName": "identity_profiles",
+      "x": 900,
+      "y": 500,
+      "fields": [
+        { "id": "prf-f1",  "name": "_id",                        "type": "objectId", "PK": true,  "isNN": true,  "isArray": false },
+        { "id": "prf-f2",  "name": "name",                       "type": "string",   "PK": false, "isNN": true,  "isArray": false },
+        { "id": "prf-f3",  "name": "description",                "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        {
+          "id": "prf-f4", "name": "attributes", "type": "object", "PK": false, "isNN": false, "isArray": false,
+          "children": [
+            { "id": "prf-f4a", "name": "title",        "type": "string", "PK": false, "isNN": false, "isArray": true },
+            { "id": "prf-f4b", "name": "department",   "type": "string", "PK": false, "isNN": false, "isArray": true },
+            { "id": "prf-f4c", "name": "memberOf",     "type": "string", "PK": false, "isNN": false, "isArray": true },
+            { "id": "prf-f4d", "name": "applications", "type": "string", "PK": false, "isNN": false, "isArray": true },
+            { "id": "prf-f4e", "name": "status",       "type": "string", "PK": false, "isNN": false, "isArray": true }
+          ]
+        },
+        { "id": "prf-f5",  "name": "expectedEntitlements",       "type": "string",   "PK": false, "isNN": false, "isArray": true  },
+        { "id": "prf-f6",  "name": "expectedApplications",       "type": "objectId", "PK": false, "isNN": false, "isArray": true  },
+        { "id": "prf-f7",  "name": "riskTier",                   "type": "string",   "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f8",  "name": "certificationFrequencyDays", "type": "int",      "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f9",  "name": "isActive",                   "type": "boolean",  "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f10", "name": "tenantId",                   "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f11", "name": "createdBy",                  "type": "objectId", "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f12", "name": "tags",                       "type": "string",   "PK": false, "isNN": false, "isArray": true  },
+        { "id": "prf-f13", "name": "createdAt",                  "type": "date",     "PK": false, "isNN": false, "isArray": false },
+        { "id": "prf-f14", "name": "updatedAt",                  "type": "date",     "PK": false, "isNN": false, "isArray": false }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-1",
+      "type": "1:M",
+      "fromTableId": "col-tenant",
+      "fromFieldId": "ten-f6",
+      "toTableId": "col-user",
+      "toFieldId": "user-f1"
+    },
+    {
+      "id": "rel-2",
+      "type": "1:M",
+      "fromTableId": "col-app",
+      "fromFieldId": "app-f4",
+      "toTableId": "col-tenant",
+      "toFieldId": "ten-f1"
+    },
+    {
+      "id": "rel-3",
+      "type": "1:M",
+      "fromTableId": "col-app",
+      "fromFieldId": "app-f28",
+      "toTableId": "col-user",
+      "toFieldId": "user-f1"
+    },
+    {
+      "id": "rel-4",
+      "type": "1:M",
+      "fromTableId": "col-identity",
+      "fromFieldId": "idn-f33",
+      "toTableId": "col-tenant",
+      "toFieldId": "ten-f1"
+    },
+    {
+      "id": "rel-5",
+      "type": "1:M",
+      "fromTableId": "col-identity",
+      "fromFieldId": "idn-f10",
+      "toTableId": "col-identity",
+      "toFieldId": "idn-f1"
+    },
+    {
+      "id": "rel-6",
+      "type": "1:M",
+      "fromTableId": "col-identity",
+      "fromFieldId": "idn-f24",
+      "toTableId": "col-app",
+      "toFieldId": "app-f1"
+    },
+    {
+      "id": "rel-7",
+      "type": "1:M",
+      "fromTableId": "col-identity",
+      "fromFieldId": "idn-f37",
+      "toTableId": "col-user",
+      "toFieldId": "user-f1"
+    },
+    {
+      "id": "rel-8",
+      "type": "1:M",
+      "fromTableId": "col-profile",
+      "fromFieldId": "prf-f10",
+      "toTableId": "col-tenant",
+      "toFieldId": "ten-f1"
+    },
+    {
+      "id": "rel-9",
+      "type": "1:M",
+      "fromTableId": "col-profile",
+      "fromFieldId": "prf-f6",
+      "toTableId": "col-app",
+      "toFieldId": "app-f1"
+    },
+    {
+      "id": "rel-10",
+      "type": "1:M",
+      "fromTableId": "col-profile",
+      "fromFieldId": "prf-f11",
+      "toTableId": "col-user",
+      "toFieldId": "user-f1"
+    }
+  ]
+}

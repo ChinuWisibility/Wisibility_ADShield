@@ -1,0 +1,79 @@
+<mxfile host="65bd71144e">
+    <diagram id="identity-application-flow" name="Identity + Application Flow">
+        <mxGraphModel dx="1374" dy="769" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="app1" value="Create Application Registry&#10;POST /api/applications" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="80" width="280" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="app2" value="Configure CSV Mappings&#10;userMappings / entitlementMappings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="190" width="280" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="app3" value="Upload CSV Data&#10;POST /api/applications/:id/upload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="295" width="280" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="app4" value="Dynamic Data + History&#10;- Inserts into app_*_users or app_*_entitlements&#10;- Writes UploadHistory&#10;- Updates Application stats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="390" width="280" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="corr1" value="Correlation / Matching Engine&#10;uses rules + identity attributes + app account data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="400" width="320" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="corr2" value="Outputs Linking Artifacts&#10;AccountAggregation_v2&#10;correlation_results" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="570" width="320" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="access1" value="Access Layer Data Becomes Queryable&#10;Accounts + Entitlements (app-scoped)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="700" width="320" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="id1" value="Create Identity Records&#10;POST /api/identities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="740" y="287.5" width="350" height="52.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="id2" value="Create Identity Profiles&#10;POST /api/identity-profiles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="195" width="360" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="id3" value="Identity Enrichment / Linking&#10;attributes, snapshots, manager chain, account links" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="345" y="280" width="350" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="use1" value="Identity Usage Endpoints&#10;GET /api/identities/:id/accounts&#10;GET /api/identities/:id/access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="10" y="692.5" width="310" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="use2" value="Entitlement + App Usage Endpoints&#10;GET /api/entitlements/:id/users&#10;GET /api/applications/:id/dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="750" y="715" width="310" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="app1" target="app2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="app2" target="app3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="app3" target="app4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="app4" target="corr1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="id3" target="corr1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="corr1" target="corr2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="corr2" target="access1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e8" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="access1" target="use1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e9" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="access1" target="use2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e10" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="id2" target="id3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e11" style="endArrow=block;endFill=1;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;" parent="1" source="id1" target="id3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,35 @@
+{
+  "name": "adshield-platform",
+  "version": "2.0.0",
+  "description": "Wisibility ADShield - Active Directory Security Platform",
+  "private": true,
+  "workspaces": [
+    "icm-frontend",
+    "icm-backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd icm-frontend && npm run dev",
+    "dev:backend": "cd icm-backend && npm run dev",
+    "build": "cd icm-frontend && npm run build",
+    "start": "cd icm-backend && npm start",
+    "install:all": "npm install && cd icm-backend && npm install && cd ../icm-frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "csv-parse": "^6.1.0",
+    "exceljs": "^4.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "csv-parser": "^3.2.0",
+    "multer": "^2.1.1",
+    "papaparse": "^5.5.3",
+    "streamifier": "^0.1.1"
+  },
+  "overrides": {
+    "uuid": "14.0.0"
+  }
+}

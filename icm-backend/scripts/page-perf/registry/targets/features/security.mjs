@@ -1,0 +1,30 @@
+/** Security feature targets (widgets / scan history) — Level 2 stubs expanded later. */
+export const SECURITY_FEATURE_TARGETS = [
+  {
+    id: "feat.security.scanHistory",
+    kind: "feature",
+    name: "Scan History",
+    parentId: "nav.scanCenter",
+    route: "/security/scans",
+    trigger: { type: "widget", key: "scanHistory", label: "Scan history table" },
+    primaryApis: ["GET /security/applications/:id/scans"],
+    metricLabel: "SecurityScans_list",
+    fe: { reactQuery: true, mountApiCalls: 1, duplicateRisk: "low", primaryApis: ["GET /security/applications/:id/scans"] },
+    measurement: { mode: "mongo", driver: "mongo" },
+    enabled: true,
+  },
+  {
+    id: "feat.security.topFindings",
+    kind: "feature",
+    name: "Top Findings Widget",
+    parentId: "nav.securityDashboard",
+    route: "/security/dashboard",
+    trigger: { type: "widget", key: "topFindings", label: "Top findings" },
+    primaryApis: ["GET /security/applications/:id/findings"],
+    metricLabel: "SecurityFindings_page10",
+    sharedApiIds: ["api.security.findings"],
+    fe: { reactQuery: true, mountApiCalls: 1, duplicateRisk: "low", primaryApis: ["GET /security/applications/:id/findings"] },
+    measurement: { mode: "mongo", driver: "mongo" },
+    enabled: true,
+  },
+];

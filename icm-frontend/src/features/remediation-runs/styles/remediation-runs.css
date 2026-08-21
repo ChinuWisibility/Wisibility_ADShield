@@ -1,0 +1,278 @@
+/* Remediation Runs dashboard — event type cards */
+
+.isc-rem-runs-page {
+  min-height: calc(100vh - 120px);
+}
+
+.isc-rem-runs-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.isc-rem-type-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.isc-rem-type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px 22px 18px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  min-height: 196px;
+  overflow: hidden;
+}
+
+.isc-rem-type-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.isc-rem-type-card-green::before { background: #22c55e; }
+.isc-rem-type-card-amber::before { background: #eab308; }
+.isc-rem-type-card-purple::before { background: #a855f7; }
+.isc-rem-type-card-teal::before { background: #14b8a6; }
+.isc-rem-type-card-red::before { background: #ef4444; }
+
+.isc-rem-type-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.isc-rem-type-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.isc-rem-type-card-title {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.isc-rem-type-card-badge {
+  flex-shrink: 0;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.isc-rem-type-card-badge-green {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.isc-rem-type-card-badge-amber {
+  background: #fefce8;
+  color: #a16207;
+  border-color: #fde047;
+}
+
+.isc-rem-type-card-badge-purple {
+  background: #faf5ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+.isc-rem-type-card-badge-teal {
+  background: #f0fdfa;
+  color: #0f766e;
+  border-color: #99f6e4;
+}
+
+.isc-rem-type-card-badge-red {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.isc-rem-type-card-desc {
+  margin: 0 0 auto;
+  font-size: 0.84rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.isc-rem-type-card-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.isc-rem-type-card-stat {
+  text-align: center;
+}
+
+.isc-rem-type-card-stat-val {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.isc-rem-type-card-stat-active { color: #2563eb; }
+.isc-rem-type-card-stat-ok { color: #059669; }
+.isc-rem-type-card-stat-fail { color: #dc2626; }
+
+.isc-rem-type-card-stat-lbl {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+}
+
+/* Execution list tags */
+.isc-exec-event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.isc-rem-type-tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.isc-rem-type-tag-green {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.isc-rem-type-tag-amber {
+  background: #fefce8;
+  color: #a16207;
+  border-color: #fde047;
+}
+
+.isc-rem-type-tag-purple {
+  background: #faf5ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+.isc-rem-type-tag-teal {
+  background: #f0fdfa;
+  color: #0f766e;
+  border-color: #99f6e4;
+}
+
+.isc-rem-type-tag-red {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.isc-rem-app-tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* Event type dropdown on detail page */
+.isc-rem-type-dropdown {
+  position: relative;
+}
+
+.isc-rem-type-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.isc-rem-type-dropdown-caret {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.isc-rem-type-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 6px;
+  z-index: 20;
+}
+
+.isc-rem-type-dropdown-item {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #334155;
+  text-decoration: none;
+}
+
+.isc-rem-type-dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.isc-rem-type-dropdown-item.active {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .isc-rem-type-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .isc-rem-type-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .isc-rem-type-card-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 12px;
+  }
+}

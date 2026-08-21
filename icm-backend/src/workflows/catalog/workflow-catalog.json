@@ -1,0 +1,358 @@
+{
+  "triggers": [
+    { "label": "Access Request Decision", "description": "ISC trigger (not yet executable)" },
+    { "label": "Account Aggregation Completed", "description": "ISC trigger (not yet executable)" },
+    { "label": "Account Attributes Changed", "description": "ISC trigger (not yet executable)" },
+    { "label": "Account Correlated", "description": "ISC trigger (not yet executable)" },
+    { "label": "Account Uncorrelated", "description": "ISC trigger (not yet executable)" },
+    {
+      "type": "UncorrelatedAccountIAMDecision",
+      "label": "Uncorrelated Account — IAM Decision",
+      "description": "Fires when an IAM review is started for an orphan/uncorrelated account from the Data Hygiene page",
+      "implemented": true,
+      "category": "trigger",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    { "label": "Campaign Generated", "description": "ISC trigger (not yet executable)" },
+    {
+      "type": "CertificationSignedOff",
+      "label": "Certification Signed Off",
+      "description": "Fires when a certification item is signed off with a decision",
+      "implemented": true,
+      "category": "trigger",
+      "paletteGroup": "process",
+      "remediationScope": ["ACCESS_REVOKE"]
+    },
+    {
+      "type": "JoinerDetected",
+      "label": "Joiner Detected",
+      "description": "Fires when a Joiner provisioning request is created after HRMS identity insert + rule match",
+      "implemented": true,
+      "category": "trigger",
+      "paletteGroup": "process",
+      "remediationScope": ["JOINER"]
+    },
+    { "label": "External Trigger", "description": "ISC trigger (not yet executable)" },
+    { "label": "Identity Attributes Changed", "description": "ISC trigger (not yet executable)" },
+    { "label": "Identity Created", "description": "ISC trigger (not yet executable)" },
+    { "label": "Identity Deleted", "description": "ISC trigger (not yet executable)" },
+    { "label": "Scheduled", "description": "ISC trigger (not yet executable)" }
+  ],
+  "actions": [
+    { "label": "Activate Certification Campaign", "description": "ISC action (not yet executable)" },
+    { "label": "Approve Access Request", "description": "ISC action (not yet executable)" },
+    { "label": "Create Certification Campaign", "description": "ISC action (not yet executable)" },
+    { "label": "Deny Access Request", "description": "ISC action (not yet executable)" },
+    { "label": "Get Access", "description": "ISC action (not yet executable)" },
+    { "label": "Get Identity", "description": "ISC action (not yet executable)" },
+    { "label": "Get Identity History", "description": "ISC action (not yet executable)" },
+    { "label": "Get List of Identities", "description": "ISC action (not yet executable)" },
+    { "label": "Get Pending Access Requests", "description": "ISC action (not yet executable)" },
+    { "label": "HTTP Request", "description": "ISC action (not yet executable)" },
+    {
+      "type": "GetCertificationItem",
+      "label": "Get Certification Item",
+      "description": "Reads identity and access from the certification trigger payload",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["ACCESS_REVOKE"]
+    },
+    {
+      "type": "RevokeAccess",
+      "label": "Manage Access",
+      "description": "Provision or remove access on the target system (revoke)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["ACCESS_REVOKE", "IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "RevokeAccess",
+      "label": "Revoke Access",
+      "description": "Removes the access item from the target system",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["ACCESS_REVOKE", "IAM_ORPHAN_REVIEW"]
+    },
+    { "label": "Manage Accounts", "description": "ISC action (not yet executable)" },
+    { "label": "Manage ServiceNow Ticket", "description": "ISC action (not yet executable)" },
+    {
+      "type": "SendEmail",
+      "label": "Send Email",
+      "description": "Sends a notification email to the user, manager, or any recipient",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "notifications",
+      "remediationScope": ["SHARED"]
+    },
+    { "label": "Send Slack Message", "description": "ISC action (not yet executable)" },
+    {
+      "type": "VerifyAccessRemoved",
+      "label": "Verify Access Removed",
+      "description": "Checks whether the entitlement still exists after revoke",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["ACCESS_REVOKE"]
+    },
+    {
+      "type": "CreateTicket",
+      "label": "Create Ticket",
+      "description": "Creates a remediation ticket (Internal provider); populate fields from the trigger",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "ticket",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "GetTicket",
+      "label": "Get Ticket",
+      "description": "Reads ticket status/owner for the created ticket (for human-in-the-loop flows)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "ticket",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "UpdateTicket",
+      "label": "Update Ticket",
+      "description": "Updates fields (status, priority, assignee, comments) on the ticket",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "ticket",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "CloseTicket",
+      "label": "Close Ticket",
+      "description": "Closes the ticket with an optional resolution note",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "ticket",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "UpdateQueueTask",
+      "label": "Update Queue Task",
+      "description": "Sets the remediation queue task status (e.g. COMPLETED) from the canvas",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "queue",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "AuditLog",
+      "label": "Audit Log",
+      "description": "Records governance evidence",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    { "label": "Wait", "description": "ISC action (not yet executable)" },
+    {
+      "type": "Scheduler",
+      "label": "Wait / Delay",
+      "description": "Pause workflow and resume after a delay (used for ticket polling loops)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "GetOrphanContext",
+      "label": "Get Orphan Context",
+      "description": "Loads orphan account, application, and enriched identity fields for downstream email templates",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "OrphanReminderSchedule",
+      "label": "Orphan Reminder Schedule",
+      "description": "Configure once: reminder phases (e.g. 1h,3h,6h,12h) stored on the execution for the background scheduler",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "StartGovernanceReview",
+      "label": "Create Uncorrelated Account Record",
+      "description": "Legacy — initiates governance review (use Get Orphan Context in new flows)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "AssignIAMTeam",
+      "label": "Assign IAM Team",
+      "description": "Marks the orphan account as UNDER_REVIEW and assigns it to the IAM team for action",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "WaitForIAMDecision",
+      "label": "Wait for Portal Decision",
+      "description": "Pauses until a decision is submitted via the review portal link (IAM, manager, or other recipient)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "WaitForJoinerApproval",
+      "label": "Wait for Joiner Approval",
+      "description": "Pauses Joiner provisioning until an approver records APPROVED or REJECTED",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["JOINER"]
+    },
+    {
+      "type": "CheckJoinerDecision",
+      "label": "Check Joiner Decision",
+      "description": "Branches on Joiner approval decision (APPROVED vs REJECTED)",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "process",
+      "remediationScope": ["JOINER"]
+    },
+    {
+      "type": "ProvisionJoinerAccount",
+      "label": "Provision Joiner Account",
+      "description": "After approval, compiles Provisioning Plan and ADD_ACCOUNT task (connector worker executes)",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["JOINER"]
+    },
+    {
+      "type": "RejectJoinerRequest",
+      "label": "Reject Joiner Request",
+      "description": "Cancels Joiner provisioning request without creating an executable task",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["JOINER"]
+    },
+    {
+      "type": "SchedulerCheck",
+      "label": "Scheduler Check",
+      "description": "Sends a scheduled reminder email to the IAM team if no decision has been recorded yet",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "RecordIAMDecision",
+      "label": "Decision Received?",
+      "description": "Reads the IAM decision from the orphan account and passes it downstream",
+      "implemented": true,
+      "category": "action",
+      "paletteGroup": "process",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    }
+  ],
+  "operators": [
+    {
+      "type": "IamDecisionTaken",
+      "label": "IAM Decision Taken?",
+      "description": "Branches Yes when IAM submitted a decision; No while still waiting",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["IAM_ORPHAN_REVIEW"]
+    },
+    {
+      "type": "CompareStrings",
+      "label": "Boolean",
+      "description": "Branch on a condition (uses Compare Strings)",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "CompareStrings",
+      "label": "If / Compare Strings",
+      "description": "Branch Yes/No on string equality (e.g. email sent, ticket CLOSED)",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "CompareNumbers",
+      "label": "Compare Numbers",
+      "description": "Branch on numeric comparison",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    { "label": "Compare Timestamps", "description": "ISC operator (not yet executable)" },
+    {
+      "type": "Switch",
+      "label": "Switch",
+      "description": "Multi-branch on a field value (e.g. IAM decision ASSIGN/DELETE/DISABLE)",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "Loop",
+      "label": "Loop",
+      "description": "Tracks remediation verification attempts",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "VerifyDataType",
+      "label": "Verify Data Type",
+      "description": "Check if a field exists or is null",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "EndSuccess",
+      "label": "End Step — Success",
+      "description": "Workflow completed successfully",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "EndFailure",
+      "label": "End Step — Failure",
+      "description": "Workflow ended with failure / escalation",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    },
+    {
+      "type": "EndWaiting",
+      "label": "End Step — Waiting",
+      "description": "Workflow parked awaiting provisioning / ITSM; re-verified on schedule",
+      "implemented": true,
+      "category": "operator",
+      "paletteGroup": "flow",
+      "remediationScope": ["SHARED"]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "name": "Access Revoke — Automated (Option 2)",
+  "description": "Default automated access-revoke starter. Creates an internal ticket, notifies the user and manager, and on successful notification completes the queue task and marks the certification revoked. Every step is editable on the canvas — add, remove, or re-point recipients as needed.",
+  "enabled": true,
+  "tags": ["CERTIFICATION_REVOKE"],
+  "trigger": {
+    "type": "CertificationSignedOff",
+    "filter": { "decision": "Revoke" }
+  },
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "CertificationSignedOff",
+      "label": "Certification Signed Off",
+      "position": { "x": 280, "y": 0 },
+      "config": {
+        "filterDecision": "Revoke",
+        "description": "Fires when a reviewer signs off a revoke decision. Trigger data comes from the queue task."
+      }
+    },
+    {
+      "id": "createTicket",
+      "type": "CreateTicket",
+      "label": "Create Ticket (Internal)",
+      "position": { "x": 280, "y": 120 },
+      "config": {
+        "provider": "internal",
+        "title": "Access Revoke: {{$.trigger.identityName}} — {{$.trigger.entitlementName}}",
+        "priority": "MEDIUM",
+        "assignedTeam": "Identity Team",
+        "identityName": "$.trigger.identityName",
+        "identityEmail": "$.trigger.identityEmail",
+        "managerName": "$.trigger.managerName",
+        "managerEmail": "$.trigger.managerEmail",
+        "applicationName": "$.trigger.applicationName",
+        "entitlementName": "$.trigger.entitlementName",
+        "reviewerName": "$.trigger.reviewerName",
+        "reviewDate": "$.trigger.reviewDate",
+        "comments": "$.trigger.comment",
+        "description": "Access \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} is being revoked for {{$.trigger.identityName}} (manager {{$.trigger.managerName}}) per certification {{$.trigger.campaignName}}. Reviewer: {{$.trigger.reviewerName}}."
+      }
+    },
+    {
+      "id": "emailUser",
+      "type": "SendEmail",
+      "label": "Notify User",
+      "position": { "x": 120, "y": 240 },
+      "config": {
+        "to": "$.trigger.identityEmail",
+        "from": "$.config.workflowFromEmail",
+        "subject": "Access Revoked: {{$.trigger.entitlementName}} on {{$.trigger.applicationName}}",
+        "body": "Hello {{$.trigger.identityName}},\n\nYour access \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} is being revoked following certification {{$.trigger.campaignName}}.\n\nTicket: {{$.steps.createTicket.ticketId}}\n\nIf you believe this is an error, contact your manager {{$.trigger.managerName}} or the IAM team."
+      }
+    },
+    {
+      "id": "emailManager",
+      "type": "SendEmail",
+      "label": "Notify Manager",
+      "position": { "x": 120, "y": 360 },
+      "config": {
+        "to": "$.trigger.managerEmail",
+        "from": "$.config.workflowFromEmail",
+        "subject": "Reportee Access Revoked: {{$.trigger.identityName}}",
+        "body": "Hello {{$.trigger.managerName}},\n\n{{$.trigger.identityName}} had \"{{$.trigger.entitlementName}}\" on {{$.trigger.applicationName}} revoked following certification {{$.trigger.campaignName}}.\n\nTicket: {{$.steps.createTicket.ticketId}}"
+      }
+    },
+    {
+      "id": "emailSent",
+      "type": "CompareStrings",
+      "label": "Email Sent Successfully?",
+      "position": { "x": 120, "y": 480 },
+      "config": {
+        "left": "$.steps.emailUser.sent",
+        "right": "true",
+        "branchLabelTrue": "Sent",
+        "branchLabelFalse": "Failed"
+      }
+    },
+    {
+      "id": "updateQueue",
+      "type": "UpdateQueueTask",
+      "label": "Complete Queue Task",
+      "position": { "x": 40, "y": 600 },
+      "config": {
+        "status": "COMPLETED",
+        "description": "Marks the remediation queue task COMPLETED; certification is finalized as REVOKED on workflow success."
+      }
+    },
+    {
+      "id": "auditSuccess",
+      "type": "AuditLog",
+      "label": "Audit Evidence",
+      "position": { "x": 40, "y": 720 },
+      "config": {
+        "action": "ACCESS_REVOKE_WORKFLOW",
+        "outcome": "SUCCESS",
+        "message": "Access revoke automated for {{$.trigger.identityName}} / {{$.trigger.entitlementName}}. Ticket {{$.steps.createTicket.ticketId}}; user and manager notified."
+      }
+    },
+    {
+      "id": "endSuccess",
+      "type": "EndSuccess",
+      "label": "End — Success",
+      "position": { "x": 40, "y": 840 },
+      "config": {}
+    },
+    {
+      "id": "endFailure",
+      "type": "EndFailure",
+      "label": "End — Failure (notification failed)",
+      "position": { "x": 320, "y": 600 },
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "from": "trigger", "to": "createTicket" },
+    { "from": "createTicket", "to": "emailUser" },
+    { "from": "emailUser", "to": "emailManager" },
+    { "from": "emailManager", "to": "emailSent" },
+    { "from": "emailSent", "to": "updateQueue", "branch": "true" },
+    { "from": "emailSent", "to": "endFailure", "branch": "false" },
+    { "from": "updateQueue", "to": "auditSuccess" },
+    { "from": "auditSuccess", "to": "endSuccess" }
+  ]
+}

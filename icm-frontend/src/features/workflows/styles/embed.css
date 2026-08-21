@@ -1,0 +1,855 @@
+/* Overrides for rendering the builder inside the IGA layout content area
+   (fixed TopBar height + MainLayout p:3 padding). Loaded after isc-theme.css. */
+.isc-app-embedded {
+  height: calc(100vh - 112px);
+  min-height: 560px;
+  border: 1px solid var(--isc-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* List / create / test pages already sit inside the padded content Box. */
+.isc-workflows-feature .isc-page-inner {
+  padding-top: 8px;
+}
+
+/* Workflow list / dash: full width + app font (Plus Jakarta Sans) */
+.isc-workflows-feature .isc-wf-list-page-wrap .isc-wf-list-page {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.isc-workflows-feature .isc-wf-list-page-wrap .isc-wf-list-page,
+.isc-workflows-feature .isc-wf-dash,
+.isc-workflows-feature .isc-wf-dash button,
+.isc-workflows-feature .isc-wf-dash input,
+.isc-workflows-feature .isc-wf-dash select,
+.isc-workflows-feature .isc-wf-dash a {
+  font-family: inherit;
+}
+
+/* Remediation executions dashboard */
+.isc-run-status.status-running {
+  color: #1e6bba;
+}
+.isc-run-status.status-waiting {
+  color: #b45309;
+}
+
+.isc-rem-exec-page {
+  min-height: calc(100vh - 120px);
+}
+
+.isc-rem-exec-inner {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.isc-rem-exec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.isc-rem-exec-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.isc-rem-exec-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.isc-rem-stat {
+  background: #fff;
+  border: 1px solid var(--isc-border, #e2e8f0);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.isc-rem-stat-val {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.isc-rem-stat-lbl {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.isc-rem-stat-active .isc-rem-stat-val { color: #1d4ed8; }
+.isc-rem-stat-ok .isc-rem-stat-val { color: #059669; }
+.isc-rem-stat-fail .isc-rem-stat-val { color: #dc2626; }
+
+.isc-rem-exec-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.isc-rem-filter-btn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.isc-rem-filter-btn:hover {
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.isc-rem-filter-btn.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.isc-rem-exec-split {
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  min-height: 480px;
+}
+
+.isc-rem-exec-list {
+  background: #fff;
+  border: 1px solid var(--isc-border, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.isc-rem-exec-list-head {
+  padding: 12px 16px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.isc-rem-exec-list-scroll {
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+}
+
+.isc-exec-event-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fff;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.isc-exec-event-card:hover {
+  background: #f8fafc;
+}
+
+.isc-exec-event-card.selected {
+  background: #eff6ff;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.isc-exec-event-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.isc-exec-event-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.isc-exec-event-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.isc-exec-status-pill {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.isc-exec-status-pill.status-success {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.isc-exec-status-pill.status-failed {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.isc-exec-status-pill.status-running {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.isc-exec-status-pill.status-waiting {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.isc-exec-status-pill.status-skipped {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.isc-exec-event-meta {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.isc-exec-dot {
+  margin: 0 4px;
+}
+
+.isc-exec-event-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #334155;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.isc-exec-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563eb;
+  animation: isc-exec-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes isc-exec-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.isc-exec-event-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.isc-exec-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.65rem;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.isc-exec-detail-panel {
+  background: #fff;
+  border: 1px solid var(--isc-border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: 20px 22px;
+  min-height: 480px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.isc-exec-detail-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.isc-exec-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 18px;
+}
+
+.isc-exec-detail-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.isc-exec-detail-sub {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.isc-exec-detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.isc-exec-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(280px, 1.2fr);
+  gap: 24px;
+}
+
+.isc-exec-detail-section h3 {
+  margin: 0 0 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.isc-exec-steps-heading {
+  margin-top: 20px !important;
+}
+
+.isc-exec-dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.isc-exec-dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.isc-exec-dl dt {
+  margin: 0;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.isc-exec-dl dd {
+  margin: 0;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.isc-exec-dl code {
+  font-size: 0.72rem;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.isc-exec-error-row dd {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.isc-exec-failure-banner {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.isc-exec-failure-banner-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #991b1b;
+  margin-bottom: 4px;
+}
+
+.isc-exec-failure-banner strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #b91c1c;
+}
+
+.isc-exec-waiting-banner {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+}
+
+.isc-exec-waiting-banner-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+.isc-exec-waiting-banner strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #b45309;
+}
+
+.isc-exec-waiting-banner-detail {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: #78350f;
+  line-height: 1.45;
+}
+
+.isc-exec-failure-banner-detail {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: #7f1d1d;
+  line-height: 1.45;
+}
+
+.isc-exec-milestones {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.isc-exec-milestones li {
+  font-size: 0.78rem;
+  color: #334155;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #2563eb;
+}
+
+.isc-exec-step-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.isc-exec-step-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.isc-exec-step-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 18px;
+  bottom: 0;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.isc-exec-step-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 2px solid #cbd5e1;
+  background: #fff;
+  z-index: 1;
+}
+
+.isc-exec-step-item.step-success .isc-exec-step-marker {
+  background: #059669;
+  border-color: #059669;
+}
+
+.isc-exec-step-item.step-failed .isc-exec-step-marker {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.isc-exec-step-item.step-waiting .isc-exec-step-marker {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+
+.isc-exec-step-item.step-pending .isc-exec-step-marker {
+  background: #fff;
+  border-color: #94a3b8;
+  border-style: dashed;
+}
+
+.isc-exec-step-badge.step-waiting {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.isc-exec-step-badge.step-pending {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.isc-exec-step-detail {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.isc-exec-step-body {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.isc-exec-step-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.isc-exec-step-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.isc-exec-step-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.isc-exec-step-badge.step-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.isc-exec-step-badge.step-failed {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.isc-exec-step-badge.step-neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.isc-exec-step-type {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  color: #64748b;
+}
+
+.isc-exec-step-error {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  color: #dc2626;
+}
+
+.isc-exec-no-steps {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+@media (max-width: 1024px) {
+  .isc-rem-exec-split {
+    grid-template-columns: 1fr;
+  }
+
+  .isc-rem-exec-list-scroll {
+    max-height: 360px;
+  }
+
+  .isc-exec-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .isc-rem-exec-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Legacy table styles (workflow list) */
+.isc-status-bullets {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.5;
+  max-width: 280px;
+}
+.isc-status-bullets li {
+  margin: 0;
+}
+
+.isc-row-selected {
+  background: #f0f6ff !important;
+}
+
+.isc-exec-detail-card {
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid var(--isc-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  padding: 16px 18px;
+}
+.isc-exec-detail-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 12px;
+}
+.isc-exec-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.isc-exec-meta > div {
+  display: flex;
+  gap: 8px;
+}
+.isc-exec-meta > div > span:first-child {
+  width: 96px;
+  flex-shrink: 0;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  padding-top: 2px;
+}
+.isc-exec-steps-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #5a6478;
+  margin-bottom: 8px;
+}
+.isc-exec-summary-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.isc-exec-summary-bar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.isc-exec-summary-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.isc-exec-summary-bar strong {
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+.isc-exec-detail-grid-debugger {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.isc-exec-meta-details {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.isc-exec-meta-details-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.isc-exec-meta-details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.isc-exec-meta-details-summary::before {
+  content: "▸";
+  margin-right: 8px;
+  color: #64748b;
+  font-size: 0.75rem;
+  transition: transform 0.15s ease;
+}
+
+.isc-exec-meta-details[open] .isc-exec-meta-details-summary::before {
+  transform: rotate(90deg);
+}
+
+.isc-exec-meta-details-summary h3 {
+  margin: 0;
+  flex: 1;
+}
+
+.isc-exec-meta-details-hint {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.isc-exec-meta-details-body {
+  padding: 0 14px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.isc-exec-dl-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px 20px;
+  padding-top: 12px;
+}
+
+.isc-exec-dl-compact > div {
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+.isc-exec-dl-compact .isc-exec-error-row {
+  grid-column: 1 / -1;
+}
+
+.isc-exec-debugger-section {
+  min-width: 0;
+  width: 100%;
+}
+
+.isc-exec-debugger-section .isc-test-debugger {
+  min-height: 420px;
+}
+
+.isc-exec-debugger-section .isc-test-debugger-embedded {
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+}
+
+.isc-exec-debugger-section .isc-test-debugger-embedded .isc-test-debugger-detail {
+  min-width: 0;
+  overflow: auto;
+}
+
+.isc-exec-debugger-section .isc-test-debugger-embedded .isc-test-debugger-payload {
+  grid-template-columns: 1fr;
+}
+
+.isc-exec-debugger-section .isc-test-debugger-embedded .isc-test-debugger-pre {
+  max-height: 280px;
+}
+
+@media (max-width: 1100px) {
+  .isc-exec-detail-grid-debugger {
+    gap: 14px;
+  }
+
+  .isc-exec-summary-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .isc-exec-debugger-section .isc-test-debugger-embedded {
+    grid-template-columns: 1fr;
+  }
+
+  .isc-exec-debugger-section .isc-test-debugger-embedded .isc-test-debugger-timeline {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    max-height: 240px;
+  }
+}
+
+@media (max-width: 860px) {
+  .isc-exec-detail-body {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,23 @@
+<!-- WinSW service definition for ADSecurity.API -->
+<service>
+  <id>ADSecurity.API</id>
+  <name>ADSecurity.API</name>
+  <description>Identity Sphere API (Wisbility)</description>
+  <executable>%BASE%\..\..\runtime\node\node.exe</executable>
+  <arguments>"%BASE%\..\..\app\backend\dist\server.js"</arguments>
+  <workingdirectory>%BASE%\..\..\app\backend</workingdirectory>
+  <env name="NODE_ENV" value="production"/>
+  <env name="ADSecurity_HOME" value="%BASE%\..\.."/>
+  <env name="ADSecurity_DATA" value="C:\ProgramData\ADSecurity"/>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>8</keepFiles>
+  </log>
+  <logpath>C:\ProgramData\ADSecurity\logs\api</logpath>
+  <depend>ADSecurity.Mongo</depend>
+  <onfailure action="restart" delay="10 sec"/>
+  <onfailure action="restart" delay="20 sec"/>
+  <resetfailure>1 hour</resetfailure>
+  <stoptimeout>30 sec</stoptimeout>
+  <startmode>Automatic</startmode>
+</service>

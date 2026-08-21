@@ -1,0 +1,19 @@
+<!-- WinSW service definition for ADSecurity.Mongo (internal component) -->
+<service>
+  <id>ADSecurity.Mongo</id>
+  <name>ADSecurity.Mongo</name>
+  <description>Identity Sphere data store (internal)</description>
+  <executable>%BASE%\..\..\runtime\mongodb\bin\mongod.exe</executable>
+  <arguments>--config "%BASE%\..\..\runtime\mongodb\mongod.cfg"</arguments>
+  <workingdirectory>%BASE%\..\..\runtime\mongodb</workingdirectory>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>8</keepFiles>
+  </log>
+  <logpath>C:\ProgramData\ADSecurity\logs\mongo</logpath>
+  <onfailure action="restart" delay="5 sec"/>
+  <onfailure action="restart" delay="15 sec"/>
+  <resetfailure>1 hour</resetfailure>
+  <stoptimeout>60 sec</stoptimeout>
+  <startmode>Automatic</startmode>
+</service>

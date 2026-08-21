@@ -1,0 +1,70 @@
+<mxfile host="65bd71144e">
+    <diagram id="roles-roadmap" name="Roles, Dependencies &amp; Build Order">
+        <mxGraphModel dx="1403" dy="784" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="IGA Platform — Who Does What, Dependencies &amp; Build Order (S0→S4)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=16;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="20" width="1000" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg1" value="&lt;font color=&quot;#000000&quot;&gt;PHASE COLORS&lt;br&gt;S0 = MVP foundation  ·  S1 = data/linking quality  ·  S2 = governance depth&lt;br&gt;S3 = automation &amp;amp; connectors  ·  S4 = retention &amp;amp; long-run ops&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="65" width="1320" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="s0" value="&lt;font color=&quot;#0d0d0d&quot;&gt;S0 — Foundation (build first)&lt;br&gt;• Register applications &amp;amp; types; schema &amp;amp; column mapping&lt;br&gt;• Identity store (profiles, CRUD, bulk, 360° read paths)&lt;br&gt;• Profile templates, auto-map &amp;amp; mappings&lt;br&gt;• CSV upload, upload history, entitlements catalog&lt;br&gt;• Quarantine (list / resolve) &amp;amp; custom attribute schemas&lt;br&gt;Depends on: nothing — this is the base.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="140" width="520" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="s1" value="&lt;font color=&quot;#000000&quot;&gt;S1 — Stronger data &amp;amp; inventory&lt;br&gt;• Account aggregation (list/detail, privileged/NHI filters)&lt;br&gt;• Correlation runs; application risk &amp;amp; compliance flags&lt;br&gt;• Entitlement risk tiers; NHI filter on identities&lt;br&gt;Depends on: S0 identity + app data + uploads.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="310" width="520" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="s2" value="&lt;font color=&quot;#000000&quot;&gt;S2 — Governance, managers &amp;amp; ops UX&lt;br&gt;• Identity risk score; lifecycle state; reassign work; peer compare; export&lt;br&gt;• Manager hierarchy &amp;amp; direct reports; contractor lifecycle&lt;br&gt;• Profile coverage / risk exposure; mapping overrides; unmapped list&lt;br&gt;• Account/entitlement exports; schema validation; upload error detail&lt;br&gt;Depends on: S0–S1 data model stable.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="450" width="520" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="s3" value="&lt;font color=&quot;#000000&quot;&gt;S3 — Automation, connectors &amp;amp; JML&lt;br&gt;• Manual JML trigger; lifecycle event log &amp;amp; processing&lt;br&gt;• Connector CRUD, credentials, sync full/delta, integration logs&lt;br&gt;• Entitlement hierarchy &amp;amp; ownership reviews (batch)&lt;br&gt;• Attribute bulk sync from HR; advanced search by attribute&lt;br&gt;Depends on: identities, accounts, entitlements, correlation concepts.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="620" width="520" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="s4" value="&lt;font color=&quot;#000000&quot;&gt;S4 — Compliance retention &amp;amp; hygiene&lt;br&gt;• Snapshots, compare, scheduled purge (GDPR-style windows)&lt;br&gt;• Deep audit exports where flagged for long retention&lt;br&gt;Depends on: stable 360° &amp;amp; history patterns from earlier phases.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="790" width="520" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="e01" style="endArrow=block;endFill=1;html=1;strokeWidth=2;" parent="1" source="s0" target="s1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e12" style="endArrow=block;endFill=1;html=1;strokeWidth=2;" parent="1" source="s1" target="s2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e23" style="endArrow=block;endFill=1;html=1;strokeWidth=2;" parent="1" source="s2" target="s3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e34" style="endArrow=block;endFill=1;html=1;strokeWidth=2;" parent="1" source="s3" target="s4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rolesH" value="USER ROLES — who touches what (typical)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#666666;fontColor=#ffffff;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="140" width="760" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="rAdmin" value="&lt;font color=&quot;#000000&quot;&gt;Admin / IGA owner&lt;br&gt;Registers apps, schemas, uploads, profiles, mappings, quarantine,&lt;br&gt;connectors, bulk ops, exports (where allowed), correlation runs.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="185" width="360" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="rMgr" value="&lt;font color=&quot;#000000&quot;&gt;Manager (line manager)&lt;br&gt;Sees team risk, direct reports, contractor renewals,&lt;br&gt;reassign handoffs, some certifications — mostly S2+.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="980" y="185" width="380" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="rAud" value="&lt;font color=&quot;#000000&quot;&gt;Audit / Analytics&lt;br&gt;Read-heavy: exports, snapshots, integration reports,&lt;br&gt;orphan/orphan-style lists — paired with Admin for actions.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="290" width="360" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="rAll" value="&lt;font color=&quot;#000000&quot;&gt;All authenticated users&lt;br&gt;Browse catalogs, open identity 360°, entitlements &amp;amp; violations read —&lt;br&gt;no structural changes.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="980" y="290" width="380" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="rSys" value="&lt;font color=&quot;#000000&quot;&gt;System / scheduler / integration account&lt;br&gt;Bulk HR sync, cron lifecycle processing, connector sync,&lt;br&gt;snapshot purge jobs — no human UI.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="385" width="760" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="dep" value="&lt;font color=&quot;#000000&quot;&gt;CROSS-CUTTING DEPENDENCY (conceptual)&lt;br&gt;Application &amp;amp; upload → entitlements &amp;amp; accounts → correlation → identity 360° &amp;amp; SoD&lt;br&gt;↑ Your existing flow: app → mapping → upload → correlation → linked view — still the spine.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffcc;strokeColor=#d6b656;fontStyle=0;align=left;spacingLeft=10;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="480" width="760" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="order" value="&lt;font color=&quot;#000000&quot;&gt;ORDER OF DEVELOPMENT (for planning)&lt;br&gt;1) S0: anything marked Built or Partial that blocks users day-to-day&lt;br&gt;2) S1: complete “inventory truth” (accounts, correlation, flags)&lt;br&gt;3) S2: manager + risk + exports — stakeholder demos get easier&lt;br&gt;4) S3: connectors + JML — operational maturity&lt;br&gt;5) S4: long-term audit &amp;amp; GDPR-style controls&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacingLeft=10;fontStyle=0;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="585" width="760" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="note" value="Tip: Pair this page with identity_application_flow.drawio — that file is the data spine; this file is roles + phased roadmap." style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontStyle=2;fontColor=#666666;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="735" width="760" height="50" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
