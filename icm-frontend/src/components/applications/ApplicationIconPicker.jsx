@@ -29,7 +29,7 @@ export function resolveApplicationIconSrc(iconOrUrl) {
   // Bust stale builtin artwork in app header / lists
   if (url && url.includes('/application-icons/') && url.includes('/image')) {
     const sep = url.includes('?') ? '&' : '?';
-    if (!/[?&]v=/.test(url)) url = `${url}${sep}v=6`;
+    if (!/[?&]v=/.test(url)) url = `${url}${sep}v=8`;
   }
   return url;
 }

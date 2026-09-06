@@ -1,0 +1,23 @@
+@ADShield.Api_HostAddress = http://localhost:5088
+
+### Health
+GET {{ADShield.Api_HostAddress}}/health
+
+### AD connectivity + security-descriptor proof
+### Fill with the same LDAP values as IdentitySphere App Registry.
+POST {{ADShield.Api_HostAddress}}/api/v1/ad/connectivity-test
+Content-Type: application/json
+
+{
+  "connection": {
+    "url": "ldap://dc.example.local:389",
+    "bindDn": "DOMAIN\\svc_adshield",
+    "bindPassword": "REPLACE_ME",
+    "baseDn": "DC=example,DC=local",
+    "timeoutMs": 30000,
+    "tlsInsecure": false,
+    "authType": "Basic"
+  },
+  "objectDn": "CN=Users,DC=example,DC=local",
+  "readSecurityDescriptor": true
+}

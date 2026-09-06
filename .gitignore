@@ -18,6 +18,18 @@ dist/
 build/
 out/
 
+# .NET / ADShield (under icm-backend)
+icm-backend/ADShield/**/bin/
+icm-backend/ADShield/**/obj/
+icm-backend/ADShield/**/*.user
+icm-backend/ADShield/.vs/
+icm-backend/ADShield/.env.local
+icm-backend/ADShield/**/.env.local
+icm-backend/ADShield/**/TestResults/
+*.nupkg
+project.lock.json
+artifacts/
+
 # Logs
 logs
 *.log

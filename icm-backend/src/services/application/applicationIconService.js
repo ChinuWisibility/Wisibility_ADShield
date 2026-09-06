@@ -14,7 +14,7 @@ const ALLOWED_MIME_TYPES = new Set([
 
 const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 
-/** Compact lowercase name for matching (e.g. "GIT HUB" → "github"). */
+/** Compact lowercase name for matching (e.g. "Active Directory" → "activedirectory"). */
 export function normalizeAppNameForIcon(name) {
   return String(name || "")
     .toLowerCase()
@@ -26,22 +26,8 @@ export function normalizeAppNameForIcon(name) {
  * Longer / more specific aliases are checked first.
  */
 const BUILTIN_NAME_ALIASES = [
-  { key: "aad", aliases: ["azuread", "azureactivedirectory", "microsoftentra", "entra", "entraid", "activedirectory"] },
-  { key: "azure", aliases: ["azure", "microsoftazure"] },
-  { key: "aws", aliases: ["aws", "amazonwebservices", "amazonaws", "amazonaws"] },
-  { key: "github", aliases: ["github", "gh"] },
-  { key: "salesforce", aliases: ["salesforce", "sfdc", "forcecom"] },
-  { key: "servicenow", aliases: ["servicenow", "snow"] },
-  { key: "microsoft", aliases: ["microsoft", "office365", "o365", "ms365", "microsoft365"] },
-  { key: "google", aliases: ["google", "googleworkspace", "gsuite", "gcp", "googlecloud"] },
-  { key: "okta", aliases: ["okta"] },
-  { key: "slack", aliases: ["slack"] },
-  { key: "jira", aliases: ["jira", "atlassianjira"] },
-  { key: "oracle", aliases: ["oracle"] },
-  { key: "sap", aliases: ["sap"] },
-  { key: "tableau", aliases: ["tableau"] },
-  { key: "workday", aliases: ["workday"] },
-  { key: "authoritative", aliases: ["authoritative", "authorative", "authoritativeapp", "authorativeapp", "hrms"] },
+  { key: "aad", aliases: ["azuread", "azureactivedirectory", "microsoftentra", "entra", "entraid"] },
+  { key: "ad", aliases: ["activedirectory", "activedirectorydirect", "adam", "adlds", "windowsad"] },
 ];
 
 export function matchBuiltinIconKey(appName) {
@@ -141,6 +127,44 @@ function resolveTenantObjectId(tenantId) {
 
 const seededTenants = new Set(); // tenantIds that have been checked this process
 
+function packKeys() {
+  return BUILTIN_APPLICATION_ICONS.map((p) => p.key);
+}
+
+/**
+ * Remove retired builtin pack icons that no application still references.
+ * In-use retired icons stay so existing apps keep their artwork by iconId.
+ */
+async function pruneRetiredBuiltinIcons(tid) {
+  const currentKeys = packKeys();
+  const retired = await ApplicationIcon.find({
+    tenantId: tid,
+    source: "builtin",
+    key: { $nin: currentKeys, $ne: null },
+  })
+    .select("_id")
+    .lean();
+  if (!retired.length) return { pruned: 0 };
+
+  const retiredIds = retired.map((d) => d._id);
+  const used = await Application.find({
+    tenantId: tid,
+    iconId: { $in: retiredIds },
+  })
+    .select("iconId")
+    .lean();
+  const usedIds = new Set(used.map((a) => String(a.iconId)));
+  const unusedIds = retiredIds.filter((id) => !usedIds.has(String(id)));
+  if (!unusedIds.length) return { pruned: 0 };
+
+  const res = await ApplicationIcon.deleteMany({
+    _id: { $in: unusedIds },
+    tenantId: tid,
+    source: "builtin",
+  });
+  return { pruned: res.deletedCount || 0 };
+}
+
 export async function seedBuiltinIcons(tenantId, { force = false } = {}) {
   const tid = resolveTenantObjectId(tenantId);
   const tidKey = String(tid);
@@ -195,10 +219,12 @@ export async function seedBuiltinIcons(tenantId, { force = false } = {}) {
   }
 
   seededTenants.add(tidKey);
+  const { pruned } = await pruneRetiredBuiltinIcons(tid);
   return {
     created,
     updated,
     existing: have.size,
+    pruned,
     total: BUILTIN_APPLICATION_ICONS.length,
     packVersion: BUILTIN_ICON_PACK_VERSION,
   };
@@ -270,7 +296,14 @@ export async function listApplicationIcons(tenantId) {
   const tid = resolveTenantObjectId(tenantId);
   await seedBuiltinIcons(tid);
 
-  const icons = await ApplicationIcon.find({ tenantId: tid })
+  const currentKeys = packKeys();
+  const icons = await ApplicationIcon.find({
+    tenantId: tid,
+    $or: [
+      { source: { $ne: "builtin" } },
+      { source: "builtin", key: { $in: currentKeys } },
+    ],
+  })
     .select("-data")
     .sort({ source: 1, name: 1 })
     .lean();
@@ -374,7 +407,7 @@ export async function deleteApplicationIcon(tenantId, iconId) {
 
 /**
  * Prefer a custom library icon named "Authoritative App" / "Authorative App",
- * otherwise the built-in `authoritative` pack icon.
+ * otherwise the built-in Active Directory pack icon.
  */
 export async function findAuthoritativeAppIcon(tenantId, { seed = true } = {}) {
   const tid = resolveTenantObjectId(tenantId);
@@ -389,16 +422,27 @@ export async function findAuthoritativeAppIcon(tenantId, { seed = true } = {}) {
     .lean();
   if (custom) return custom;
 
-  let builtin = await ApplicationIcon.findOne({ tenantId: tid, key: "authoritative" })
+  const builtins = await ApplicationIcon.find({
+    tenantId: tid,
+    source: "builtin",
+    key: { $in: ["ad", "aad"] },
+  })
     .select("-data")
     .lean();
-  if (!builtin && seed) {
-    await seedBuiltinIcons(tid);
-    builtin = await ApplicationIcon.findOne({ tenantId: tid, key: "authoritative" })
+  if (!builtins.length && seed) {
+    await seedBuiltinIcons(tid, { force: true });
+    const retried = await ApplicationIcon.find({
+      tenantId: tid,
+      source: "builtin",
+      key: { $in: ["ad", "aad"] },
+    })
       .select("-data")
       .lean();
+    const byKey = new Map(retried.map((d) => [d.key, d]));
+    return byKey.get("ad") || byKey.get("aad") || null;
   }
-  return builtin;
+  const byKey = new Map(builtins.map((d) => [d.key, d]));
+  return byKey.get("ad") || byKey.get("aad") || null;
 }
 
 /**
@@ -482,7 +526,7 @@ export async function ensureAuthoritativeIconsForApplications(applications) {
     const assignment = {
       iconId: icon._id,
       icon: applicationIconImageUrl(icon._id),
-      color: icon.color || "#059669",
+      color: icon.color || "#005A9E",
     };
     const ids = apps.map((a) => a._id);
     await Application.updateMany(
@@ -529,7 +573,7 @@ export async function applyAuthoritativeDefaultIcon(tenantId, fields = {}) {
   return {
     iconId: icon._id,
     icon: applicationIconImageUrl(icon._id),
-    color: fields.color || icon.color || "#059669",
+    color: fields.color || icon.color || "#005A9E",
   };
 }
 

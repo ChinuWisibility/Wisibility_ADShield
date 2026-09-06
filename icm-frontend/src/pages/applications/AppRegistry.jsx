@@ -36,87 +36,13 @@ const STATUSES = ['active', 'inactive', 'decommissioned', 'pending'];
 const INTEGRATION_TYPES = ['manual', 'auto', 'api', 'connector'];
 const SCHEDULES = ['daily', 'weekly', 'monthly', 'none'];
 
-/** Catalog aligned with legacy IGA connector dropdown (same list as AD option). */
-const CONNECTOR_OPTIONS = [
+/** ADShield catalog fallback when GET /applications/connectors/catalog is empty. */
+const AD_CONNECTOR_FALLBACK = [
   '',
-  'ACF2 - Full',
   'ADAM - Direct',
-  'AIX - Direct',
-  'AWS IAM',
   'Active Directory - Direct',
-  'Airwatch MIM',
   'Azure Active Directory',
   'Microsoft Entra ID - Graph',
-  'BMC ITSM - Direct',
-  'BMC Remedy - Direct',
-  'Box',
-  'Cloud Gateway',
-  'CyberArk',
-  'DB2 - Full',
-  'DB2 Windows - Direct',
-  'DelimitedFile',
-  'Dropbox',
-  'Duo',
-  'GoToMeeting',
-  'Good Technology MIM',
-  'Google Apps - Direct',
-  'IBM Lotus Domino - Direct',
-  'IBM Security Identity Manager',
-  'IBM Tivoli Access Manager',
-  'IBM Tivoli DS - Direct',
-  'IBM i',
-  'JDBC',
-  'JIVE',
-  'LDAP',
-  'LDIF',
-  'Linux - Direct',
-  'Logical',
-  'Mainframe',
-  'Microsoft Forefront Identity Manager',
-  'Microsoft Project Server',
-  'Microsoft SQL Server - Direct',
-  'Microsoft SharePoint Online',
-  'Microsoft SharePoint Server',
-  'MobileIron MIM',
-  'NetSuite',
-  'Novell Identity Manager',
-  'Novell eDirectory - Direct',
-  'OpenLDAP - Direct',
-  'Oracle Database - Direct',
-  'Oracle E-Business',
-  'Oracle HRMS',
-  'Oracle Identity Manager',
-  'Oracle Internet Directory - Direct',
-  'PeopleSoft - Direct',
-  'PeopleSoft HCM Database',
-  'RACF',
-  'RACF - Full',
-  'RSA Authentication Manager - Direct',
-  'Rally',
-  'RemedyForce',
-  'RuleBasedFileParser',
-  'SAP - Direct',
-  'SAP GRC',
-  'SAP HR/HCM',
-  'SAP Portal - UMWebService',
-  'SCIM',
-  'SQLLoader',
-  'Salesforce',
-  'ServiceNow',
-  'Siebel',
-  'Solaris - Direct',
-  'Sun IDM',
-  'SunOne - Direct',
-  'Sybase - Direct',
-  'Tenrox',
-  'TopSecret',
-  'TopSecret - Full',
-  'Unix',
-  'VMS',
-  'Webex',
-  'Windows Local - Direct',
-  'XML',
-  'Yammer',
 ];
 
 /** Normalize populated or raw ObjectId fields from API responses. */
@@ -380,7 +306,7 @@ const formBlueprint = [
     icon: <SettingsEthernet fontSize="small" />,
     color: 'info.main',
     fields: [
-      { name: 'connectorType', label: 'Connector', type: 'select', options: CONNECTOR_OPTIONS, col: 4 },
+      { name: 'connectorType', label: 'Connector', type: 'select', options: AD_CONNECTOR_FALLBACK, col: 4 },
       { name: 'integrationType', label: 'Integration Type', type: 'select', options: INTEGRATION_TYPES, col: 4 },
       { name: 'autoUploadSchedule', label: 'Sync Schedule', type: 'select', options: SCHEDULES, col: 4 },
       { name: 'tags', label: 'Tags (comma separated)', type: 'text', col: 4 },
@@ -390,7 +316,7 @@ const formBlueprint = [
         type: 'checkbox',
         col: 12,
         helperText:
-          'Mark if this application is a master HR / people or trusted identity feed (e.g. Workday, SAP HR, AD).',
+          'Mark if this application is a trusted identity feed (e.g. Active Directory).',
       },
     ]
   }
@@ -474,6 +400,13 @@ export default function AppRegistry() {
     const row = connectorCatalog.find((c) => c.label === formData.connectorType);
     return row?.family ?? null;
   }, [formData.connectorType, connectorCatalog]);
+
+  const connectorSelectOptions = useMemo(() => {
+    if (connectorCatalog.length) {
+      return ['', ...connectorCatalog.map((c) => c.label)];
+    }
+    return AD_CONNECTOR_FALLBACK;
+  }, [connectorCatalog]);
 
   const authoritativeApps = useMemo(
     () => applications.filter((a) => !!a.authoritativeSource),
@@ -802,7 +735,7 @@ export default function AppRegistry() {
               : undefined
           }
         >
-          {field.options.map((o) => (
+          {(field.name === 'connectorType' ? connectorSelectOptions : field.options).map((o) => (
             <MenuItem key={o || '__none__'} value={o}>
               {field.name === 'connectorType' ? (o === '' ? 'Select One …' : o) : (o === '' ? '—' : String(o).toUpperCase())}
             </MenuItem>
