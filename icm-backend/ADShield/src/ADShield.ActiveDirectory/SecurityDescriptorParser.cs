@@ -81,7 +81,11 @@ public static class SecurityDescriptorParser
                 SelfRelative = (control & SdControlSelfRelative) != 0,
                 OwnerSid = ownerSid,
                 GroupSid = groupSid,
+                DaclPresent = dacl.Present,
+                DaclHeaderAceCount = dacl.HeaderAceCount,
                 DaclAceCount = dacl.Aces.Count,
+                SaclPresent = sacl.Present,
+                SaclHeaderAceCount = sacl.HeaderAceCount,
                 SaclAceCount = sacl.Aces.Count,
                 Aces = aces,
             };
@@ -129,10 +133,13 @@ public static class SecurityDescriptorParser
         return ParseSid(buf.AsSpan(offset, needed));
     }
 
-    private static (bool Present, IReadOnlyList<AceInfo> Aces) ParseAcl(byte[] buf, uint relativeOffset, string aclType)
+    private static (bool Present, int HeaderAceCount, IReadOnlyList<AceInfo> Aces) ParseAcl(
+        byte[] buf,
+        uint relativeOffset,
+        string aclType)
     {
         if (relativeOffset == 0 || relativeOffset + 8 > buf.Length)
-            return (false, Array.Empty<AceInfo>());
+            return (false, 0, Array.Empty<AceInfo>());
 
         var start = (int)relativeOffset;
         var aceCount = BitConverter.ToUInt16(buf, start + 2);
@@ -152,7 +159,7 @@ public static class SecurityDescriptorParser
             parsed++;
         }
 
-        return (true, aces);
+        return (true, aceCount, aces);
     }
 
     private static AceInfo? ParseAceAtOffset(byte[] buf, int offset, string aclType)

@@ -137,7 +137,9 @@ export async function runPostureScan(params) {
   const modules = resolvePostureModules(features);
   const moduleResults = [];
   const featureSettings = mergeFeatureSettingsForScan(application, options);
-  let scanOptions = { ...options, featureSettings };
+  // Propagate adConfig for modules that need credentials without requiresAdLdap
+  // (e.g. identity_graph_security → ADShield ACL analysis).
+  let scanOptions = { ...options, featureSettings, adConfig: adConfig || options?.adConfig };
 
   const ldapModules = modules.filter((id) => POSTURE_MODULES[id]?.requiresAdLdap);
   if (ldapModules.length && adConfig) {

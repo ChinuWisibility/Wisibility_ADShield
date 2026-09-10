@@ -8,9 +8,10 @@
     "icm-backend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently -n node,react,dotnet -c cyan,green,magenta \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:adshield\"",
     "dev:frontend": "cd icm-frontend && npm run dev",
     "dev:backend": "cd icm-backend && npm run dev",
+    "dev:adshield": "node scripts/run-adshield.mjs",
     "build": "cd icm-frontend && npm run build",
     "start": "cd icm-backend && npm start",
     "install:all": "npm install && cd icm-backend && npm install && cd ../icm-frontend && npm install"

@@ -43,7 +43,37 @@ Swagger (Development): `http://localhost:5088/swagger`
 
 Liveness probe.
 
+### `POST /api/v1/security/acl-analysis`
+
+Live ACL analysis for IdentitySphere Phase 1 features: `broken_acls`, `unknown_sid_bindings`.
+Credentials are request-scoped (never persisted). Optional `ADSHIELD_API_KEY` / `ADShield:ApiKey`
+requires matching `X-ADShield-Key` header.
+
+```json
+{
+  "scanId": "...",
+  "features": ["broken_acls", "unknown_sid_bindings"],
+  "connection": {
+    "url": "ldap://dc.example.local:389",
+    "bindDn": "CN=svc,DC=example,DC=local",
+    "bindPassword": "***",
+    "baseDn": "DC=example,DC=local",
+    "timeoutMs": 120000,
+    "tlsInsecure": false
+  },
+  "search": {
+    "baseDn": "DC=example,DC=local",
+    "filter": "(|(&(objectCategory=person)(objectClass=user))(objectClass=group))",
+    "scope": "sub"
+  },
+  "options": { "maxObjects": 5000 }
+}
+```
+
+Returns IdentitySphere discovery findings (`feature`, `status`, `findingSignals`, `evidence`, …).
+
 ### `POST /api/v1/ad/connectivity-test`
+
 
 Body (all AD settings supplied per request — nothing is hard-coded):
 

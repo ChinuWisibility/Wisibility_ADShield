@@ -742,6 +742,8 @@ const REGISTRY = [
     defaultEnabled: true,
     requiresGraph: true,
     requiresAdLdap: false,
+    /** When ADSHIELD_ENABLED, live analysis via ADShield (not ldapts posture modules). */
+    requiresAdShield: true,
     executionMode: "GRAPH",
     moduleId: "identity_graph_security",
     requiredAttributes: ["nTSecurityDescriptor", "objectSid"],
@@ -759,6 +761,8 @@ const REGISTRY = [
     defaultEnabled: true,
     requiresGraph: true,
     requiresAdLdap: false,
+    /** When ADSHIELD_ENABLED, live analysis via ADShield (not ldapts posture modules). */
+    requiresAdShield: true,
     executionMode: "GRAPH",
     moduleId: "identity_graph_security",
     requiredAttributes: ["nTSecurityDescriptor", "objectSid"],

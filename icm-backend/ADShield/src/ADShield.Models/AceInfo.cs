@@ -28,7 +28,12 @@ public sealed class ParsedSecurityDescriptor
     public bool SelfRelative { get; init; }
     public string OwnerSid { get; init; } = string.Empty;
     public string GroupSid { get; init; } = string.Empty;
+    public bool DaclPresent { get; init; }
+    /// <summary>AceCount field from the DACL header (may differ from successfully parsed ACEs).</summary>
+    public int DaclHeaderAceCount { get; init; }
     public int DaclAceCount { get; init; }
+    public bool SaclPresent { get; init; }
+    public int SaclHeaderAceCount { get; init; }
     public int SaclAceCount { get; init; }
     public IReadOnlyList<AceInfo> Aces { get; init; } = Array.Empty<AceInfo>();
 }

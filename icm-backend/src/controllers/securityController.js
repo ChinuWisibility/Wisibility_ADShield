@@ -40,9 +40,15 @@ import {
   ensureWorkingConfiguration,
 } from "../services/security/assessmentVersionService.js";
 import { validatePostureLdapConnection, friendlyLdapErrorMessage } from "../services/posture/postureLdapValidator.js";
+import { isAdShieldEnabled } from "../services/security/adShield/adShieldClient.js";
 
 function selectedFeaturesNeedLdap(featureIds) {
   return (featureIds || []).some((id) => getPostureFeatureById(id)?.requiresAdLdap);
+}
+
+/** True when any selected feature needs live ADShield (.NET) analysis. */
+function selectedFeaturesNeedAdShield(featureIds) {
+  return (featureIds || []).some((id) => getPostureFeatureById(id)?.requiresAdShield);
 }
 
 async function loadApplication(req, res) {
@@ -350,24 +356,37 @@ export async function runApplicationSecurityScan(req, res) {
 
     let adConfig;
     const needsLdap = selectedFeaturesNeedLdap(executableFeatures);
+    const needsAdShield =
+      isAdShieldEnabled() && selectedFeaturesNeedAdShield(executableFeatures);
 
-    if (needsLdap) {
+    if (needsLdap || needsAdShield) {
       const fromDb = app.connectionConfig?.ad || {};
       const pwd = req.body?.bindPassword || fromDb.bindPassword;
       adConfig = normalizeAdConfig({ ...fromDb, bindPassword: pwd });
       if (!adConfig.bindPassword) {
         return res.status(400).json({
           success: false,
-          message: "Bind password is required for LDAP-based scan features.",
+          message: needsLdap
+            ? "Bind password is required for LDAP-based scan features."
+            : "Bind password is required for ADShield ACL analysis features.",
         });
       }
-      try {
-        await validatePostureLdapConnection(adConfig);
-      } catch (ldapErr) {
+      if (!adConfig.url || !adConfig.baseDn || !adConfig.bindDn) {
         return res.status(400).json({
           success: false,
-          message: ldapErr.message || friendlyLdapErrorMessage(ldapErr),
+          message:
+            "AD connection settings (url, baseDn, bindDn) are required for this scan.",
         });
+      }
+      if (needsLdap) {
+        try {
+          await validatePostureLdapConnection(adConfig);
+        } catch (ldapErr) {
+          return res.status(400).json({
+            success: false,
+            message: ldapErr.message || friendlyLdapErrorMessage(ldapErr),
+          });
+        }
       }
     }
 

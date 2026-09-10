@@ -165,6 +165,8 @@ export async function runIdentityGraphSecurityScan({
     analysisCtx,
     queryOverrides: options.queryOverrides || {},
     ldapCfg,
+    // Request-scoped AD config for ADShield (never persisted by this module).
+    adConfig: options.adConfig || null,
   };
 
   const selected = Array.isArray(features) ? features : IDENTITY_GRAPH_SECURITY_FEATURES;
@@ -284,6 +286,9 @@ export async function runIdentityGraphSecurityScan({
 
     },
 
+    // Soft-fail diagnostics from ADShield (not shown as findings; distinguishes empty vs failed).
+    ...(acl.errors?.length ? { aclErrors: acl.errors } : {}),
+
     summary: {
 
       totalFindings: findings.length,
@@ -293,6 +298,8 @@ export async function runIdentityGraphSecurityScan({
       timings,
 
       metrics,
+
+      ...(acl.errors?.length ? { aclErrors: acl.errors } : {}),
 
     },
 

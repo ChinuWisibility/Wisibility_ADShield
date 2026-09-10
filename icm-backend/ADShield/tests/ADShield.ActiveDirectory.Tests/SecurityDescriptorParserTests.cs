@@ -45,6 +45,8 @@ public class SecurityDescriptorParserTests
         Assert.Null(error);
         Assert.NotNull(parsed);
         Assert.True(parsed!.SelfRelative);
+        Assert.True(parsed.DaclPresent);
+        Assert.Equal(1, parsed.DaclHeaderAceCount);
         Assert.Equal("S-1-1-0", parsed.OwnerSid);
         Assert.Equal("S-1-1-0", parsed.GroupSid);
         Assert.Equal(1, parsed.DaclAceCount);

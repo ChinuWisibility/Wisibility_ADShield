@@ -241,6 +241,25 @@ const env = {
     String(process.env.LEGACY_REMEDIATION_ENABLED || "false").toLowerCase() === "true",
 
   /**
+   * Optional ADShield .NET engine for live ACL / security-descriptor analysis.
+   * Disabled by default — ACL intelligence falls back to Node detectors.
+   */
+  adShield: {
+    enabled:
+      String(process.env.ADSHIELD_ENABLED || "false").toLowerCase() === "true",
+    baseUrl: String(process.env.ADSHIELD_BASE_URL || "http://127.0.0.1:5088")
+      .trim()
+      .replace(/\/+$/, ""),
+    /** HTTP client timeout for ACL analysis (ms). Keep below FE scan budget (600s). */
+    timeoutMs: Math.min(
+      Math.max(parseInt(process.env.ADSHIELD_TIMEOUT_MS, 10) || 180000, 5000),
+      540000,
+    ),
+    /** Optional shared secret sent as X-ADShield-Key when set on both sides. */
+    apiKey: String(process.env.ADSHIELD_API_KEY || "").trim(),
+  },
+
+  /**
    * Offline product licensing (LMS).
    * There is intentionally no flag to disable licensing.
    */

@@ -1,6 +1,7 @@
 using System.DirectoryServices.Protocols;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using ADShield.Configuration;
 using ADShield.Models;
 using Microsoft.Extensions.Logging;
@@ -163,6 +164,287 @@ public sealed class LdapActiveDirectoryClient : IActiveDirectoryClient
             Parsed = parsed,
             DecodeError = decodeError,
         };
+    }
+
+    public async Task<IReadOnlyList<SecurableDirectoryObject>> SearchSecurableObjectsAsync(
+        string searchBaseDn,
+        string ldapFilter,
+        SearchScopeKind scope,
+        int maxResults,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(searchBaseDn))
+            throw new ArgumentException("Search base DN is required.", nameof(searchBaseDn));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+
+        var filter = string.IsNullOrWhiteSpace(ldapFilter)
+            ? "(|(&(objectCategory=person)(objectClass=user))(objectClass=group))"
+            : ldapFilter.Trim();
+        var limit = Math.Clamp(maxResults, 1, 50_000);
+        var ldapScope = scope switch
+        {
+            SearchScopeKind.Base => SearchScope.Base,
+            SearchScopeKind.OneLevel => SearchScope.OneLevel,
+            _ => SearchScope.Subtree,
+        };
+
+        var request = new SearchRequest(
+            searchBaseDn.Trim(),
+            filter,
+            ldapScope,
+            "distinguishedName",
+            "objectClass",
+            "objectSid",
+            "sAMAccountName",
+            "cn",
+            "name",
+            "nTSecurityDescriptor");
+
+        // LDAP_SERVER_SD_FLAGS_OID — OWNER|GROUP|DACL
+        request.Controls.Add(new DirectoryControl(
+            "1.2.840.113556.1.4.801",
+            [0x30, 0x03, 0x02, 0x01, 0x07],
+            isCritical: true,
+            serverSide: true));
+
+        var pageSize = Math.Min(1000, limit);
+        var pageControl = new PageResultRequestControl(pageSize);
+        request.Controls.Add(pageControl);
+
+        var results = new List<SecurableDirectoryObject>();
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var response = await SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+            foreach (SearchResultEntry entry in response.Entries)
+            {
+                results.Add(MapSecurableEntry(entry));
+                if (results.Count >= limit)
+                    return results;
+            }
+
+            var responsePage = response.Controls
+                .OfType<PageResultResponseControl>()
+                .FirstOrDefault();
+            if (responsePage is null || responsePage.Cookie.Length == 0)
+                break;
+
+            pageControl.Cookie = responsePage.Cookie;
+        }
+
+        return results;
+    }
+
+    public async Task<string?> ResolveSidAsync(
+        string sidString,
+        string searchBaseDn,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await LookupPrincipalBySidAsync(sidString, searchBaseDn, cancellationToken)
+            .ConfigureAwait(false);
+        return result?.DistinguishedName;
+    }
+
+    public async Task<SidLookupResult?> LookupPrincipalBySidAsync(
+        string sidString,
+        string searchBaseDn,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        var sid = NormalizeSid(sidString);
+        if (string.IsNullOrEmpty(sid) || string.IsNullOrWhiteSpace(searchBaseDn))
+            return null;
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+
+        byte[]? sidBytes;
+        try
+        {
+            sidBytes = SidStringToBytes(sid);
+        }
+        catch
+        {
+            return null;
+        }
+
+        if (sidBytes is null || sidBytes.Length == 0)
+            return null;
+
+        var filterBytes = new StringBuilder();
+        filterBytes.Append("(objectSid=");
+        foreach (var b in sidBytes)
+            filterBytes.Append('\\').Append(b.ToString("X2"));
+        filterBytes.Append(')');
+
+        var request = new SearchRequest(
+            searchBaseDn.Trim(),
+            filterBytes.ToString(),
+            SearchScope.Subtree,
+            "distinguishedName",
+            "objectClass",
+            "sAMAccountName",
+            "cn",
+            "name",
+            "objectSid");
+        request.SizeLimit = 1;
+
+        try
+        {
+            var response = await SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            if (response.Entries.Count == 0)
+                return null;
+
+            var entry = response.Entries[0];
+            var dn = entry.DistinguishedName ?? string.Empty;
+            var objectClass = GetLastStringAttr(entry, "objectClass");
+            var name =
+                GetFirstStringAttr(entry, "sAMAccountName")
+                ?? GetFirstStringAttr(entry, "cn")
+                ?? GetFirstStringAttr(entry, "name");
+            var foreign = (objectClass ?? string.Empty).Contains("foreignsecurityprincipal", StringComparison.OrdinalIgnoreCase)
+                          || dn.Contains("ForeignSecurityPrincipals", StringComparison.OrdinalIgnoreCase);
+
+            return new SidLookupResult
+            {
+                Sid = sid,
+                DistinguishedName = dn,
+                ObjectName = name,
+                ObjectClass = objectClass,
+                IsForeignSecurityPrincipal = foreign,
+            };
+        }
+        catch (DirectoryOperationException)
+        {
+            return null;
+        }
+    }
+
+    private static SecurableDirectoryObject MapSecurableEntry(SearchResultEntry entry)
+    {
+        var dn = entry.DistinguishedName ?? string.Empty;
+        var objectClass = GetLastStringAttr(entry, "objectClass");
+        var objectType = ResolveObjectType(objectClass, dn);
+        var name =
+            GetFirstStringAttr(entry, "sAMAccountName")
+            ?? GetFirstStringAttr(entry, "cn")
+            ?? GetFirstStringAttr(entry, "name")
+            ?? dn;
+
+        var objectSid = string.Empty;
+        if (entry.Attributes.Contains("objectSid") && entry.Attributes["objectSid"].Count > 0)
+        {
+            if (entry.Attributes["objectSid"][0] is byte[] sidBytes)
+                objectSid = SecurityDescriptorParser.ParseSid(sidBytes);
+        }
+
+        ParsedSecurityDescriptor? parsed = null;
+        var descriptorFound = false;
+        string? descriptorError = null;
+        if (entry.Attributes.Contains("nTSecurityDescriptor") && entry.Attributes["nTSecurityDescriptor"].Count > 0)
+        {
+            var raw = entry.Attributes["nTSecurityDescriptor"][0];
+            byte[]? bytes = raw as byte[] ?? (raw is string s ? Convert.FromBase64String(s) : null);
+            if (bytes is { Length: > 0 })
+            {
+                descriptorFound = true;
+                parsed = SecurityDescriptorParser.Parse(bytes, out descriptorError);
+            }
+        }
+
+        return new SecurableDirectoryObject
+        {
+            DistinguishedName = dn,
+            ObjectType = objectType,
+            ObjectName = name,
+            ObjectSid = NormalizeSid(objectSid),
+            DescriptorFound = descriptorFound,
+            ParsedSd = parsed,
+            DescriptorError = descriptorError,
+        };
+    }
+
+    private static string ResolveObjectType(string? objectClass, string dn)
+    {
+        var oc = (objectClass ?? string.Empty).ToLowerInvariant();
+        if (oc.Contains("foreignsecurityprincipal") || dn.Contains("ForeignSecurityPrincipals", StringComparison.OrdinalIgnoreCase))
+            return "foreign_security_principal";
+        if (oc.Contains("group"))
+            return "group";
+        if (oc.Contains("user") || oc.Contains("person"))
+            return "user";
+        if (oc.Contains("computer"))
+            return "computer";
+        if (oc.Contains("organizationalunit"))
+            return "organizationalUnit";
+        return "object";
+    }
+
+    private static string? GetFirstStringAttr(SearchResultEntry entry, string name)
+    {
+        if (!entry.Attributes.Contains(name) || entry.Attributes[name].Count == 0)
+            return null;
+        var v = entry.Attributes[name][0];
+        return v switch
+        {
+            string s when !string.IsNullOrWhiteSpace(s) => s,
+            byte[] => null,
+            _ => Convert.ToString(v),
+        };
+    }
+
+    private static string? GetLastStringAttr(SearchResultEntry entry, string name)
+    {
+        if (!entry.Attributes.Contains(name) || entry.Attributes[name].Count == 0)
+            return null;
+        var attr = entry.Attributes[name];
+        for (var i = attr.Count - 1; i >= 0; i--)
+        {
+            if (attr[i] is string s && !string.IsNullOrWhiteSpace(s))
+                return s;
+        }
+        return null;
+    }
+
+    public static string NormalizeSid(string? sid)
+    {
+        var s = (sid ?? string.Empty).Trim();
+        return string.IsNullOrEmpty(s) ? string.Empty : s.ToUpperInvariant();
+    }
+
+    /// <summary>Convert S-1-5-... string to binary SID (MS-DTYP).</summary>
+    public static byte[]? SidStringToBytes(string sid)
+    {
+        var parts = sid.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 3 || !parts[0].Equals("S", StringComparison.OrdinalIgnoreCase))
+            return null;
+        if (!byte.TryParse(parts[1], out var revision))
+            return null;
+        if (!ulong.TryParse(parts[2], out var authority))
+            return null;
+
+        var subAuthorities = new List<uint>();
+        for (var i = 3; i < parts.Length; i++)
+        {
+            if (!uint.TryParse(parts[i], out var sub))
+                return null;
+            subAuthorities.Add(sub);
+        }
+
+        var buf = new byte[8 + subAuthorities.Count * 4];
+        buf[0] = revision;
+        buf[1] = (byte)subAuthorities.Count;
+        buf[2] = (byte)((authority >> 40) & 0xFF);
+        buf[3] = (byte)((authority >> 32) & 0xFF);
+        buf[4] = (byte)((authority >> 24) & 0xFF);
+        buf[5] = (byte)((authority >> 16) & 0xFF);
+        buf[6] = (byte)((authority >> 8) & 0xFF);
+        buf[7] = (byte)(authority & 0xFF);
+        for (var i = 0; i < subAuthorities.Count; i++)
+            BitConverter.GetBytes(subAuthorities[i]).CopyTo(buf, 8 + i * 4);
+        return buf;
     }
 
     public ValueTask DisposeAsync()

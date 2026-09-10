@@ -44,6 +44,41 @@ public interface IActiveDirectoryClient : IAsyncDisposable
     Task<SecurityDescriptorResult> ReadSecurityDescriptorAsync(
         string distinguishedName,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Enumerates securable objects (users/groups by default) with security descriptors under a search base.
+    /// </summary>
+    Task<IReadOnlyList<SecurableDirectoryObject>> SearchSecurableObjectsAsync(
+        string searchBaseDn,
+        string ldapFilter,
+        SearchScopeKind scope,
+        int maxResults,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Resolves a SID string to a directory object DN when present in the directory.
+    /// Prefer <see cref="LookupPrincipalBySidAsync"/> for richer results.
+    /// </summary>
+    Task<string?> ResolveSidAsync(
+        string sidString,
+        string searchBaseDn,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Targeted LDAP lookup by binary objectSid under <paramref name="searchBaseDn"/> (typically domain base DN).
+    /// Independent of ACL object enumeration / maxObjects.
+    /// </summary>
+    Task<SidLookupResult?> LookupPrincipalBySidAsync(
+        string sidString,
+        string searchBaseDn,
+        CancellationToken cancellationToken = default);
+}
+
+public enum SearchScopeKind
+{
+    Base = 0,
+    OneLevel = 1,
+    Subtree = 2,
 }
 
 /// <summary>
