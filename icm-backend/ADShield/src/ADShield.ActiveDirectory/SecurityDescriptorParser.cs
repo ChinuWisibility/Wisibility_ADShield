@@ -196,6 +196,7 @@ public static class SecurityDescriptorParser
             AceTypeName = typeName ?? $"UNKNOWN_{aceType}",
             AceFlags = aceFlags,
             AceSize = aceSize,
+            Offset = offset,
             AccessMask = accessMask,
             AccessMaskHex = $"0x{accessMask:X8}",
             TrusteeSid = trusteeSid,

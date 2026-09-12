@@ -26,8 +26,21 @@ public sealed class AclAnalysisService : IAclAnalysisService
     [
         "broken_acls",
         "unknown_sid_bindings",
+        "orphan_sids",
         "shadow_admins_acl",
+        "shadow_admins",
+        "sid_history_analysis",
+        "foreign_security_principals",
     ];
+
+    private static readonly HashSet<string> DescriptorFeatures = new(StringComparer.Ordinal)
+    {
+        "broken_acls",
+        "unknown_sid_bindings",
+        "orphan_sids",
+        "shadow_admins_acl",
+        "shadow_admins",
+    };
 
     private readonly IActiveDirectoryClientFactory _clientFactory;
     private readonly ILogger<AclAnalysisService> _logger;
@@ -63,7 +76,7 @@ public sealed class AclAnalysisService : IAclAnalysisService
         }
 
         var features = (request.Features ?? Array.Empty<string>())
-            .Select(f => (f ?? string.Empty).Trim())
+            .Select(f => NormalizeFeatureId(f))
             .Where(f => SupportedFeatures.Contains(f, StringComparer.Ordinal))
             .Distinct(StringComparer.Ordinal)
             .ToList();
@@ -75,7 +88,8 @@ public sealed class AclAnalysisService : IAclAnalysisService
                 Success = false,
                 Errors =
                 [
-                    "No supported ACL features requested. Supported: broken_acls, unknown_sid_bindings, shadow_admins_acl.",
+                    "No supported ACL features requested. Supported: "
+                    + string.Join(", ", SupportedFeatures) + ".",
                 ],
                 Diagnostics = new AclAnalysisDiagnosticsDto { Endpoint = endpoint },
             };
@@ -95,6 +109,9 @@ public sealed class AclAnalysisService : IAclAnalysisService
             ? Guid.NewGuid().ToString()
             : request.ScanId.Trim();
         var wantShadow = features.Contains("shadow_admins_acl", StringComparer.Ordinal);
+        var needDescriptors = features.Any(f => DescriptorFeatures.Contains(f));
+        var wantSidHistory = features.Contains("sid_history_analysis", StringComparer.Ordinal);
+        var wantFsp = features.Contains("foreign_security_principals", StringComparer.Ordinal);
 
         try
         {
@@ -105,55 +122,71 @@ public sealed class AclAnalysisService : IAclAnalysisService
 
             await client.TestConnectionAsync(ct).ConfigureAwait(false);
 
-            var objects = (await client.SearchSecurableObjectsAsync(
-                    searchBase,
-                    filter,
-                    scope,
-                    maxObjects,
-                    ct)
-                .ConfigureAwait(false)).ToList();
-
-            var catalogSids = objects
-                .Select(o => o.ObjectSid)
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .ToList();
-            var accountDomainSids = SidResolutionEngine.CollectAccountDomainSids(catalogSids);
-
-            var privilegedSids = BuildPrivilegedSidSet(objects);
-            foreach (var sid in request.Options?.PrivilegedSids ?? Array.Empty<string>())
-            {
-                var n = LdapActiveDirectoryClient.NormalizeSid(sid);
-                if (!string.IsNullOrEmpty(n))
-                    privilegedSids.Add(n);
-            }
-
+            var objects = new List<SecurableDirectoryObject>();
+            var catalogSids = new List<string>();
+            var accountDomainSids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var privilegedSids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var shadowDiag = new ShadowAdminAclDetector.DetectionDiagnostics();
-            if (wantShadow)
-            {
-                var candidates = ShadowAdminAclDetector.BuildPrivilegedSidCandidates(
-                    catalogSids,
-                    privilegedSids,
-                    accountDomainSids);
-                foreach (var sid in candidates)
-                    privilegedSids.Add(sid);
 
-                var supplemental = await ResolveMissingPrivilegedTargetsAsync(
-                        client,
-                        objects,
-                        privilegedSids,
-                        domainSearchBase,
+            if (needDescriptors)
+            {
+                objects = (await client.SearchSecurableObjectsAsync(
+                        searchBase,
+                        filter,
+                        scope,
+                        maxObjects,
                         ct)
-                    .ConfigureAwait(false);
-                shadowDiag.PrivilegedTargetsResolved = supplemental.Count;
-                if (supplemental.Count > 0)
+                    .ConfigureAwait(false)).ToList();
+
+                catalogSids = objects
+                    .Select(o => o.ObjectSid)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToList()!;
+                accountDomainSids = SidResolutionEngine.CollectAccountDomainSids(catalogSids);
+                privilegedSids = BuildPrivilegedSidSet(objects);
+                foreach (var sid in request.Options?.PrivilegedSids ?? Array.Empty<string>())
                 {
-                    objects.AddRange(supplemental);
-                    foreach (var o in supplemental)
+                    var n = LdapActiveDirectoryClient.NormalizeSid(sid);
+                    if (!string.IsNullOrEmpty(n))
+                        privilegedSids.Add(n);
+                }
+
+                if (wantShadow)
+                {
+                    var candidates = ShadowAdminAclDetector.BuildPrivilegedSidCandidates(
+                        catalogSids,
+                        privilegedSids,
+                        accountDomainSids);
+                    foreach (var sid in candidates)
+                        privilegedSids.Add(sid);
+
+                    var supplemental = await ResolveMissingPrivilegedTargetsAsync(
+                            client,
+                            objects,
+                            privilegedSids,
+                            domainSearchBase,
+                            ct)
+                        .ConfigureAwait(false);
+                    shadowDiag.PrivilegedTargetsResolved = supplemental.Count;
+                    if (supplemental.Count > 0)
                     {
-                        var s = LdapActiveDirectoryClient.NormalizeSid(o.ObjectSid);
-                        if (!string.IsNullOrEmpty(s))
-                            catalogSids.Add(s);
+                        objects.AddRange(supplemental);
+                        foreach (var o in supplemental)
+                        {
+                            var s = LdapActiveDirectoryClient.NormalizeSid(o.ObjectSid);
+                            if (!string.IsNullOrEmpty(s))
+                                catalogSids.Add(s);
+                        }
                     }
+                }
+            }
+            else
+            {
+                foreach (var sid in request.Options?.PrivilegedSids ?? Array.Empty<string>())
+                {
+                    var n = LdapActiveDirectoryClient.NormalizeSid(sid);
+                    if (!string.IsNullOrEmpty(n))
+                        privilegedSids.Add(n);
                 }
             }
 
@@ -163,14 +196,50 @@ public sealed class AclAnalysisService : IAclAnalysisService
                 domainSearchBase,
                 (sid, baseDn, token) => client.LookupPrincipalBySidAsync(sid, baseDn, token));
 
-            var uniqueTrusteeSids = CollectTrusteeSids(objects, features, privilegedSids);
-            await sidEngine.EnsureResolvedAsync(uniqueTrusteeSids, ct).ConfigureAwait(false);
+            if (needDescriptors)
+            {
+                var uniqueTrusteeSids = CollectTrusteeSids(objects, features, privilegedSids);
+                await sidEngine.EnsureResolvedAsync(uniqueTrusteeSids, ct).ConfigureAwait(false);
+            }
 
             var usersBySid = objects
                 .Where(o => string.Equals(o.ObjectType, "user", StringComparison.OrdinalIgnoreCase))
                 .Where(o => !string.IsNullOrWhiteSpace(o.ObjectSid))
                 .GroupBy(o => LdapActiveDirectoryClient.NormalizeSid(o.ObjectSid), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+            IReadOnlyList<DirectorySearchHit> sidHistoryHits = Array.Empty<DirectorySearchHit>();
+            if (wantSidHistory)
+            {
+                sidHistoryHits = await client.SearchAsync(
+                        searchBase,
+                        "(sIDHistory=*)",
+                        scope,
+                        ["distinguishedName", "objectClass", "objectSid", "sAMAccountName", "cn", "name", "sIDHistory"],
+                        maxObjects,
+                        ct)
+                    .ConfigureAwait(false);
+                var historySids = sidHistoryHits
+                    .SelectMany(h => h.Attributes.TryGetValue("sIDHistory", out var v) ? v : Array.Empty<string>())
+                    .Select(LdapActiveDirectoryClient.NormalizeSid)
+                    .Where(s => s.Length > 0)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                await sidEngine.EnsureResolvedAsync(historySids, ct).ConfigureAwait(false);
+            }
+
+            IReadOnlyList<DirectorySearchHit> fspHits = Array.Empty<DirectorySearchHit>();
+            if (wantFsp)
+            {
+                fspHits = await client.SearchAsync(
+                        searchBase,
+                        "(objectClass=foreignSecurityPrincipal)",
+                        scope,
+                        ["distinguishedName", "objectClass", "objectSid", "cn", "name"],
+                        maxObjects,
+                        ct)
+                    .ConfigureAwait(false);
+            }
 
             var allFindings = new List<DiscoveryFindingDto>();
             var featureResults = new List<AclFeatureResultDto>();
@@ -182,6 +251,7 @@ public sealed class AclAnalysisService : IAclAnalysisService
                 {
                     "broken_acls" => DetectBrokenAcls(scanId, objects, sidEngine, privilegedSids),
                     "unknown_sid_bindings" => DetectUnknownSidBindings(scanId, objects, sidEngine),
+                    "orphan_sids" => DetectOrphanSids(scanId, objects, sidEngine),
                     "shadow_admins_acl" => await ShadowAdminAclDetector.DetectAsync(
                             scanId,
                             objects,
@@ -192,13 +262,15 @@ public sealed class AclAnalysisService : IAclAnalysisService
                             usersBySid,
                             ct)
                         .ConfigureAwait(false),
+                    "sid_history_analysis" => DetectSidHistory(scanId, sidHistoryHits, sidEngine),
+                    "foreign_security_principals" => DetectForeignSecurityPrincipals(scanId, fspHits),
                     _ => [],
                 };
                 sw.Stop();
                 allFindings.AddRange(featureFindings);
                 featureResults.Add(new AclFeatureResultDto
                 {
-                    Feature = feature,
+                    Feature = feature == "shadow_admins_acl" ? "shadow_admins" : feature,
                     Count = featureFindings.Count,
                     DurationMs = sw.ElapsedMilliseconds,
                 });
@@ -213,7 +285,7 @@ public sealed class AclAnalysisService : IAclAnalysisService
                 Results = featureResults,
                 Diagnostics = new AclAnalysisDiagnosticsDto
                 {
-                    ObjectsScanned = objects.Count,
+                    ObjectsScanned = Math.Max(objects.Count, Math.Max(sidHistoryHits.Count, fspHits.Count)),
                     DescriptorsRead = descriptorsRead,
                     Endpoint = endpoint,
                     SearchBase = searchBase,
@@ -342,6 +414,31 @@ public sealed class AclAnalysisService : IAclAnalysisService
             },
         };
 
+    private static bool IsPrivilegedHistorySid(string sid)
+    {
+        var norm = LdapActiveDirectoryClient.NormalizeSid(sid);
+        if (string.IsNullOrEmpty(norm))
+            return false;
+        if (ShadowAdminAclDetector.BuiltinPrivilegedSids.Any(s =>
+                string.Equals(s, norm, StringComparison.OrdinalIgnoreCase)))
+            return true;
+        foreach (var rid in ShadowAdminAclDetector.PrivilegedDomainRelativeRids)
+        {
+            if (norm.EndsWith("-" + rid, StringComparison.Ordinal))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static string NormalizeFeatureId(string? feature)
+    {
+        var id = (feature ?? string.Empty).Trim();
+        if (id.Equals("shadow_admins", StringComparison.Ordinal))
+            return "shadow_admins_acl";
+        return id;
+    }
+
     private static SearchScopeKind ParseScope(string? scope)
     {
         var s = (scope ?? "sub").Trim().ToLowerInvariant();
@@ -384,7 +481,8 @@ public sealed class AclAnalysisService : IAclAnalysisService
         IReadOnlySet<string> privilegedSids)
     {
         var needBroken = features.Contains("broken_acls", StringComparer.Ordinal)
-                         || features.Contains("unknown_sid_bindings", StringComparer.Ordinal);
+                         || features.Contains("unknown_sid_bindings", StringComparer.Ordinal)
+                         || features.Contains("orphan_sids", StringComparer.Ordinal);
         var needShadow = features.Contains("shadow_admins_acl", StringComparer.Ordinal);
         if (!needBroken && !needShadow)
             return [];
@@ -593,6 +691,139 @@ public sealed class AclAnalysisService : IAclAnalysisService
                         ["aceFlags"] = ace.AceFlags,
                     }));
             }
+        }
+
+        return findings;
+    }
+
+    /// <summary>
+    /// Classic orphan SID: DACL/SACL ACE trustee that cannot be resolved in the directory.
+    /// </summary>
+    private static List<DiscoveryFindingDto> DetectOrphanSids(
+        string scanId,
+        IReadOnlyList<SecurableDirectoryObject> objects,
+        SidResolutionEngine sidEngine)
+    {
+        var findings = new List<DiscoveryFindingDto>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var obj in objects)
+        {
+            var parsed = obj.ParsedSd;
+            if (parsed is null)
+                continue;
+
+            foreach (var ace in parsed.Aces)
+            {
+                var sid = LdapActiveDirectoryClient.NormalizeSid(ace.TrusteeSid);
+                if (string.IsNullOrEmpty(sid) || sidEngine.IsKnown(sid))
+                    continue;
+                var sig = $"{obj.DistinguishedName}|{sid}|{ace.AccessMask}|{ace.AceType}";
+                if (!seen.Add(sig))
+                    continue;
+                findings.Add(Finding(
+                    scanId,
+                    "orphan_sids",
+                    obj,
+                    "orphan_ace_trustee",
+                    "ORPHAN_SID",
+                    new Dictionary<string, object?>
+                    {
+                        ["orphanSid"] = sid,
+                        ["aclType"] = ace.AclType,
+                        ["aceType"] = ace.AceType,
+                        ["accessMask"] = ace.AccessMask,
+                        ["accessMaskHex"] = ace.AccessMaskHex,
+                        ["remediationAction"] = "remove_dacl_ace",
+                    }));
+            }
+        }
+
+        return findings;
+    }
+
+    private static List<DiscoveryFindingDto> DetectSidHistory(
+        string scanId,
+        IReadOnlyList<DirectorySearchHit> hits,
+        SidResolutionEngine sidEngine)
+    {
+        var findings = new List<DiscoveryFindingDto>();
+        foreach (var hit in hits)
+        {
+            if (!hit.Attributes.TryGetValue("sIDHistory", out var history) || history.Count == 0)
+                continue;
+
+            var normalized = history
+                .Select(LdapActiveDirectoryClient.NormalizeSid)
+                .Where(s => s.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (normalized.Count == 0)
+                continue;
+
+            var privileged = normalized.Where(IsPrivilegedHistorySid).ToList();
+            var unknown = normalized.Where(s => !sidEngine.IsKnown(s)).ToList();
+            var status = privileged.Count > 0
+                ? "migrated_privileged_sid_history"
+                : unknown.Count > 0
+                    ? "unresolved_sid_history"
+                    : "sid_history_present";
+
+            findings.Add(new DiscoveryFindingDto
+            {
+                ScanId = scanId,
+                Feature = "sid_history_analysis",
+                ObjectType = hit.ObjectType,
+                ObjectName = string.IsNullOrWhiteSpace(hit.ObjectName) ? "—" : hit.ObjectName,
+                Dn = hit.DistinguishedName,
+                Status = status,
+                Attributes = new Dictionary<string, object?>(),
+                Evidence = new Dictionary<string, object?>
+                {
+                    ["sidHistory"] = normalized,
+                    ["privilegedHistorySids"] = privileged,
+                    ["unknownHistorySids"] = unknown,
+                    ["historyCount"] = normalized.Count,
+                    ["remediationAction"] = "clear_sid_history",
+                },
+                Relationships = Array.Empty<object>(),
+                FindingType = "SID_HISTORY_RISK",
+                FindingSignals =
+                [
+                    "SID_HISTORY_RISK",
+                    ..(privileged.Count > 0 ? new[] { "PRIVILEGED_USER" } : Array.Empty<string>()),
+                ],
+            });
+        }
+
+        return findings;
+    }
+
+    private static List<DiscoveryFindingDto> DetectForeignSecurityPrincipals(
+        string scanId,
+        IReadOnlyList<DirectorySearchHit> hits)
+    {
+        var findings = new List<DiscoveryFindingDto>(hits.Count);
+        foreach (var hit in hits)
+        {
+            findings.Add(new DiscoveryFindingDto
+            {
+                ScanId = scanId,
+                Feature = "foreign_security_principals",
+                ObjectType = "foreign_security_principal",
+                ObjectName = string.IsNullOrWhiteSpace(hit.ObjectName) ? "—" : hit.ObjectName,
+                Dn = hit.DistinguishedName,
+                Status = "foreign_security_principal_present",
+                Attributes = new Dictionary<string, object?>(),
+                Evidence = new Dictionary<string, object?>
+                {
+                    ["objectSid"] = hit.ObjectSid,
+                    ["remediationAction"] = "delete_foreign_security_principal",
+                },
+                Relationships = Array.Empty<object>(),
+                FindingType = "FOREIGN_SECURITY_PRINCIPAL",
+                FindingSignals = ["FOREIGN_SECURITY_PRINCIPAL"],
+            });
         }
 
         return findings;

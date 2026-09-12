@@ -322,6 +322,226 @@ public sealed class LdapActiveDirectoryClient : IActiveDirectoryClient
         }
     }
 
+    public async Task<IReadOnlyList<DirectorySearchHit>> SearchAsync(
+        string searchBaseDn,
+        string ldapFilter,
+        SearchScopeKind scope,
+        IReadOnlyList<string> attributes,
+        int maxResults,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(searchBaseDn))
+            throw new ArgumentException("Search base DN is required.", nameof(searchBaseDn));
+        if (string.IsNullOrWhiteSpace(ldapFilter))
+            throw new ArgumentException("LDAP filter is required.", nameof(ldapFilter));
+        if (attributes is null || attributes.Count == 0)
+            throw new ArgumentException("At least one attribute is required.", nameof(attributes));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+
+        var limit = Math.Clamp(maxResults, 1, 50_000);
+        var ldapScope = scope switch
+        {
+            SearchScopeKind.Base => SearchScope.Base,
+            SearchScopeKind.OneLevel => SearchScope.OneLevel,
+            _ => SearchScope.Subtree,
+        };
+
+        var attrArray = attributes.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var request = new SearchRequest(
+            searchBaseDn.Trim(),
+            ldapFilter.Trim(),
+            ldapScope,
+            attrArray);
+
+        var pageSize = Math.Min(1000, limit);
+        var pageControl = new PageResultRequestControl(pageSize);
+        request.Controls.Add(pageControl);
+
+        var results = new List<DirectorySearchHit>();
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var response = await SendSearchAsync(request, cancellationToken).ConfigureAwait(false);
+
+            foreach (SearchResultEntry entry in response.Entries)
+            {
+                results.Add(MapSearchHit(entry));
+                if (results.Count >= limit)
+                    return results;
+            }
+
+            var responsePage = response.Controls
+                .OfType<PageResultResponseControl>()
+                .FirstOrDefault();
+            if (responsePage is null || responsePage.Cookie.Length == 0)
+                break;
+
+            pageControl.Cookie = responsePage.Cookie;
+        }
+
+        return results;
+    }
+
+    public async Task ModifyAttributesAsync(
+        string distinguishedName,
+        IReadOnlyList<DirectoryAttributeChange> changes,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(distinguishedName))
+            throw new ArgumentException("Distinguished name is required.", nameof(distinguishedName));
+        if (changes is null || changes.Count == 0)
+            throw new ArgumentException("At least one attribute change is required.", nameof(changes));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+
+        var mods = new DirectoryAttributeModification[changes.Count];
+        for (var i = 0; i < changes.Count; i++)
+        {
+            var change = changes[i];
+            if (string.IsNullOrWhiteSpace(change.AttributeName))
+                throw new ArgumentException($"changes[{i}].AttributeName is required.");
+
+            var mod = new DirectoryAttributeModification
+            {
+                Name = change.AttributeName.Trim(),
+                Operation = change.Operation switch
+                {
+                    AttributeChangeOperation.Add =>
+                        System.DirectoryServices.Protocols.DirectoryAttributeOperation.Add,
+                    AttributeChangeOperation.Delete =>
+                        System.DirectoryServices.Protocols.DirectoryAttributeOperation.Delete,
+                    _ => System.DirectoryServices.Protocols.DirectoryAttributeOperation.Replace,
+                },
+            };
+
+            foreach (var value in change.Values ?? Array.Empty<object>())
+            {
+                if (value is null)
+                    continue;
+                if (value is byte[] bytes)
+                    mod.Add(bytes);
+                else
+                    mod.Add(Convert.ToString(value) ?? string.Empty);
+            }
+
+            mods[i] = mod;
+        }
+
+        var request = new ModifyRequest(distinguishedName.Trim(), mods);
+        await SendDirectoryAsync(request, cancellationToken).ConfigureAwait(false);
+        _logger.LogInformation(
+            "LDAP modify succeeded on {Dn} ({ChangeCount} change(s))",
+            distinguishedName.Trim(),
+            changes.Count);
+    }
+
+    public async Task ReplaceSecurityDescriptorAsync(
+        string distinguishedName,
+        byte[] securityDescriptorBytes,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(distinguishedName))
+            throw new ArgumentException("Distinguished name is required.", nameof(distinguishedName));
+        if (securityDescriptorBytes is null || securityDescriptorBytes.Length < 20)
+            throw new ArgumentException("Security descriptor bytes are required.", nameof(securityDescriptorBytes));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+
+        var mod = new DirectoryAttributeModification
+        {
+            Name = "nTSecurityDescriptor",
+            Operation = System.DirectoryServices.Protocols.DirectoryAttributeOperation.Replace,
+        };
+        mod.Add(securityDescriptorBytes);
+
+        var request = new ModifyRequest(distinguishedName.Trim(), mod);
+        // LDAP_SERVER_SD_FLAGS_OID — DACL (0x4) write. OWNER|GROUP|DACL = 0x07 is also accepted by DC.
+        request.Controls.Add(new DirectoryControl(
+            "1.2.840.113556.1.4.801",
+            [0x30, 0x03, 0x02, 0x01, 0x07],
+            isCritical: true,
+            serverSide: true));
+
+        await SendDirectoryAsync(request, cancellationToken).ConfigureAwait(false);
+        _logger.LogInformation(
+            "Replaced nTSecurityDescriptor on {Dn} ({ByteLength} bytes)",
+            distinguishedName.Trim(),
+            securityDescriptorBytes.Length);
+    }
+
+    public async Task DeleteObjectAsync(
+        string distinguishedName,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(distinguishedName))
+            throw new ArgumentException("Distinguished name is required.", nameof(distinguishedName));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+        var request = new DeleteRequest(distinguishedName.Trim());
+        await SendDirectoryAsync(request, cancellationToken).ConfigureAwait(false);
+        _logger.LogInformation("Deleted directory object {Dn}", distinguishedName.Trim());
+    }
+
+    private static DirectorySearchHit MapSearchHit(SearchResultEntry entry)
+    {
+        var dn = entry.DistinguishedName ?? string.Empty;
+        var objectClass = GetLastStringAttr(entry, "objectClass");
+        var objectType = ResolveObjectType(objectClass, dn);
+        var name =
+            GetFirstStringAttr(entry, "sAMAccountName")
+            ?? GetFirstStringAttr(entry, "cn")
+            ?? GetFirstStringAttr(entry, "name")
+            ?? dn;
+
+        var objectSid = string.Empty;
+        var attrs = new Dictionary<string, IReadOnlyList<string>>(StringComparer.OrdinalIgnoreCase);
+        var binaries = new Dictionary<string, byte[][]>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string attrName in entry.Attributes.AttributeNames)
+        {
+            var attr = entry.Attributes[attrName];
+            var strings = new List<string>(attr.Count);
+            var bins = new List<byte[]>();
+            for (var i = 0; i < attr.Count; i++)
+            {
+                var v = attr[i];
+                if (v is byte[] bytes)
+                {
+                    bins.Add(bytes);
+                    if (attrName.Equals("objectSid", StringComparison.OrdinalIgnoreCase) && bytes.Length > 0)
+                        objectSid = SecurityDescriptorParser.ParseSid(bytes);
+                    else if (attrName.Equals("sIDHistory", StringComparison.OrdinalIgnoreCase) && bytes.Length > 0)
+                        strings.Add(SecurityDescriptorParser.ParseSid(bytes));
+                    else
+                        strings.Add(Convert.ToBase64String(bytes));
+                }
+                else
+                {
+                    strings.Add(Convert.ToString(v) ?? string.Empty);
+                }
+            }
+
+            attrs[attrName] = strings;
+            if (bins.Count > 0)
+                binaries[attrName] = bins.ToArray();
+        }
+
+        return new DirectorySearchHit
+        {
+            DistinguishedName = dn,
+            ObjectType = objectType,
+            ObjectName = name,
+            ObjectSid = NormalizeSid(objectSid),
+            Attributes = attrs,
+            BinaryAttributes = binaries,
+        };
+    }
+
     private static SecurableDirectoryObject MapSecurableEntry(SearchResultEntry entry)
     {
         var dn = entry.DistinguishedName ?? string.Empty;
@@ -533,7 +753,7 @@ public sealed class LdapActiveDirectoryClient : IActiveDirectoryClient
         _logger.LogInformation("Bind succeeded against {Endpoint}", _options.EndpointDisplay);
     }
 
-    private async Task<SearchResponse> SendRequestAsync(DirectoryRequest request, CancellationToken cancellationToken)
+    private async Task<SearchResponse> SendSearchAsync(DirectoryRequest request, CancellationToken cancellationToken)
     {
         if (_connection is null)
             throw new InvalidOperationException("LDAP connection is not established.");
@@ -550,6 +770,25 @@ public sealed class LdapActiveDirectoryClient : IActiveDirectoryClient
 
         return response;
     }
+
+    private async Task SendDirectoryAsync(DirectoryRequest request, CancellationToken cancellationToken)
+    {
+        if (_connection is null)
+            throw new InvalidOperationException("LDAP connection is not established.");
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        await Task.Run(
+            () =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _connection.SendRequest(request);
+            },
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<SearchResponse> SendRequestAsync(DirectoryRequest request, CancellationToken cancellationToken)
+        => await SendSearchAsync(request, cancellationToken).ConfigureAwait(false);
 
     private static DirectoryObjectResult MapEntry(SearchResultEntry entry)
     {

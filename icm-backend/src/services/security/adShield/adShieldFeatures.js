@@ -2,7 +2,8 @@
  * ACL intelligence features delegated to ADShield when ADSHIELD_ENABLED=true.
  *
  * Phase 1 (fully delegated — skip Node SD detectors):
- *   broken_acls, unknown_sid_bindings
+ *   broken_acls, unknown_sid_bindings, orphan_sids,
+ *   sid_history_analysis, foreign_security_principals
  *
  * Phase 2 (hybrid token — NOT a full Node skip):
  *   shadow_admins_acl — ACL half only; Node graph half always runs via detectShadowAdmins.
@@ -12,6 +13,9 @@
 export const ADSHIELD_ACL_FEATURES = Object.freeze([
   "broken_acls",
   "unknown_sid_bindings",
+  "orphan_sids",
+  "sid_history_analysis",
+  "foreign_security_principals",
   "shadow_admins_acl",
 ]);
 
@@ -19,6 +23,9 @@ export const ADSHIELD_ACL_FEATURES = Object.freeze([
 export const ADSHIELD_FULLY_DELEGATED_FEATURES = Object.freeze([
   "broken_acls",
   "unknown_sid_bindings",
+  "orphan_sids",
+  "sid_history_analysis",
+  "foreign_security_principals",
 ]);
 
 export function isAdShieldAclFeature(featureId) {
@@ -35,5 +42,11 @@ export function isAdShieldFullyDelegatedFeature(featureId) {
  */
 export function isAdShieldFindingFeature(featureId) {
   const f = String(featureId || "");
-  return f === "shadow_admins" || isAdShieldAclFeature(f);
+  return (
+    f === "shadow_admins" ||
+    f === "orphan_sids" ||
+    f === "sid_history_analysis" ||
+    f === "foreign_security_principals" ||
+    isAdShieldAclFeature(f)
+  );
 }

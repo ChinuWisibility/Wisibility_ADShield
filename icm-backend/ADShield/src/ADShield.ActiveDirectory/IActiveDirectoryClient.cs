@@ -72,6 +72,41 @@ public interface IActiveDirectoryClient : IAsyncDisposable
         string sidString,
         string searchBaseDn,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Paged LDAP search returning requested attributes. Search base, filter, and scope are caller-supplied.
+    /// </summary>
+    Task<IReadOnlyList<DirectorySearchHit>> SearchAsync(
+        string searchBaseDn,
+        string ldapFilter,
+        SearchScopeKind scope,
+        IReadOnlyList<string> attributes,
+        int maxResults,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Applies attribute modifications (add/delete/replace). Never logs attribute values.
+    /// </summary>
+    Task ModifyAttributesAsync(
+        string distinguishedName,
+        IReadOnlyList<DirectoryAttributeChange> changes,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Replaces nTSecurityDescriptor with a self-relative SECURITY_DESCRIPTOR blob.
+    /// Uses LDAP_SERVER_SD_FLAGS_OID for DACL write.
+    /// </summary>
+    Task ReplaceSecurityDescriptorAsync(
+        string distinguishedName,
+        byte[] securityDescriptorBytes,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a leaf object (e.g. foreignSecurityPrincipal). Fails if the object has children.
+    /// </summary>
+    Task DeleteObjectAsync(
+        string distinguishedName,
+        CancellationToken cancellationToken = default);
 }
 
 public enum SearchScopeKind

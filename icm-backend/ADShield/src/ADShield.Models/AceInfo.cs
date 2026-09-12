@@ -10,6 +10,8 @@ public sealed class AceInfo
     public string AceTypeName { get; init; } = string.Empty;
     public int AceFlags { get; init; }
     public int AceSize { get; init; }
+    /// <summary>Byte offset of this ACE within the original security descriptor buffer (when known).</summary>
+    public int Offset { get; init; } = -1;
     public uint AccessMask { get; init; }
     public string AccessMaskHex { get; init; } = "0x0";
     public string TrusteeSid { get; init; } = string.Empty;
