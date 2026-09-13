@@ -3,13 +3,13 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import { createCrudController } from "../utils/crudFactory.js";
-import PolicyException from "../models/governance/PolicyException.js";
-import RiskMatrix from "../models/governance/RiskMatrix.js";
-import AuditComment from "../models/governance/AuditComment.js";
-import DataRetentionPolicy from "../models/governance/DataRetentionPolicy.js";
-import GovernancePolicy from "../models/governance/GovernancePolicy.js";
+} from "../../middleware/auth.js";
+import { createCrudController } from "../../utils/crudFactory.js";
+import PolicyException from "../../models/governance/PolicyException.js";
+import RiskMatrix from "../../models/governance/RiskMatrix.js";
+import AuditComment from "../../models/governance/AuditComment.js";
+import DataRetentionPolicy from "../../models/governance/DataRetentionPolicy.js";
+import GovernancePolicy from "../../models/governance/GovernancePolicy.js";
 
 const router = Router();
 

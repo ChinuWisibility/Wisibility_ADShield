@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { requireSetupToken } from "../middleware/setupAuth.js";
-import { postInitialize } from "../controllers/setupController.js";
+import { requireSetupToken } from "../../middleware/setupAuth.js";
+import { postInitialize } from "../../controllers/setup/setupController.js";
 
 const router = Router();
 

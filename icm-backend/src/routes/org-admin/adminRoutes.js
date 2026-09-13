@@ -3,9 +3,9 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import * as sessionCtrl from "../controllers/sessionController.js";
-import * as apiKeyCtrl from "../controllers/apiKeyController.js";
+} from "../../middleware/auth.js";
+import * as sessionCtrl from "../../controllers/auth/sessionController.js";
+import * as apiKeyCtrl from "../../controllers/auth/apiKeyController.js";
 
 const router = Router();
 

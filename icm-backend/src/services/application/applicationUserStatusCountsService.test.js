@@ -3,7 +3,7 @@ import {
   resolveApplicationStatusFieldSpec,
   buildAccountStatusFilterClause,
   classifyAccountStatusRaw,
-} from "../services/applicationUserStatusCountsService.js";
+} from "../../services/application/applicationUserStatusCountsService.js";
 
 describe("application user status field resolution", () => {
   test("CSV status→status mapping uses string kind, not UAC", () => {

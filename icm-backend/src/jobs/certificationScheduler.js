@@ -20,7 +20,7 @@ import {
   buildCertificationAssignmentEmail,
   buildCertificationReminderEmail,
   buildOwnerActionExpiredEmail,
-} from "../services/emailService.js";
+} from "../services/email/appEmailService.js";
 import { enqueueCertificationEmail } from "../services/email/emailJobService.js";
 import {
   isDueForReminder,
@@ -34,8 +34,8 @@ import {
   loadScopeRowsForCampaign,
 } from "../services/access-certification/certificationScopeService.js";
 import { resolveCampaignOwnerContact } from "../services/access-certification/campaignOwnerActionService.js";
-import { countPendingEntitlementsByReviewerForCampaign } from "../services/reviewItemService.js";
-import { generateReviewItems } from "../services/reviewItemService.js";
+import { countPendingEntitlementsByReviewerForCampaign } from "../services/access-certification/reviewItemService.js";
+import { generateReviewItems } from "../services/access-certification/reviewItemService.js";
 import ReviewItem from "../models/certification/ReviewItem.js";
 import CertificationReviewerAssignment from "../models/certification/CertificationReviewerAssignment.js";
 

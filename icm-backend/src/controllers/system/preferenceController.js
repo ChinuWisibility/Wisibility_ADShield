@@ -1,4 +1,4 @@
-import * as preferenceService from '../services/preferenceService.js';
+import * as preferenceService from '../../services/system/preferenceService.js';
 
 export async function getPreferences(req, res, next) {
   try {

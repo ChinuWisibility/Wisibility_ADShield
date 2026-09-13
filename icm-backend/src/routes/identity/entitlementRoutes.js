@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import Entitlement from '../models/access/Entitlement.js';
-import Account from '../models/access/Account.js';
-import EntitlementHierarchy from '../models/access/EntitlementHierarchy.js';
-import EntitlementOwnershipReview from '../models/access/EntitlementOwnershipReview.js';
-import { createCrudController } from '../utils/crudFactory.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import Entitlement from '../../models/access/Entitlement.js';
+import Account from '../../models/access/Account.js';
+import EntitlementHierarchy from '../../models/access/EntitlementHierarchy.js';
+import EntitlementOwnershipReview from '../../models/access/EntitlementOwnershipReview.js';
+import { createCrudController } from '../../utils/crudFactory.js';
 
 const router = Router();
 const ctrl = createCrudController(Entitlement, { searchFields: ['name', 'displayName', 'applicationName'] });

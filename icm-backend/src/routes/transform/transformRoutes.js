@@ -3,7 +3,7 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
+} from "../../middleware/auth.js";
 import {
   listTransforms,
   getTransformById,
@@ -12,7 +12,7 @@ import {
   deleteTransform,
   postValidate,
   postExecute,
-} from "../controllers/transformController.js";
+} from "../../controllers/transform/transformController.js";
 
 const router = Router();
 

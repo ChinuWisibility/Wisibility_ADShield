@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { fetchAdGroupLdapEntries, normalizeAdConfig } from "../adLdapService.js";
-import { normalizeGroup, normalizeDn } from "../ldapNormalizer.js";
+import { fetchAdGroupLdapEntries, normalizeAdConfig } from "../ad/adLdapService.js";
+import { normalizeGroup, normalizeDn } from "../ad/ldapNormalizer.js";
 import { getAttrFirst, getAttrValues, getMemberDnsFromEntry, hasLdapMemberAttribute } from "../../utils/ldapEntryAttributes.js";
 import { buildGroupRiskFinding } from "./utils/adSecurityHelpers.js";
 import { PRIVILEGED_NAME_TOKENS } from "../graph/graphConstants.js";

@@ -1,28 +1,28 @@
 import mongoose from "mongoose";
-import RemediationEvent from "../models/remediation/RemediationEvent.js";
-import RemediationAuditLog from "../models/remediation/RemediationAuditLog.js";
-import RemediationTicket from "../models/remediation/RemediationTicket.js";
-import RemediationTicketItem from "../models/remediation/RemediationTicketItem.js";
-import RemediationTicketResponse from "../models/remediation/RemediationTicketResponse.js";
-import RemediationExecutionLog from "../models/remediation/RemediationExecutionLog.js";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import Campaign from "../models/certification/Campaign.js";
-import ReviewItem from "../models/certification/ReviewItem.js";
-import Application from "../models/application/Application.js";
-import { getDynamicIdentityModelForTenantId } from "../models/identity/Identity.js";
-import { AppError } from "../middleware/errorHandler.js";
+import RemediationEvent from "../../models/remediation/RemediationEvent.js";
+import RemediationAuditLog from "../../models/remediation/RemediationAuditLog.js";
+import RemediationTicket from "../../models/remediation/RemediationTicket.js";
+import RemediationTicketItem from "../../models/remediation/RemediationTicketItem.js";
+import RemediationTicketResponse from "../../models/remediation/RemediationTicketResponse.js";
+import RemediationExecutionLog from "../../models/remediation/RemediationExecutionLog.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import Campaign from "../../models/certification/Campaign.js";
+import ReviewItem from "../../models/certification/ReviewItem.js";
+import Application from "../../models/application/Application.js";
+import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   remediationTenantFilter,
   remediationWithTenant,
-} from "../utils/remediation/remediationTenant.js";
-import { sendRemediationEmail } from "../services/remediationNotificationService.js";
-import { resolveCertificationAccessTenantId } from "../utils/access-certification/resolveCertificationAccessTenantId.js";
+} from "../../utils/remediation/remediationTenant.js";
+import { sendRemediationEmail } from "../../services/remediation/remediationNotificationService.js";
+import { resolveCertificationAccessTenantId } from "../../utils/access-certification/resolveCertificationAccessTenantId.js";
 import {
   asObjectId,
   getTenantApplicationIds,
-} from "./access-certification/certificationControllerHelpers.js";
-import { countRevokedEntitlementsForCampaign } from "../services/remediation/remediationRevokedUsersService.js";
-import { resolveMappedUserModel } from "../utils/access-certification/mappedUserResolver.js";
+} from "../access-certification/certificationControllerHelpers.js";
+import { countRevokedEntitlementsForCampaign } from "../../services/remediation/remediationRevokedUsersService.js";
+import { resolveMappedUserModel } from "../../utils/access-certification/mappedUserResolver.js";
 
 const DEFAULT_TEMPLATES = {
   REVOKE_ACCESS: {

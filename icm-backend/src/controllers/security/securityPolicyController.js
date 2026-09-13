@@ -1,4 +1,4 @@
-import Application from "../models/application/Application.js";
+import Application from "../../models/application/Application.js";
 import {
   listSecurityPoliciesForManagement,
   listAvailablePolicyConditions,
@@ -8,7 +8,7 @@ import {
   cloneSecurityPolicy,
   deleteSecurityPolicy,
   ensureBuiltInSecurityPolicies,
-} from "../services/security/securityPolicyService.js";
+} from "../../services/security/securityPolicyService.js";
 
 function resolveTenantId(req) {
   const tid = req.scopedTenantId || req.user?.tenantId || null;

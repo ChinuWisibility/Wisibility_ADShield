@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { normalizeAdConfig } from "../adLdapService.js";
+import { normalizeAdConfig } from "../ad/adLdapService.js";
 import {
   buildUserRiskFinding,
   dontRequirePreauth,

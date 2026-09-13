@@ -13,7 +13,7 @@ import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
 import Application from "../../models/application/Application.js";
 import ApplicationUserDuplicate from "../../models/application/ApplicationUserDuplicate.js";
 import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 import {
   countInactiveAccessFromSidecar,
   isInactiveAccessSidecarReady,

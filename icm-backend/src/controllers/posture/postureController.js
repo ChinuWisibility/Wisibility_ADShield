@@ -1,5 +1,5 @@
-import Application from "../models/application/Application.js";
-import { normalizeAdConfig } from "../services/adLdapService.js";
+import Application from "../../models/application/Application.js";
+import { normalizeAdConfig } from "../../services/ad/adLdapService.js";
 import {
   getScanResult,
   listScanResultsForApplication,
@@ -11,12 +11,12 @@ import {
   KERBEROS_SECURITY_FEATURES,
   DELEGATION_SECURITY_FEATURES,
   POSTURE_MODULES,
-} from "../services/posture/postureOrchestrator.js";
+} from "../../services/posture/postureOrchestrator.js";
 import {
   buildPostureFeaturesDiscoveryPayload,
   resolveExecutableFeatureIds,
-} from "../services/posture/postureFeatureRegistry.js";
-import { validateCustomFeatureDefinitions } from "../services/posture/ldapFilterValidator.js";
+} from "../../services/posture/postureFeatureRegistry.js";
+import { validateCustomFeatureDefinitions } from "../../services/posture/ldapFilterValidator.js";
 
 function resolveAdConfig(application, req) {
   const fromDb = application.connectionConfig?.ad || {};

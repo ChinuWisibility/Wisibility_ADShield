@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate } from '../../middleware/auth.js';
 import {
   getIdentityProfiles,
   getIdentityProfileById,
@@ -25,7 +25,7 @@ import {
   patchIdentityProfileDraft,
   clearIdentityProfileDraft,
   getManagerCorrelationPreview,
-} from '../controllers/identity/identityProfileController.js';
+} from '../../controllers/identity/identityProfileController.js';
 
 const router = Router();
 

@@ -11,7 +11,7 @@ import {
 import {
   canonicalizeIncomingUsers,
   applyCanonicalUsers,
-} from "../applicationUserIngestService.js";
+} from "../application/applicationUserIngestService.js";
 import { compareAccountMaps } from "./deltaComparisonService.js";
 import {
   loadSnapshotMap,
@@ -21,7 +21,7 @@ import {
 import {
   applicationIdInClause,
   normalizePrimaryKeyValue,
-} from "../applicationUserIngestService.js";
+} from "../application/applicationUserIngestService.js";
 import {
   buildAccountMap,
   buildEntitlementCatalog,

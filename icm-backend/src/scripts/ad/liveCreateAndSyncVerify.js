@@ -18,9 +18,9 @@ import {
   normalizeAdConfig,
   testAdConnection,
   createAdUser,
-} from "../../services/adLdapService.js";
-import { createAdSyncJob, getAdSyncJobForApplication } from "../../services/adSyncJobService.js";
-import { runAdSyncPipeline } from "../../services/adSyncPipelineService.js";
+} from "../../services/ad/adLdapService.js";
+import { createAdSyncJob, getAdSyncJobForApplication } from "../../services/ad/adSyncJobService.js";
+import { runAdSyncPipeline } from "../../services/ad/adSyncPipelineService.js";
 import AccountAggregation from "../../models/access/AccountAggregation.js";
 
 function arg(name, fallback = "") {

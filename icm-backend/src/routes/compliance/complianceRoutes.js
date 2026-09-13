@@ -3,21 +3,21 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import { createCrudController } from "../utils/crudFactory.js";
-import UnifiedAuditEvent from "../models/compliance/UnifiedAuditEvent.js";
-import ComplianceFramework from "../models/compliance/ComplianceFramework.js";
-import ComplianceMapping from "../models/compliance/ComplianceMapping.js";
-import ReportDefinition from "../models/compliance/ReportDefinition.js";
-import ReportHistory from "../models/compliance/ReportHistory.js";
-import ComplianceEvidence from "../models/compliance/ComplianceEvidence.js";
-import TaskExecution from "../models/compliance/TaskExecution.js";
+} from "../../middleware/auth.js";
+import { createCrudController } from "../../utils/crudFactory.js";
+import UnifiedAuditEvent from "../../models/compliance/UnifiedAuditEvent.js";
+import ComplianceFramework from "../../models/compliance/ComplianceFramework.js";
+import ComplianceMapping from "../../models/compliance/ComplianceMapping.js";
+import ReportDefinition from "../../models/compliance/ReportDefinition.js";
+import ReportHistory from "../../models/compliance/ReportHistory.js";
+import ComplianceEvidence from "../../models/compliance/ComplianceEvidence.js";
+import TaskExecution from "../../models/compliance/TaskExecution.js";
 import {
   listFrameworks,
   getFrameworkById,
   createFramework,
   getFrameworkCoverage,
-} from "../controllers/complianceFrameworkController.js";
+} from "../../controllers/compliance/complianceFrameworkController.js";
 
 const router = Router();
 

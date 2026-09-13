@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import * as wf from "../controllers/remediationWorkflowController.js";
-import * as orphanPortal from "../controllers/orphanIamPortalController.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import * as wf from "../../controllers/remediation/remediationWorkflowController.js";
+import * as orphanPortal from "../../controllers/remediation/orphanIamPortalController.js";
 
 const router = Router();
 

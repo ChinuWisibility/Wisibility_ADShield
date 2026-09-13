@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate } from "../../middleware/auth.js";
 import {
   getApplicationSecurityFindings,
   getApplicationSecurityOverview,
@@ -26,13 +26,13 @@ import {
   resetApplicationAssessmentWorkingConfiguration,
   cloneApplicationAssessmentVersionToWorking,
   executeApplicationAssessment,
-} from "../controllers/securityController.js";
+} from "../../controllers/security/securityController.js";
 import {
   validateSecurityLdapQuery,
   getApplicationFeatureConfig,
   upsertApplicationFeatureConfig,
   testApplicationSecurityQuery,
-} from "../controllers/securityQueryController.js";
+} from "../../controllers/security/securityQueryController.js";
 import {
   listSecurityPolicies,
   listPolicyConditions,
@@ -41,7 +41,7 @@ import {
   updateSecurityPolicyHandler,
   cloneSecurityPolicyHandler,
   deleteSecurityPolicyHandler,
-} from "../controllers/securityPolicyController.js";
+} from "../../controllers/security/securityPolicyController.js";
 
 const router = Router();
 

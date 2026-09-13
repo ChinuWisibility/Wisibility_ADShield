@@ -1,23 +1,23 @@
-import Campaign from "../models/certification/Campaign.js";
+import Campaign from "../../models/certification/Campaign.js";
 import {
   applyBulkDecisionToReviewItems,
   applyDecisionToReviewItem,
   applyEntitlementDecision,
   applyBulkEntitlementDecision,
   DECISION_SOURCE_EMAIL_LINK,
-} from "../services/access-certification/certificationDecisionService.js";
+} from "../../services/access-certification/certificationDecisionService.js";
 import {
   validateReviewerToken,
-} from "../services/access-certification/certificationTokenService.js";
-import { getReviewItemsForReviewer } from "../services/reviewItemService.js";
-import { buildPortalItemDetails } from "./access-certification/certificationTokenController.js";
-import { auditMetadataFromRequest } from "../utils/auditMetadata.js";
-import CertificationReviewerPortalSession from "../models/certification/CertificationReviewerPortalSession.js";
+} from "../../services/access-certification/certificationTokenService.js";
+import { getReviewItemsForReviewer } from "../../services/access-certification/reviewItemService.js";
+import { buildPortalItemDetails } from "./certificationTokenController.js";
+import { auditMetadataFromRequest } from "../../utils/auditMetadata.js";
+import CertificationReviewerPortalSession from "../../models/certification/CertificationReviewerPortalSession.js";
 import {
   enqueuePortalRevokeRemediation,
   enqueueBulkPortalRevokeRemediations,
   isRevokeDecision,
-} from "../services/workflow/certificationPortalWorkflowService.js";
+} from "../../services/workflow/certificationPortalWorkflowService.js";
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -412,7 +412,7 @@ export async function postReviewBulkDecision(req, res) {
 
     if (isRevokeDecision(decision) && affectedCount > 0) {
       const items = await (
-        await import("../models/certification/ReviewItem.js")
+        await import("../../models/certification/ReviewItem.js")
       ).default.find({
         campaignId,
         reviewerEmail: String(reviewerEmail || "").trim().toLowerCase(),

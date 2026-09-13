@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
-import ReviewItem from "../models/certification/ReviewItem.js";
-import CertificationReviewerAssignment from "../models/certification/CertificationReviewerAssignment.js";
-import CertificationScopeSnapshot from "../models/certification/CertificationScopeSnapshot.js";
-import User from "../models/platform/User.js";
-import Identity from "../models/identity/Identity.js";
+import ReviewItem from "../../models/certification/ReviewItem.js";
+import CertificationReviewerAssignment from "../../models/certification/CertificationReviewerAssignment.js";
+import CertificationScopeSnapshot from "../../models/certification/CertificationScopeSnapshot.js";
+import User from "../../models/platform/User.js";
+import Identity from "../../models/identity/Identity.js";
 import {
   collectScopeItemAliasCandidates,
   collectUserPrimaryIdentifiers,
   itemIdsMatch,
   normalizeItemIdKey,
   resolveCanonicalItemKey,
-} from "../utils/access-certification/certificationItemId.js";
-import { tokenizeAndNormalize } from "../utils/accessMemberOfTokens.js";
-import { adaptUserToSnapshotRow } from '../utils/access-certification/certificationUserAdapter.js';
+} from "../../utils/access-certification/certificationItemId.js";
+import { tokenizeAndNormalize } from "../../utils/accessMemberOfTokens.js";
+import { adaptUserToSnapshotRow } from '../../utils/access-certification/certificationUserAdapter.js';
 
 function ensureMap(maybeMap) {
   if (maybeMap instanceof Map) return maybeMap;

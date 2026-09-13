@@ -1,4 +1,4 @@
-import { runDelimitedIdentityRefresh } from "./identityProfileRefreshService.js";
+import { runDelimitedIdentityRefresh } from "../identity/identityProfileRefreshService.js";
 
 /** How many identity profiles to refresh in parallel (different source apps, separate queries). */
 const BULK_PROFILE_CONCURRENCY = 3;

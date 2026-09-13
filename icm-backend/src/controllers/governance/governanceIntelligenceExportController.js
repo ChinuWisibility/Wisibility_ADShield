@@ -5,9 +5,9 @@
  * Risk bands are resolved server-side from the tenant/application rule set.
  */
 import archiver from "archiver";
-import { buildGovernanceIntelligenceSnapshot } from "../services/governanceIntelligenceSnapshotService.js";
-import { buildGovernanceIntelligenceExcelBuffer } from "../services/governanceIntelligenceExcelExport.js";
-import { buildGovernanceIntelligencePdfBuffer } from "../services/governanceIntelligencePdfExport.js";
+import { buildGovernanceIntelligenceSnapshot } from "../../services/governance/governanceIntelligenceSnapshotService.js";
+import { buildGovernanceIntelligenceExcelBuffer } from "../../services/governance/governanceIntelligenceExcelExport.js";
+import { buildGovernanceIntelligencePdfBuffer } from "../../services/governance/governanceIntelligencePdfExport.js";
 
 function safeFilenamePart(s, fallback = "export") {
   const cleaned = String(s || "")

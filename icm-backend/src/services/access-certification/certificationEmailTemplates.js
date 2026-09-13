@@ -1,6 +1,6 @@
-import { getBranding } from "./brandingService.js";
-import { getLogoImage } from "./logoService.js";
-import env from "../config/env.js";
+import { getBranding } from "../system/brandingService.js";
+import { getLogoImage } from "../system/logoService.js";
+import env from "../../config/env.js";
 
 export const EMAIL_LOGO_CID = "wisibility-logo@branding";
 

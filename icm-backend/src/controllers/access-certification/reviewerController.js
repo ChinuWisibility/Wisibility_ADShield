@@ -4,7 +4,7 @@ import ReviewItem from "../../models/certification/ReviewItem.js";
 import { AppError } from "../../middleware/errorHandler.js";
 import { createRevokeAccessTask } from "../../services/workflowTaskQueue/workflowTaskQueueService.js";
 import { auditMetadataFromRequest } from "../../utils/auditMetadata.js";
-import { getReviewerProgress, getMissingReviewerCount } from "../../services/reviewItemService.js";
+import { getReviewerProgress, getMissingReviewerCount } from "../../services/access-certification/reviewItemService.js";
 import { applyDecisionToCampaign, applyEntitlementDecision } from "../../services/access-certification/certificationDecisionService.js";
 import { validateReviewerToken } from "../../services/access-certification/certificationTokenService.js";
 import { buildReviewerAssignmentMap, buildReviewerEmailTokens } from "../../services/access-certification/certificationScopeService.js";

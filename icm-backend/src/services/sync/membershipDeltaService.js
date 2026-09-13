@@ -1,4 +1,4 @@
-import { normalizeDn } from "../ldapNormalizer.js";
+import { normalizeDn } from "../ad/ldapNormalizer.js";
 import { memberGroupDnsForAdUser } from "../../utils/accountEntitlementCorrelation.js";
 
 /**

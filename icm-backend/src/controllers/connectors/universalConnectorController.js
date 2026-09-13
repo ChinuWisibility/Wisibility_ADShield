@@ -1,14 +1,14 @@
-import Application from '../models/application/Application.js';
-import { getCatalog } from '../config/connectorCatalog.js';
-import { dispatchTest, dispatchSync } from '../services/connectors/connectorDispatcher.js';
-import { getDynamicUserModelForTenantId } from '../models/application/Users.js';
-import { applicationIdInClause } from "../services/applicationUserIngestService.js";
-import { ingestApplicationUsersWithReconciliation } from "../services/reconciliation/ingestWithReconciliation.js";
-import { applyCsvImportMappingToRows } from "../services/delimitedApplicationUserSync.js";
+import Application from '../../models/application/Application.js';
+import { getCatalog } from '../../config/connectorCatalog.js';
+import { dispatchTest, dispatchSync } from '../../services/connectors/connectorDispatcher.js';
+import { getDynamicUserModelForTenantId } from '../../models/application/Users.js';
+import { applicationIdInClause } from "../../services/application/applicationUserIngestService.js";
+import { ingestApplicationUsersWithReconciliation } from "../../services/reconciliation/ingestWithReconciliation.js";
+import { applyCsvImportMappingToRows } from "../../services/application/delimitedApplicationUserSync.js";
 import {
   isDelimitedFileHrmsApplication,
   materializeDelimitedImportToApplicationUsers,
-} from '../services/delimitedApplicationUserSync.js';
+} from '../../services/application/delimitedApplicationUserSync.js';
 
 function mergeConnectionConfig(stored = {}, incoming = {}) {
   return {

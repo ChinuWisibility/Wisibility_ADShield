@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import AdSuggestionSnapshot from "../models/application/AdSuggestionSnapshot.js";
-import { getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
-import { getScopedTenantId } from "../middleware/auth.js";
-import { normalizeDn } from "../services/ldapNormalizer.js";
+import Application from "../../models/application/Application.js";
+import AdSuggestionSnapshot from "../../models/application/AdSuggestionSnapshot.js";
+import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
+import { getScopedTenantId } from "../../middleware/auth.js";
+import { normalizeDn } from "../../services/ad/ldapNormalizer.js";
 import {
   fetchAdDirectory,
   normalizeAdConfig,
-} from "../services/adLdapService.js";
+} from "../../services/ad/adLdapService.js";
 import {
   buildDerivedAdConnectionConfig,
   cloneAdSchemaFieldsFromSource,
   syncDerivedApplicationFromAdDirectory,
   syncInheritedMetadataFromSource,
-} from "../services/adDerivedApplicationService.js";
+} from "../../services/ad/adDerivedApplicationService.js";
 import {
   buildAdSuggestions,
   computeCacheMetadata,
@@ -25,11 +25,11 @@ import {
   enrichSuggestionsForDisplay,
   sortSuggestionsForDisplay,
   stripGroupsFromSuggestions,
-} from "../services/adSuggestionBuildService.js";
+} from "../../services/ad/adSuggestionBuildService.js";
 import {
   evaluateRuleSet,
   toRuleEvaluationEntity,
-} from "../services/adSuggestionRuleEngine.js";
+} from "../../services/ad/adSuggestionRuleEngine.js";
 
 function trimString(value) {
   return String(value || "").trim();

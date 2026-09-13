@@ -6,7 +6,7 @@ import {
 
   buildCertEmailContent,
 
-} from "../../certificationEmailTemplates.js";
+} from "../../access-certification/certificationEmailTemplates.js";
 import env from "../../../config/env.js";
 
 

@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate } from "../../middleware/auth.js";
 import {
   listReconciliationRuns,
   getReconciliationRun,
   listReconciliationDeltas,
   listEntitlementDeltas,
   listRunSnapshots,
-} from "../controllers/reconciliationController.js";
+} from "../../controllers/reconciliation/reconciliationController.js";
 
 const router = Router({ mergeParams: true });
 

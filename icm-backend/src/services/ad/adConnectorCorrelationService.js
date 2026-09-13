@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { resolveTenantSlugFromTenantId } from "../utils/applicationDynamicCollections.js";
+import { resolveTenantSlugFromTenantId } from "../../utils/applicationDynamicCollections.js";
 import {
   appNameToCorrelationSlug,
   applyIncrementalAdMembershipCorrelation,
   rebuildCorrelationEntitlementStats,
   runAdMembershipAccountEntitlementCorrelation,
-} from "../utils/accountEntitlementCorrelation.js";
+} from "../../utils/accountEntitlementCorrelation.js";
 
 /** Primary AD connector or AD-derived child app — membership correlation is automatic. */
 export function isAdAutoAccountEntitlementCorrelationApp(app) {
@@ -31,13 +31,13 @@ async function resolveCorrelationContext(application) {
 
 /**
  * Rebuild account ↔ entitlement correlation from AD group DNs (legacy full rebuild).
- * @param {import('../models/application/Application.js').default | object} application
+ * @param {import('../../models/application/Application.js').default | object} application
  */
 export async function rebuildAdConnectorAccountEntitlementCorrelation(application) {
   const { appName, db, tenantSlug } = await resolveCorrelationContext(application);
 
   const { clearApplicationAccountEntitlementCorrelation } = await import(
-    "../utils/accountEntitlementCorrelation.js"
+    "../../utils/accountEntitlementCorrelation.js"
   );
 
   await clearApplicationAccountEntitlementCorrelation(

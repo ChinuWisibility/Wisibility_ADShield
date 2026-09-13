@@ -39,7 +39,7 @@ const filterApplicationId = argValue("applicationId");
 const { default: Tenant } = await import("../src/models/platform/Tenant.js");
 const { default: Application } = await import("../src/models/application/Application.js");
 const { syncAllForApplication } = await import(
-  "../src/services/identityEntitlementSyncService.js"
+  "../src/services/identity/identityEntitlementSyncService.js"
 );
 
 await mongoose.connect(uri, { dbName, serverSelectionTimeoutMS: 120000 });

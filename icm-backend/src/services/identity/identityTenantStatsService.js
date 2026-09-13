@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { getDynamicIdentityModelForTenantId } from "../models/identity/Identity.js";
-import IdentityTenantStats from "../models/identity/IdentityTenantStats.js";
+import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
+import IdentityTenantStats from "../../models/identity/IdentityTenantStats.js";
 
 export function toTenantObjectId(tenantId) {
   if (tenantId == null || tenantId === "") return null;

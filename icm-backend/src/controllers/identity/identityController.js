@@ -12,7 +12,7 @@ import Application from '../../models/application/Application.js';
 import { getDynamicUserModelForTenantId } from '../../models/application/Users.js';
 import { syncIdentityStats } from '../../utils/syncIdentityStats.js'; // <-- Import the utility
 import IdentityTenantStats from '../../models/identity/IdentityTenantStats.js';
-import { recomputeIdentityTenantStats, toTenantObjectId } from '../../services/identityTenantStatsService.js';
+import { recomputeIdentityTenantStats, toTenantObjectId } from '../../services/identity/identityTenantStatsService.js';
 
 /**
  * ==========================================

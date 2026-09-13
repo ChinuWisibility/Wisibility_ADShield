@@ -12,7 +12,7 @@ import {
   enableAdUser,
   addAdGroupMember,
   removeAdGroupMember,
-} from "../../adLdapService.js";
+} from "../../ad/adLdapService.js";
 import { resolveAdEntitlementTarget } from "./adEntitlementTargetResolver.js";
 import {
   provisioningResult,

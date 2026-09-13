@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
-import { postGovernanceIntelligenceExport } from "../controllers/governanceIntelligenceExportController.js";
+import { authenticate } from "../../middleware/auth.js";
+import { postGovernanceIntelligenceExport } from "../../controllers/governance/governanceIntelligenceExportController.js";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { PagedResultsControl } from "ldapts";
-import { parseSID } from "../utils/sidParser.js";
+import { parseSID } from "../../utils/sidParser.js";
 import {
   buildRawDataFromEntry,
   getAttrFirst,
@@ -7,7 +7,7 @@ import {
   LDAP_SEARCH_SCOPE_SUBTREE,
   resolveLdaptsScope,
   objectGuidToString,
-} from "../utils/ldapEntryAttributes.js";
+} from "../../utils/ldapEntryAttributes.js";
 
 /** Same default as adLdapService (pre-ldapts). */
 export const DEFAULT_USER_FILTER = "(&(objectClass=user)(objectCategory=person))";

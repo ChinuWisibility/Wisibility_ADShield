@@ -2,7 +2,7 @@ import IdentityGraphEdge from "../../models/security/IdentityGraphEdge.js";
 import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
 import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
 import { toTenantObjectId } from "../../utils/applicationDynamicCollections.js";
-import { normalizeDn } from "../ldapNormalizer.js";
+import { normalizeDn } from "../ad/ldapNormalizer.js";
 import { GRAPH_EDGE_TYPES, GRAPH_NODE_TYPES } from "./graphConstants.js";
 import {
   buildGroupCatalogIndexes,

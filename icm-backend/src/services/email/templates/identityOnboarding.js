@@ -1,4 +1,4 @@
-import { wrapCertificationEmail } from "../../certificationEmailTemplates.js";
+import { wrapCertificationEmail } from "../../access-certification/certificationEmailTemplates.js";
 
 function escapeHtml(value) {
   return String(value ?? "")

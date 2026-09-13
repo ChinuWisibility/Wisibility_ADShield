@@ -1,4 +1,4 @@
-import { normalizeAdConfig } from "../../adLdapService.js";
+import { normalizeAdConfig } from "../../ad/adLdapService.js";
 import {
   isAdShieldEnabled,
   postRemediate,

@@ -1,11 +1,12 @@
-import Application from "../models/application/Application.js";
+import Application from "../../models/application/Application.js";
 import { fetchAdDirectory, normalizeAdConfig } from "./adLdapService.js";
 import { syncSourceApplicationAndDerivedFromDirectory } from "./adDirectorySyncService.js";
 import {
   appendAdSyncStageTiming,
+  findActiveAdSyncJobForApplication,
   patchAdSyncJob,
 } from "./adSyncJobService.js";
-import { buildIngestSubstageTimings } from "./sync/identitySyncBackground.js";
+import { buildIngestSubstageTimings } from "../sync/identitySyncBackground.js";
 import {
   buildProfilerSummary,
   buildRuntimeAttribution,
@@ -13,18 +14,49 @@ import {
   heapUsedMb,
   noteMemory,
   rankStagesByDuration,
-} from "./sync/adSyncProfiler.js";
+} from "../sync/adSyncProfiler.js";
 import {
   AD_SYNC_PERFORMANCE_BUDGET,
   runtimeBudgetMsForUserCount,
-} from "./sync/adSyncPerformanceBudget.js";
+} from "../sync/adSyncPerformanceBudget.js";
 import {
   resolveUserSearchFilterForSyncScope,
   normalizeAdSyncScope,
-} from "../utils/adSyncScope.js";
+} from "../../utils/adSyncScope.js";
 
 /** @type {Set<string>} */
 const inFlightJobIds = new Set();
+
+/**
+ * True if this process is currently executing the job worker.
+ * Used to detect orphaned DB jobs after nodemon/process restart.
+ * @param {string} jobId
+ */
+export function isAdSyncJobInFlight(jobId) {
+  return inFlightJobIds.has(String(jobId || ""));
+}
+
+/**
+ * If Mongo still shows queued/running but this process is not executing it
+ * (typical after nodemon restart), mark the job failed so a new sync can start.
+ * @param {import('mongoose').Types.ObjectId | string} applicationId
+ * @returns {Promise<object|null>} still-active in-flight job, else null
+ */
+export async function reclaimOrphanedAdSyncJobForApplication(applicationId) {
+  const active = await findActiveAdSyncJobForApplication(applicationId);
+  if (!active) return null;
+  if (isAdSyncJobInFlight(active.jobId)) return active;
+
+  await patchAdSyncJob(active.jobId, {
+    status: "failed",
+    phase: "failed",
+    percent: 100,
+    message: "Sync worker lost (process restart or crash). Start a new sync.",
+    error: "Sync worker lost (process restart or crash). Start a new sync.",
+    completedAt: new Date(),
+  });
+  return null;
+}
 
 /**
  * @param {string} stage

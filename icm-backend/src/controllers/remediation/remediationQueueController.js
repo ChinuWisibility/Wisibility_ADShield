@@ -1,17 +1,17 @@
-import { AppError } from "../middleware/errorHandler.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   listQueueRecords,
   getQueueById,
   listQueueItems,
   getQueueSummary,
   reconcileQueueTicketFlags,
-} from "../services/remediation/remediationQueueService.js";
+} from "../../services/remediation/remediationQueueService.js";
 import {
   manualEnqueueFromDetection,
   ingestCompletedRevokeAccessCampaigns,
   runTenantQueueIngestion,
-} from "../services/remediation/remediationQueueIngestionService.js";
-import { createRemediationTicketFromQueue } from "../services/remediation/remediationTicketService.js";
+} from "../../services/remediation/remediationQueueIngestionService.js";
+import { createRemediationTicketFromQueue } from "../../services/remediation/remediationTicketService.js";
 
 export async function getQueueSummaryHandler(req, res, next) {
   try {

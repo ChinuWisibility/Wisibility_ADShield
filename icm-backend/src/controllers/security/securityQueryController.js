@@ -1,11 +1,11 @@
-import Application from "../models/application/Application.js";
+import Application from "../../models/application/Application.js";
 import {
   buildFeatureConfigPayload,
   upsertFeatureQueryOverride,
-} from "../services/security/applicationSecurityQueryService.js";
-import { testApplicationLdapQuery } from "../services/security/ldapQueryTestService.js";
-import { validateLdapQueryFields } from "../services/posture/ldapFilterValidator.js";
-import { normalizeAdConfig } from "../services/adLdapService.js";
+} from "../../services/security/applicationSecurityQueryService.js";
+import { testApplicationLdapQuery } from "../../services/security/ldapQueryTestService.js";
+import { validateLdapQueryFields } from "../../services/posture/ldapFilterValidator.js";
+import { normalizeAdConfig } from "../../services/ad/adLdapService.js";
 
 async function loadApplication(req, res) {
   const application = await Application.findById(req.params.applicationId);

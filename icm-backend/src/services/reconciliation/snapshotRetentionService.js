@@ -1,6 +1,6 @@
 import { getReconciliationModels } from "../../utils/reconciliationCollections.js";
 import { resolveTenantSlugFromTenantId } from "../../utils/applicationDynamicCollections.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 
 const DEFAULT_KEEP_RUNS = Math.max(
   1,

@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import ContractorProfile from '../models/identity/ContractorProfile.js';
-import IdentityAccountLink from '../models/identity/IdentityAccountLink.js';
-import IdentitySnapshot from '../models/identity/IdentitySnapshot.js';
-import ManagerHierarchy from '../models/identity/ManagerHierarchy.js';
-import OrphanAccount from '../models/identity/OrphanAccount.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import ContractorProfile from '../../models/identity/ContractorProfile.js';
+import IdentityAccountLink from '../../models/identity/IdentityAccountLink.js';
+import IdentitySnapshot from '../../models/identity/IdentitySnapshot.js';
+import ManagerHierarchy from '../../models/identity/ManagerHierarchy.js';
+import OrphanAccount from '../../models/identity/OrphanAccount.js';
 
 const router = Router();
 

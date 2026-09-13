@@ -7,7 +7,7 @@ import RemediationValidation from "../models/remediation/RemediationValidation.j
 import RemediationNotification from "../models/remediation/RemediationNotification.js";
 import RemediationQueue from "../models/remediation/RemediationQueue.js";
 import DistributedLock from "../models/scheduler/DistributedLock.js";
-import { sendEmail } from "../services/emailService.js";
+import { sendEmail } from "../services/email/appEmailService.js";
 import { updateStage } from "../services/remediation/remediationTrackingService.js";
 import { updateQueueStatus } from "../services/remediation/remediationQueueService.js";
 

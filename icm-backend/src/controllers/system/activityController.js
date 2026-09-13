@@ -1,4 +1,4 @@
-import * as activityService from "../services/activityService.js";
+import * as activityService from "../../services/system/activityService.js";
 
 export async function logActivity(req, res, next) {
   try {

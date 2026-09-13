@@ -10,7 +10,7 @@ import {
   controlComplianceSummary,
   buildPostureProgressRows,
   riskBandRowsForExport,
-} from "../utils/governanceReportUiPresentation.js";
+} from "../../utils/governanceReportUiPresentation.js";
 
 const BRAND_NAVY = "#0f3380";
 const BRAND_BLUE = "#2563eb";

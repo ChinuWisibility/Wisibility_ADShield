@@ -223,6 +223,8 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
   const [toast, setToast] = useState({ severity: 'info', message: '' });
+  const [adSyncProgress, setAdSyncProgress] = useState(null);
+  const adSyncPollRef = useRef(null);
 
   // --- Add attribute dialog ---
   const [addOpen, setAddOpen] = useState(false);
@@ -288,6 +290,153 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
       setWorkflow('mapped');
     }
   }, [isDelimitedFileConnector]);
+
+  const stopAdSyncPoll = useCallback(() => {
+    if (adSyncPollRef.current) {
+      clearTimeout(adSyncPollRef.current);
+      adSyncPollRef.current = null;
+    }
+  }, []);
+
+  const pollAdSyncJob = useCallback(
+    (jobId) => {
+      stopAdSyncPoll();
+      const POLL_MS = 1000;
+      const maxWaitMs = 2 * 60 * 60 * 1000;
+      const deadline = Date.now() + maxWaitMs;
+
+      const tick = async () => {
+        try {
+          const st = await applicationAPI.getAdSyncJob(applicationId, jobId);
+          const job = st.data?.data;
+          if (!job) {
+            setAdSyncProgress(null);
+            setToast({ severity: 'error', message: 'AD sync job not found.' });
+            return;
+          }
+          setAdSyncProgress({
+            jobId,
+            percent: typeof job.percent === 'number' ? job.percent : 0,
+            phase: job.phase || job.status,
+            message: job.message || '',
+            status: job.status,
+            reconnecting: false,
+          });
+          if (job.status === 'completed') {
+            setToast({
+              severity: 'success',
+              message: job.message || 'AD sync completed successfully.',
+            });
+            setAdSyncProgress(null);
+            onSaved?.();
+            return;
+          }
+          if (job.status === 'failed') {
+            setToast({
+              severity: 'error',
+              message: job.error || job.message || 'AD sync failed.',
+            });
+            setAdSyncProgress(null);
+            return;
+          }
+          if (Date.now() >= deadline) {
+            setToast({
+              severity: 'warning',
+              message:
+                'Still waiting for AD sync. It may continue in the background — refresh this page or check Current accounts.',
+            });
+            return;
+          }
+          adSyncPollRef.current = setTimeout(tick, POLL_MS);
+        } catch (err) {
+          const transient =
+            !err.response ||
+            err.code === 'ERR_NETWORK' ||
+            /network error/i.test(String(err.message || ''));
+          if (transient && Date.now() < deadline) {
+            setAdSyncProgress((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    reconnecting: true,
+                    message: 'Connection interrupted — reconnecting to sync status…',
+                  }
+                : {
+                    jobId,
+                    percent: 0,
+                    phase: 'reconnecting',
+                    message: 'Connection interrupted — reconnecting to sync status…',
+                    status: 'running',
+                    reconnecting: true,
+                  },
+            );
+            adSyncPollRef.current = setTimeout(tick, Math.min(POLL_MS * 2, 3000));
+            return;
+          }
+          setToast({
+            severity: 'error',
+            message: err.response?.data?.message || err.message || 'Failed to poll AD sync status.',
+          });
+          setAdSyncProgress(null);
+        }
+      };
+
+      tick();
+    },
+    [applicationId, onSaved, stopAdSyncPoll],
+  );
+
+  const startAdSyncInBackground = useCallback(async () => {
+    setAdSyncProgress({
+      percent: 0,
+      phase: 'starting',
+      message: 'Starting AD sync…',
+      status: 'queued',
+    });
+    try {
+      const started = await applicationAPI.startAdSyncJob(applicationId, {});
+      setAdSyncProgress({
+        jobId: started.jobId,
+        percent: typeof started.percent === 'number' ? started.percent : 1,
+        phase: started.phase || started.status || 'queued',
+        message: started.resumed
+          ? 'Resuming AD sync already in progress…'
+          : 'AD sync started. You can keep working while it runs.',
+        status: started.status || 'queued',
+      });
+      pollAdSyncJob(started.jobId);
+    } catch (err) {
+      setAdSyncProgress(null);
+      throw err;
+    }
+  }, [applicationId, pollAdSyncJob]);
+
+  // Resume progress banner if a sync is already running when opening this tab.
+  useEffect(() => {
+    if (!applicationId || !isAdConnector) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await applicationAPI.getActiveAdSyncJob(applicationId);
+        const job = res.data?.data;
+        if (cancelled || !job?.jobId) return;
+        setAdSyncProgress({
+          jobId: job.jobId,
+          percent: typeof job.percent === 'number' ? job.percent : 0,
+          phase: job.phase || job.status,
+          message: job.message || 'AD sync in progress…',
+          status: job.status,
+        });
+        pollAdSyncJob(job.jobId);
+      } catch {
+        /* ignore — no active job */
+      }
+    })();
+    return () => {
+      cancelled = true;
+      stopAdSyncPoll();
+    };
+  }, [applicationId, isAdConnector, pollAdSyncJob, stopAdSyncPoll]);
 
   useEffect(() => {
     let cancelled = false;
@@ -882,8 +1031,8 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
       await applicationAPI.saveCsvImportMapping(applicationId, {
         mappings: importMappings,
         // CSV Map & import: send complete detected headers so backend can ensure userMappings
-        // without using the reduced importMappings list. Skip for AD (no CSV file) so we do not
-        // overwrite/merge AD attribute names into an empty application schema incorrectly.
+        // without using the reduced importMappings list.
+        // AD Map & import: also persist the mapped target schema (with PK) so sync can run.
         ...(mappingFileObj && mappingHeaders.length
           ? (() => {
               const pkHeader = mappingHeaders.includes(mappingPkCsv)
@@ -903,7 +1052,9 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
                 ),
               };
             })()
-          : {}),
+          : {
+              schemaMappings: buildUserMappingsPayload(targetRows),
+            }),
         displayNameMode: mappingDisplayMode === 'first_last' ? 'first_last' : 'direct',
         displayNameFirstColumn: mappingFirstCsv,
         displayNameLastColumn: mappingLastCsv,
@@ -945,13 +1096,27 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
           setMappingDialogOpen(false);
           onSaved?.();
         } else if (isAd) {
-          setToast({ severity: 'info', message: 'Mapping saved. Syncing from connector...' });
-          await applicationAPI.waitForAdSyncJob(applicationId, {});
-          setSuccessDialogMessage('Connector synchronized successfully with mapped schema.');
-          setSuccessDialogOpen(true);
+          // Save mapping, close modal immediately, sync in background with progress banner.
+          setToast({
+            severity: 'info',
+            message: 'Mapping saved. AD sync started in the background…',
+          });
           setMappingDialogOpen(false);
           setMappingFileObj(null);
+          setImporting(false);
           onSaved?.();
+          try {
+            await startAdSyncInBackground();
+          } catch (syncErr) {
+            setToast({
+              severity: 'error',
+              message:
+                syncErr.response?.data?.message ||
+                syncErr.message ||
+                'Mapping saved, but AD sync failed to start.',
+            });
+          }
+          return;
         } else {
           setToast({ severity: 'info', message: 'Mapping saved. Syncing from connector...' });
           await applicationAPI.syncConnector(applicationId, {});
@@ -973,6 +1138,30 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
 
   return (
     <Box sx={{ p: 3 }}>
+      {adSyncProgress ? (
+        <Alert severity={adSyncProgress.reconnecting ? 'warning' : 'info'} sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+            {adSyncProgress.message || adSyncProgress.phase || 'AD sync in progress…'}
+            {!adSyncProgress.reconnecting && typeof adSyncProgress.percent === 'number'
+              ? ` (${adSyncProgress.percent}%)`
+              : ''}
+          </Typography>
+          <LinearProgress
+            variant={adSyncProgress.reconnecting ? 'indeterminate' : 'determinate'}
+            value={
+              adSyncProgress.reconnecting
+                ? undefined
+                : Math.min(100, Math.max(0, adSyncProgress.percent || 0))
+            }
+            sx={{ mt: 1, borderRadius: 1 }}
+          />
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
+            {adSyncProgress.reconnecting
+              ? 'Waiting for the API to come back — sync will resume automatically.'
+              : 'You can close the mapping dialog and keep using the app — sync continues in the background.'}
+          </Typography>
+        </Alert>
+      ) : null}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 2 }}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
@@ -1721,7 +1910,9 @@ export default function ApplicationSchemaTab({ applicationId, app, onSaved }) {
             Cancel
           </Button>
           <Button variant="contained" onClick={handleMappingProceed} disabled={importing || !canProceedMapping}>
-            {importing ? 'Importing...' : (mappingSaveOnly ? 'Save mapping' : 'Save Mapping & Import Users')}
+            {importing
+              ? 'Saving…'
+              : (mappingSaveOnly ? 'Save mapping' : (isAdConnector && !mappingFileObj ? 'Save Mapping & Sync AD' : 'Save Mapping & Import Users'))}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import { AppError } from "../middleware/errorHandler.js";
-import * as logoCtrl from "../controllers/logoController.js";
-import { imageFileFilter } from "../utils/uploadFilters.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import * as logoCtrl from "../../controllers/branding/logoController.js";
+import { imageFileFilter } from "../../utils/uploadFilters.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),

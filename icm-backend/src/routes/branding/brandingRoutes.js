@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import * as brandingCtrl from "../controllers/brandingController.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import * as brandingCtrl from "../../controllers/branding/brandingController.js";
 
 const router = Router();
 

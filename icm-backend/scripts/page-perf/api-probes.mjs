@@ -183,9 +183,7 @@ export async function runApiProbes({ tenantId, db, pageSize = 10 }) {
 
   // --- Identity profiles ---
   try {
-    const mod = await import("../../src/controllers/identity/identityProfileController.js").catch(() =>
-      import("../../src/controllers/identityProfileController.js").catch(() => null),
-    );
+    const mod = await import("../../src/controllers/identity/identityProfileController.js").catch(() => null);
     const handler = mod?.getIdentityProfiles || mod?.listIdentityProfiles;
     if (handler) {
       const sample = await sampleAsync(
@@ -220,9 +218,7 @@ export async function runApiProbes({ tenantId, db, pageSize = 10 }) {
 
   // --- Access cert campaigns (payload hotspot) ---
   try {
-    const mod = await import("../../src/controllers/accessCertification/campaignController.js").catch(() =>
-      import("../../src/controllers/campaignController.js").catch(() => null),
-    );
+    const mod = await import("../../src/controllers/access-certification/campaignController.js").catch(() => null);
     const handler = mod?.getAllCampaigns || mod?.listCampaigns;
     if (handler) {
       const sample = await sampleAsync(

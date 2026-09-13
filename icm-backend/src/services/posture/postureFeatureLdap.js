@@ -6,7 +6,7 @@ import {
   DEFAULT_USER_FILTER,
   DEFAULT_GROUP_FILTER,
   DEFAULT_COMPUTER_FILTER,
-} from "../ldapNormalizer.js";
+} from "../ad/ldapNormalizer.js";
 import { getPostureFeatureById } from "./postureFeatureRegistry.js";
 import { GROUP_LDAP_SECURITY_FEATURES } from "./postureFeatureIds.js";
 import { COMPUTER_SECURITY_FEATURES } from "./postureFeatureIds.js";

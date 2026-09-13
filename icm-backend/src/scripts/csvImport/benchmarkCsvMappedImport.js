@@ -29,7 +29,7 @@ import ApplicationUserDuplicate from "../../models/application/ApplicationUserDu
 import { getDynamicUserModel } from "../../models/application/Users.js";
 import { getReconciliationModels } from "../../utils/reconciliationCollections.js";
 import { resolveTenantSlugFromTenantId } from "../../utils/applicationDynamicCollections.js";
-import { applicationIdInClause } from "../../services/applicationUserIngestService.js";
+import { applicationIdInClause } from "../../services/application/applicationUserIngestService.js";
 import { runCsvImportEngine } from "../../services/csvImport/csvImportEngine.js";
 import { runCsvMappedReconciliation } from "../../services/reconciliation/strategies/index.js";
 import { ingestApplicationUsersWithReconciliation } from "../../services/reconciliation/ingestWithReconciliation.js";

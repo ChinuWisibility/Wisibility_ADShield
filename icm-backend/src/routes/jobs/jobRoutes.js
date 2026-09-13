@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
 import {
   listJobs,
   getJob,
@@ -12,7 +12,7 @@ import {
   listLocks,
   getLockStatus,
   releaseLock,
-} from '../controllers/jobController.js';
+} from '../../controllers/jobs/jobController.js';
 
 const router = Router();
 

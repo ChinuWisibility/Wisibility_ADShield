@@ -1,4 +1,4 @@
-import { evaluateCondition } from "./discoveryEvaluationService.js";
+import { evaluateCondition } from "../discovery/discoveryEvaluationService.js";
 
 const AD_GROUP_FIELD_ALIASES = {
   groupname: "groupName",

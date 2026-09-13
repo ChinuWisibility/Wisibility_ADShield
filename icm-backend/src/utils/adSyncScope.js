@@ -1,4 +1,4 @@
-import { DEFAULT_USER_FILTER } from "../services/ldapNormalizer.js";
+import { DEFAULT_USER_FILTER } from "../services/ad/ldapNormalizer.js";
 
 /** @typedef {'total'|'active'|'disabled'} AdSyncScope */
 

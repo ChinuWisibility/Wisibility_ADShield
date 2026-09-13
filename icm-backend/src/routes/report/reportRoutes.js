@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate } from "../../middleware/auth.js";
 import {
   getGovernanceRiskBandSetting,
   putGovernanceRiskBandSetting,
-} from "../controllers/report/governanceRiskBandController.js";
+} from "../../controllers/report/governanceRiskBandController.js";
 import {
   getEffectiveReportingRuleSet,
   putApplicationReportingRuleSet,
-} from "../controllers/report/reportingRuleSetController.js";
+} from "../../controllers/report/reportingRuleSetController.js";
 
 const router = Router();
 

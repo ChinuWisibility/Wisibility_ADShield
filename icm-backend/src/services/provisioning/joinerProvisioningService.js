@@ -21,7 +21,7 @@ import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
 import AccountAggregation from "../../models/access/AccountAggregation.js";
 import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
 import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 import { startJoinerWorkflow } from "./joinerWorkflowService.js";
 import {
   evaluateDesiredAccess,

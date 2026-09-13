@@ -9,7 +9,7 @@ import { AppError } from "../../middleware/errorHandler.js";
 import { resolveCertificationAccessTenantId as resolveUserTenantId } from "../../utils/access-certification/resolveCertificationAccessTenantId.js";
 import { getTenantCampaignScopeQuery } from "../../utils/access-certification/certificationTenantScope.js";
 import { generateReviewerToken } from "../../services/access-certification/certificationTokenService.js";
-import { buildCertificationReminderEmail } from "../../services/emailService.js";
+import { buildCertificationReminderEmail } from "../../services/email/appEmailService.js";
 import {
   enqueueCertificationEmail,
   resolveEffectiveFreqForCampaign,
@@ -17,7 +17,7 @@ import {
 import { computeReminderWindow } from "../../services/email/reminderWindow.js";
 import { deliverEmailJobNow } from "../../services/email/deliverEmailJobNow.js";
 import { buildReviewerEmailTokens } from "../../services/access-certification/certificationScopeService.js";
-import { countPendingEntitlementsByReviewerForCampaign } from "../../services/reviewItemService.js";
+import { countPendingEntitlementsByReviewerForCampaign } from "../../services/access-certification/reviewItemService.js";
 import { pickFromRawData, resolveUserName } from "../../utils/access-certification/certificationUserDisplay.js";
 import { resolveMappedManagerEmail } from "../../utils/access-certification/mappedUserResolver.js";
 import {

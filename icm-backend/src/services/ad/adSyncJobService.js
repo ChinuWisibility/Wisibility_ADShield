@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import AdSyncJob from "../models/application/AdSyncJob.js";
+import AdSyncJob from "../../models/application/AdSyncJob.js";
 
 const ACTIVE_STATUSES = ["queued", "running"];
 

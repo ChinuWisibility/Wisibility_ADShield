@@ -4,7 +4,7 @@ import {
   DEFAULT_PAGE_SIZE,
   MAX_PAGE_SIZE,
 } from "./ldapNormalizer.js";
-import { buildNestedMemberEdgesForGroup } from "./graph/graphEdgeBuilder.js";
+import { buildNestedMemberEdgesForGroup } from "../graph/graphEdgeBuilder.js";
 
 describe("AD sync LDAP throughput helpers", () => {
   test("default page size is LDAP-browser scale", () => {

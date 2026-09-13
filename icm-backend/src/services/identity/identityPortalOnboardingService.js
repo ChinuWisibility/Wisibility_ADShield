@@ -2,13 +2,13 @@ import User from "../../models/platform/User.js";
 import env from "../../config/env.js";
 import { AppError } from "../../middleware/errorHandler.js";
 import { isPlatformPlaneUser } from "../../middleware/auth.js";
-import { logActivity } from "../activityService.js";
+import { logActivity } from "../system/activityService.js";
 import {
   sendEmail,
   buildIdentityOnboardingEmail,
-} from "../emailService.js";
-import { prepareCertificationEmailForSend } from "../certificationEmailTemplates.js";
-import { issueIdentityOnboardingTokenForUser } from "../authService.js";
+} from "../email/appEmailService.js";
+import { prepareCertificationEmailForSend } from "../access-certification/certificationEmailTemplates.js";
+import { issueIdentityOnboardingTokenForUser } from "../auth/authService.js";
 import { getDeploymentAccess } from "../system/deploymentAccessService.js";
 import { isValidEmailSyntax, normalizeEmailAddress } from "../../utils/emailSyntax.js";
 import {

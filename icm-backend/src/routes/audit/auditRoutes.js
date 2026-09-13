@@ -3,8 +3,8 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import * as auditCtrl from "../controllers/auditController.js";
+} from "../../middleware/auth.js";
+import * as auditCtrl from "../../controllers/audit/auditController.js";
 
 const router = Router();
 

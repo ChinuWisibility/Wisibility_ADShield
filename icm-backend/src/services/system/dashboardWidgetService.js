@@ -1,4 +1,4 @@
-import DashboardWidget from '../models/branding/DashboardWidget.js';
+import DashboardWidget from '../../models/branding/DashboardWidget.js';
 
 const DEFAULT_WIDGETS = [
   { widgetType: 'SOD_SUMMARY', position: { x: 0, y: 0, w: 6, h: 4 }, config: {}, isVisible: true },

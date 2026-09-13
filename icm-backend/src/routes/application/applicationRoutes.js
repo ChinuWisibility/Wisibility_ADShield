@@ -1,25 +1,25 @@
 import { Router } from "express";
 import multer from "multer";
-import { csvFileFilter } from "../utils/uploadFilters.js";
+import { csvFileFilter } from "../../utils/uploadFilters.js";
 import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import Application from "../models/application/Application.js";
-import ApplicationType from "../models/application/ApplicationType.js";
-import UploadHistory from "../models/application/UploadHistory.js";
-import { getDynamicIdentityModelForTenantId } from "../models/identity/Identity.js";
-import Entitlement from "../models/access/Entitlement.js";
-import Account from "../models/access/Account.js";
-import ApplicationRiskProfile from "../models/application/ApplicationRiskProfile.js";
-import IntegrationLog from "../models/application/IntegrationLog.js";
-import { createCrudController } from "../utils/crudFactory.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { getDB } from "../config/database.js";
+} from "../../middleware/auth.js";
+import Application from "../../models/application/Application.js";
+import ApplicationType from "../../models/application/ApplicationType.js";
+import UploadHistory from "../../models/application/UploadHistory.js";
+import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
+import Entitlement from "../../models/access/Entitlement.js";
+import Account from "../../models/access/Account.js";
+import ApplicationRiskProfile from "../../models/application/ApplicationRiskProfile.js";
+import IntegrationLog from "../../models/application/IntegrationLog.js";
+import { createCrudController } from "../../utils/crudFactory.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { getDB } from "../../config/database.js";
 import express from "express";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
 import {
   getApplications,
   getApplicationById,
@@ -42,26 +42,27 @@ import {
   deleteApplicationScoped,
   patchAccountsTablePreferences,
   patchSecurityScanSettings,
-} from "../controllers/applicationController.js";
+} from "../../controllers/application/applicationController.js";
 import {
   testAdConnection,
   testCreateAdUser,
   syncAdUsersFromAd,
   getAdSyncJobStatus,
-} from "../controllers/adConnectorController.js";
+  getActiveAdSyncJob,
+} from "../../controllers/ad/adConnectorController.js";
 import {
   getApplicationPostureScan,
   listApplicationPostureScans,
   listPostureFeatures,
   runApplicationPostureScan,
   validatePostureCustomFeatures,
-} from "../controllers/postureController.js";
-import reconciliationRoutes from "./reconciliationRoutes.js";
+} from "../../controllers/posture/postureController.js";
+import reconciliationRoutes from "../reconciliation/reconciliationRoutes.js";
 import {
   getConnectorCatalog,
   testUniversalConnection,
   syncUniversalConnector,
-} from "../controllers/universalConnectorController.js";
+} from "../../controllers/connectors/universalConnectorController.js";
 import {
   executeCorrelation,
   getCorrelationResults,
@@ -71,12 +72,12 @@ import {
   getManagerCorrelationGroups,
   getManagerCorrelationGroupUsers,
   getManagerCorrelationJobStatus,
-} from "../controllers/appCorrelationController.js";
+} from "../../controllers/correlation/appCorrelationController.js";
 import {
   listApplicationUserDuplicates,
   getApplicationUserDuplicateById,
-} from "../controllers/applicationUserDuplicateController.js";
-import { getApplicationCertifications } from "../controllers/applicationCatalogController.js";
+} from "../../controllers/application/applicationUserDuplicateController.js";
+import { getApplicationCertifications } from "../../controllers/application/applicationCatalogController.js";
 
 const router = Router();
 const upload = multer({
@@ -146,6 +147,7 @@ router.post(
   testCreateAdUser,
 );
 router.post("/:id/ad/sync", authenticate, syncAdUsersFromAd);
+router.get("/:id/ad-sync-jobs/active", authenticate, getActiveAdSyncJob);
 router.get("/:id/ad-sync-jobs/:jobId", authenticate, getAdSyncJobStatus);
 router.get("/:id/posture/features", authenticate, listPostureFeatures);
 router.post("/:id/posture/validate-custom-features", authenticate, validatePostureCustomFeatures);

@@ -1,4 +1,4 @@
-import * as sessionService from "../services/sessionService.js";
+import * as sessionService from "../../services/auth/sessionService.js";
 
 export async function listActiveSessions(req, res, next) {
   try {

@@ -4,12 +4,12 @@ import {
   orgAdminOnly,
   requirePermission,
   PERMISSIONS,
-} from '../middleware/auth.js';
-import * as identityPostureRulesCtrl from '../controllers/identity/identityPostureRulesController.js';
-import * as reportingRuleSetCtrl from '../controllers/report/reportingRuleSetController.js';
-import * as uncorrelatedTrustMappingCtrl from '../controllers/datahygine/uncorrelatedTrustMappingController.js';
-import * as workflowTaskQueueCtrl from '../controllers/workflowTaskQueueController.js';
-import schedulerRoutes from './org-admin/scheduler.routes.js';
+} from '../../middleware/auth.js';
+import * as identityPostureRulesCtrl from '../../controllers/identity/identityPostureRulesController.js';
+import * as reportingRuleSetCtrl from '../../controllers/report/reportingRuleSetController.js';
+import * as uncorrelatedTrustMappingCtrl from '../../controllers/datahygine/uncorrelatedTrustMappingController.js';
+import * as workflowTaskQueueCtrl from '../../controllers/workflowTaskQueue/workflowTaskQueueController.js';
+import schedulerRoutes from './scheduler.routes.js';
 
 const router = Router();
 

@@ -1,10 +1,10 @@
-import IdentityProfile from "../models/identity/IdentityProfile.js";
-import { getDynamicIdentityModelForTenantId } from "../models/identity/Identity.js";
+import IdentityProfile from "../../models/identity/IdentityProfile.js";
+import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
 import {
   canonicalCorrelationKey,
   canonicalIdentityMappingTargetKey,
-} from "../utils/identityProfileMappingUtils.js";
-import { getIdentityFieldValue } from "../utils/correlationIdentityFields.js";
+} from "../../utils/identityProfileMappingUtils.js";
+import { getIdentityFieldValue } from "../../utils/correlationIdentityFields.js";
 
 const IDENTITY_CURSOR_BATCH = Number(process.env.IDENTITY_ENTITLEMENT_SYNC_LINK_BATCH ?? 1000);
 

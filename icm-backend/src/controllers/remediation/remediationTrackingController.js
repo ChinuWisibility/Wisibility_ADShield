@@ -1,10 +1,10 @@
-import { AppError } from "../middleware/errorHandler.js";
-import RemediationQueue from "../models/remediation/RemediationQueue.js";
-import RemediationQueueItem from "../models/remediation/RemediationQueueItem.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import RemediationQueue from "../../models/remediation/RemediationQueue.js";
+import RemediationQueueItem from "../../models/remediation/RemediationQueueItem.js";
 import {
   getTrackingByEventId,
   markCertificationReviewerComplete,
-} from "../services/remediation/remediationTrackingService.js";
+} from "../../services/remediation/remediationTrackingService.js";
 
 async function healRevokeAccessManagerStage(tenantId, eventId, tracking) {
   if (tracking?.managerStatus?.status !== "PENDING") return tracking;

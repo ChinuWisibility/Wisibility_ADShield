@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate } from "../../middleware/auth.js";
 import {
   getSuggestedAppGroups,
   getSuggestedApps,
@@ -7,7 +7,7 @@ import {
   previewGroupRuleMatches,
   recomputeSuggestions,
   refreshSuggestions,
-} from "../controllers/adSuggestionController.js";
+} from "../../controllers/ad/adSuggestionController.js";
 
 const router = Router();
 

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import Account from '../models/access/Account.js';
-import AccountAggregation from '../models/access/AccountAggregation.js';
-import AccountLifecycleLog from '../models/access/AccountLifecycleLog.js';
-import { createCrudController } from '../utils/crudFactory.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import Account from '../../models/access/Account.js';
+import AccountAggregation from '../../models/access/AccountAggregation.js';
+import AccountLifecycleLog from '../../models/access/AccountLifecycleLog.js';
+import { createCrudController } from '../../utils/crudFactory.js';
 
 const router = Router();
 const ctrl = createCrudController(Account, { searchFields: ['nativeIdentity', 'displayName', 'applicationName', 'identityName'] });

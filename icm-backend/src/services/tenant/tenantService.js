@@ -1,5 +1,5 @@
-import TenantConfig from '../models/platform/TenantConfig.js';
-import { AppError } from '../middleware/errorHandler.js';
+import TenantConfig from '../../models/platform/TenantConfig.js';
+import { AppError } from '../../middleware/errorHandler.js';
 
 async function getOrCreateDefault() {
   let config = await TenantConfig.findOne();

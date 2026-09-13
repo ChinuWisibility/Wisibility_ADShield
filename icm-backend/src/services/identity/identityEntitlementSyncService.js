@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import { getDynamicIdentityModelForTenantId } from "../models/identity/Identity.js";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { getIdentityEntitlementModelForTenantId } from "../models/identityEntitlementModel.js";
+import Application from "../../models/application/Application.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { getIdentityEntitlementModelForTenantId } from "../../models/identityEntitlementModel.js";
 import {
   getAppCorrelationCollectionName,
   getAppEntitlementsCollectionName,
   resolveTenantSlugFromTenantId,
   toTenantObjectId,
-} from "../utils/applicationDynamicCollections.js";
-import { extractEntitlementTokensFromAppUser } from "../utils/sod/sodAppUserEntitlements.js";
+} from "../../utils/applicationDynamicCollections.js";
+import { extractEntitlementTokensFromAppUser } from "../../utils/sod/sodAppUserEntitlements.js";
 import {
   findAuthSourceApplicationUser,
   forEachAuthSourceIdentityBatch,
@@ -243,7 +243,7 @@ export async function removeStaleAssignments(ProjectionModel, filter, syncedAt) 
 
 async function resolveLiveApplicationUserForSync(DynamicUserModel, link, app) {
   const { resolveLiveApplicationUser } = await import(
-    "../controllers/correlation/identityAccountLinkController.js"
+    "../../controllers/correlation/identityAccountLinkController.js"
   );
   return resolveLiveApplicationUser(DynamicUserModel, link, app);
 }

@@ -3,7 +3,7 @@ import Application from "../../models/application/Application.js";
 import ApplicationStatusMismatch from "../../models/application/ApplicationStatusMismatch.js";
 import ApplicationStatusMismatchState from "../../models/application/ApplicationStatusMismatchState.js";
 import { getDynamicIdentityModelForTenantId } from "../../models/identity/Identity.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 import { buildHygieneFindingSearchFields } from "./hygieneFindingSearch.js";
 import { hygieneMetricInc, hygieneTiming } from "./hygieneTelemetry.js";
 

@@ -1,21 +1,21 @@
-import Application from "../models/application/Application.js";
+import Application from "../../models/application/Application.js";
 import { normalizeDn } from "./ldapNormalizer.js";
 import { buildGroupDnToNameMap } from "./adDirectoryIngestService.js";
-import { applyCsvImportMappingToRows } from "./delimitedApplicationUserSync.js";
-import { ingestApplicationUsersWithReconciliation } from "./reconciliation/ingestWithReconciliation.js";
+import { applyCsvImportMappingToRows } from "../application/delimitedApplicationUserSync.js";
+import { ingestApplicationUsersWithReconciliation } from "../reconciliation/ingestWithReconciliation.js";
 import { upsertAggregationsFromAdUserDocs } from "./adAccountAggregationService.js";
 import {
   buildAdEntitlementRows,
   ensureDefaultAdEntitlementMappings,
   getDefaultAdEntitlementMappings,
   upsertApplicationEntitlementsFromRows,
-} from "./applicationEntitlementIngestService.js";
+} from "../application/applicationEntitlementIngestService.js";
 import { incrementalAdConnectorAccountEntitlementCorrelation } from "./adConnectorCorrelationService.js";
-import { mergeMappedAdUserDoc } from "../utils/mergeMappedAdUserDoc.js";
-import { incrementalGraphUpdateFromDirectory } from "./graph/graphIncrementalUpdateService.js";
-import { validateUserMappings } from "../utils/applicationMappingValidation.js";
-import { persistAppIgaUserImportSchemaDocument } from "../controllers/applicationController.js";
-import { resolveStableSyncKey } from "./sync/accountHashService.js";
+import { mergeMappedAdUserDoc } from "../../utils/mergeMappedAdUserDoc.js";
+import { incrementalGraphUpdateFromDirectory } from "../graph/graphIncrementalUpdateService.js";
+import { validateUserMappings } from "../../utils/applicationMappingValidation.js";
+import { persistAppIgaUserImportSchemaDocument } from "../../controllers/application/applicationController.js";
+import { resolveStableSyncKey } from "../sync/accountHashService.js";
 
 const DEFAULT_AD_USER_MAPPING_DRAFT = [
   {
@@ -242,7 +242,7 @@ function applyScopedMembershipToRawData(rawData, scopedDns) {
 
 /**
  * Copy integration metadata from source AD onto derived child applications.
- * @param {import('../models/application/Application.js').default} child
+ * @param {import('../../models/application/Application.js').default} child
  * @param {object} sourceApplication
  */
 export async function syncInheritedMetadataFromSource(child, sourceApplication) {

@@ -1,4 +1,4 @@
-import * as logoService from '../services/logoService.js';
+import * as logoService from '../../services/system/logoService.js';
 
 export async function listLogos(req, res, next) {
   try {

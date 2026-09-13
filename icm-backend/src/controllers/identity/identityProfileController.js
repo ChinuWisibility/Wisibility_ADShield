@@ -20,7 +20,7 @@ import {
   runDelimitedIdentityRefresh,
   getProfileReadiness,
   validateAttributeMappings,
-} from "../../services/identityProfileRefreshService.js";
+} from "../../services/identity/identityProfileRefreshService.js";
 import { resolveHrmsIntegrationRecord } from "../../utils/hrmsConnectorResolve.js";
 import {
   resolveApplicationDocForPreview,
@@ -28,23 +28,23 @@ import {
 } from "../../utils/applicationPreviewRows.js";
 import { migrateHrmsIntegrationsIntoApplicationsOnce } from "../../utils/migrateHrmsIntoApplications.js";
 import { ensureDelimitedHrmsStubApplicationsOnce } from "../../utils/ensureDelimitedHrmsStubs.js";
-import { recomputeIdentityTenantStats, toTenantObjectId } from "../../services/identityTenantStatsService.js";
+import { recomputeIdentityTenantStats, toTenantObjectId } from "../../services/identity/identityTenantStatsService.js";
 import {
   tryAcquireMaterializationLock,
   releaseMaterializationLock,
   getMaterializationLockStatusForTenant,
   resolveTenantIdForLock,
-} from "../../services/tenantMaterializationLockService.js";
+} from "../../services/tenant/tenantMaterializationLockService.js";
 import {
   computeIdentityProfileDeletionImpact,
   executeIdentityProfileDeletion,
-} from "../../services/identityProfileDeletionService.js";
+} from "../../services/identity/identityProfileDeletionService.js";
 import {
   createTenantBulkMaterializationJob,
   patchTenantBulkMaterializationJob,
   getTenantBulkMaterializationJobForTenant,
-} from "../../services/tenantBulkMaterializationJobStore.js";
-import { runBulkTenantMaterializationProfiles } from "../../services/tenantBulkMaterializationRunner.js";
+} from "../../services/tenant/tenantBulkMaterializationJobStore.js";
+import { runBulkTenantMaterializationProfiles } from "../../services/tenant/tenantBulkMaterializationRunner.js";
 import {
   buildIdentityCreateSchema,
   findIdentityAttributeValues,

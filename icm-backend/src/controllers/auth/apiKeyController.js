@@ -1,4 +1,4 @@
-import * as apiKeyService from "../services/apiKeyService.js";
+import * as apiKeyService from "../../services/auth/apiKeyService.js";
 
 export async function createApiKey(req, res, next) {
   try {

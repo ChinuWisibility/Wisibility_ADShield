@@ -14,7 +14,7 @@ import {
   recomputeTenantCorrelationStats,
   getCachedTenantCorrelationStats,
   getLiveTenantCorrelationRollups,
-} from '../../services/tenantCorrelationStatsService.js';
+} from '../../services/tenant/tenantCorrelationStatsService.js';
 import { scheduleDataHygieneSummaryRecompute } from '../../services/datahygine/dataHygieneSummaryCacheService.js';
 import {
   enrichOrphanRowsForDisplay,
@@ -39,7 +39,7 @@ import {
 import {
   loadDuplicatePrimaryKeyNormalizedSet,
   normalizePrimaryKeyValue,
-} from '../../services/applicationUserIngestService.js';
+} from '../../services/application/applicationUserIngestService.js';
 import {
   getDynamicValue,
   getIdentityFieldValue,

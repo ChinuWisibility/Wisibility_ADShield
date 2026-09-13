@@ -1,4 +1,4 @@
-import Branding from '../models/branding/Branding.js';
+import Branding from '../../models/branding/Branding.js';
 
 const DEFAULTS = {
   companyName: 'ADSecurity',

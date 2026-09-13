@@ -1,4 +1,4 @@
-import * as tenantService from '../services/tenantService.js';
+import * as tenantService from '../../services/tenant/tenantService.js';
 
 export async function getTenantConfig(req, res, next) {
   try {
@@ -35,7 +35,7 @@ export async function getLicenceStatus(req, res, next) {
   } catch (err) { next(err); }
 }
 
-import Tenant from '../models/platform/Tenant.js';
+import Tenant from '../../models/platform/Tenant.js';
 
 export async function createTenant(req, res, next) {
   try {

@@ -1,5 +1,5 @@
-import { initializeSetup } from "../services/setup/setupInitializeService.js";
-import { AppError } from "../middleware/errorHandler.js";
+import { initializeSetup } from "../../services/setup/setupInitializeService.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 export async function postInitialize(req, res, next) {
   try {

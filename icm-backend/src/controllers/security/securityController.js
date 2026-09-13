@@ -1,22 +1,22 @@
-import Application from "../models/application/Application.js";
-import { listScanResultsForApplication, countScanResultsForApplication, deleteScanResult } from "../services/posture/postureScanResultsStore.js";
-import { getScanResult } from "../services/posture/postureOrchestrator.js";
-import { runPostureScan } from "../services/posture/postureOrchestrator.js";
-import { normalizeAdConfig } from "../services/adLdapService.js";
+import Application from "../../models/application/Application.js";
+import { listScanResultsForApplication, countScanResultsForApplication, deleteScanResult } from "../../services/posture/postureScanResultsStore.js";
+import { getScanResult } from "../../services/posture/postureOrchestrator.js";
+import { runPostureScan } from "../../services/posture/postureOrchestrator.js";
+import { normalizeAdConfig } from "../../services/ad/adLdapService.js";
 import {
   resolveExecutableFeatureIds,
   getPostureFeatureById,
-} from "../services/posture/postureFeatureRegistry.js";
-import { validateCustomFeatureDefinitions } from "../services/posture/ldapFilterValidator.js";
+} from "../../services/posture/postureFeatureRegistry.js";
+import { validateCustomFeatureDefinitions } from "../../services/posture/ldapFilterValidator.js";
 import {
   getPaginatedFindings,
   getSecurityOverview,
   compareSecurityScans,
-} from "../services/security/securityFindingsService.js";
+} from "../../services/security/securityFindingsService.js";
 import {
   getApplicationRemediationSummary,
   getTenantRemediationApplicationTiles,
-} from "../services/security/securityRemediationSummaryService.js";
+} from "../../services/security/securityRemediationSummaryService.js";
 import {
   listAssessmentsForApplication,
   getAssessmentById,
@@ -25,7 +25,7 @@ import {
   markAssessmentRunning,
   markAssessmentExecutionCompleted,
   attachOrphanScansToAssessment,
-} from "../services/security/assessmentService.js";
+} from "../../services/security/assessmentService.js";
 import {
   listVersionsForAssessment,
   getVersionById,
@@ -38,15 +38,15 @@ import {
   resetWorkingConfigurationFromApplication,
   cloneVersionToWorkingConfiguration,
   ensureWorkingConfiguration,
-} from "../services/security/assessmentVersionService.js";
-import { validatePostureLdapConnection, friendlyLdapErrorMessage } from "../services/posture/postureLdapValidator.js";
-import { isAdShieldEnabled } from "../services/security/adShield/adShieldClient.js";
-import { remediateSecurityFinding } from "../services/security/adShield/adShieldRemediationService.js";
+} from "../../services/security/assessmentVersionService.js";
+import { validatePostureLdapConnection, friendlyLdapErrorMessage } from "../../services/posture/postureLdapValidator.js";
+import { isAdShieldEnabled } from "../../services/security/adShield/adShieldClient.js";
+import { remediateSecurityFinding } from "../../services/security/adShield/adShieldRemediationService.js";
 import {
   isAdShieldAccountFeature,
   isAdShieldAclFeature,
   isAdShieldPostureFeature,
-} from "../services/security/adShield/adShieldFeatures.js";
+} from "../../services/security/adShield/adShieldFeatures.js";
 
 function selectedFeaturesNeedLdap(featureIds) {
   return (featureIds || []).some((id) => getPostureFeatureById(id)?.requiresAdLdap);

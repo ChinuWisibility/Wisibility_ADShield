@@ -1,8 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
-import * as auth from "../controllers/authController.js";
-import * as mfaCtrl from "../controllers/mfaController.js";
-import * as sessionCtrl from "../controllers/sessionController.js";
+import * as auth from "../../controllers/auth/authController.js";
+import * as mfaCtrl from "../../controllers/auth/mfaController.js";
+import * as sessionCtrl from "../../controllers/auth/sessionController.js";
 import {
   authenticate,
   authenticateOptional,
@@ -10,20 +10,20 @@ import {
   ROLES,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import { authLimiter } from "../middleware/rateLimiter.js";
+} from "../../middleware/auth.js";
+import { authLimiter } from "../../middleware/rateLimiter.js";
 import {
   validateRegister,
   validateLogin,
   validateChangePassword,
   validateUpdateProfile,
-} from "../middleware/authValidation.js";
+} from "../../middleware/authValidation.js";
 import {
   trackSession,
   trackLogin,
   trackLogout,
-} from "../middleware/sessionTracker.js";
-import { csvFileFilter } from "../utils/uploadFilters.js";
+} from "../../middleware/sessionTracker.js";
+import { csvFileFilter } from "../../utils/uploadFilters.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),

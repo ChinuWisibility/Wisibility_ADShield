@@ -9,7 +9,7 @@ function runSafely(label, fn) {
   setImmediate(() => {
     void (async () => {
       try {
-        const mod = await import("../services/identityEntitlementSyncService.js");
+        const mod = await import("../services/identity/identityEntitlementSyncService.js");
         await fn(mod);
       } catch (err) {
         console.error(LOG_PREFIX, label, err?.message || err);

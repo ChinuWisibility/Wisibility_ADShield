@@ -1,6 +1,6 @@
-import Activity from "../models/platform/Activity.js";
-import { AppError } from "../middleware/errorHandler.js";
-import User from "../models/platform/User.js";
+import Activity from "../../models/platform/Activity.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import User from "../../models/platform/User.js";
 
 function isPlatformPlaneActor(actor) {
   return (

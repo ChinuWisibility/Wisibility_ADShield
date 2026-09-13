@@ -1,14 +1,14 @@
 import {
   getDynamicIdentityModelForTenantId,
   getLegacyIdentityModel,
-} from '../models/identity/Identity.js';
-import HrmsIntegration from '../models/integrations/HrmsIntegration.js';
-import Application from '../models/application/Application.js';
-import { runOrangeHrmIdentityRefresh, enqueueLifecycleTransitionsFromRefresh } from './identityProfileRefreshService.js';
-import { recomputeIdentityTenantStats } from './identityTenantStatsService.js';
-import env from '../config/env.js';
+} from '../../models/identity/Identity.js';
+import HrmsIntegration from '../../models/integrations/HrmsIntegration.js';
+import Application from '../../models/application/Application.js';
+import { runOrangeHrmIdentityRefresh, enqueueLifecycleTransitionsFromRefresh } from '../identity/identityProfileRefreshService.js';
+import { recomputeIdentityTenantStats } from '../identity/identityTenantStatsService.js';
+import env from '../../config/env.js';
 import { refreshHrmsAccessToken } from './hrmsTokenService.js';
-import { safeErrorString } from '../utils/safeString.js';
+import { safeErrorString } from '../../utils/safeString.js';
 
 function normalizeBaseUrl(url) {
   return String(url || '')

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import ComplianceFramework from "../models/compliance/ComplianceFramework.js";
-import ComplianceEvidence from "../models/compliance/ComplianceEvidence.js";
-import { AppError } from "../middleware/errorHandler.js";
+import ComplianceFramework from "../../models/compliance/ComplianceFramework.js";
+import ComplianceEvidence from "../../models/compliance/ComplianceEvidence.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 function isPlatformPlaneActor(actor) {
   return (

@@ -2,36 +2,36 @@
  * Canonical server-side snapshot for Governance Intelligence export (PDF / Excel / pack).
  */
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import Account from "../models/access/Account.js";
-import Tenant from "../models/platform/Tenant.js";
+import Application from "../../models/application/Application.js";
+import Account from "../../models/access/Account.js";
+import Tenant from "../../models/platform/Tenant.js";
 import {
   buildOrphanIsoSummaryForApplication,
   loadAllOpenOrphansForIsoReportPayload,
   buildOrphanListFilters,
-} from "../controllers/correlation/correlationController.js";
-import { buildCertificationIsoReportData } from "../controllers/access-certification/certificationISOReportController.js";
-import { resolveCertificationAccessTenantId } from "../utils/access-certification/resolveCertificationAccessTenantId.js";
-import { ISO_REPORT_DECISION_LIMIT_MAX } from "../config/certificationISOReport.config.js";
+} from "../../controllers/correlation/correlationController.js";
+import { buildCertificationIsoReportData } from "../../controllers/access-certification/certificationISOReportController.js";
+import { resolveCertificationAccessTenantId } from "../../utils/access-certification/resolveCertificationAccessTenantId.js";
+import { ISO_REPORT_DECISION_LIMIT_MAX } from "../../config/certificationISOReport.config.js";
 import {
   computeUserStats,
   computeAccountStatusDonutCountsFromQueueDigest,
   computeDepartmentRiskBarFromQueueDigest,
   buildKeyFindings,
   buildComplianceTrendSeries,
-} from "../utils/governanceReportLifecycleMetrics.js";
+} from "../../utils/governanceReportLifecycleMetrics.js";
 import {
   ISO_GOVERNANCE_CONTROLS,
   deriveControlStatus,
   computeGovernanceHealthScore,
   governanceHealthToRiskExposure10,
-} from "../config/isoGovernanceControls.config.js";
-import OrphanAccount from "../models/identity/OrphanAccount.js";
-import { resolveEffectiveRiskBand } from "./report/reportingRuleSetResolver.js";
-import { GOVERNANCE_RISK_BAND_METRIC_KEYS } from "../models/report/GovernanceRiskBandSetting.js";
-import SodPolicy from "../models/sod/SodPolicy.js";
-import SodViolation from "../models/sod/SodViolation.js";
-import { sodTenantFilter } from "../utils/sod/sodTenant.js";
+} from "../../config/isoGovernanceControls.config.js";
+import OrphanAccount from "../../models/identity/OrphanAccount.js";
+import { resolveEffectiveRiskBand } from "../report/reportingRuleSetResolver.js";
+import { GOVERNANCE_RISK_BAND_METRIC_KEYS } from "../../models/report/GovernanceRiskBandSetting.js";
+import SodPolicy from "../../models/sod/SodPolicy.js";
+import SodViolation from "../../models/sod/SodViolation.js";
+import { sodTenantFilter } from "../../utils/sod/sodTenant.js";
 
 /** Resolve tenant ObjectId for orphan/account scoping (platform admin may pass body.tenantId). */
 export function resolveSnapshotTenantId(req, bodyTenantId) {

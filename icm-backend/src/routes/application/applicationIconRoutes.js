@@ -4,10 +4,10 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import { AppError } from "../middleware/errorHandler.js";
-import * as iconCtrl from "../controllers/application/applicationIconController.js";
-import { imageFileFilter } from "../utils/uploadFilters.js";
+} from "../../middleware/auth.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import * as iconCtrl from "../../controllers/application/applicationIconController.js";
+import { imageFileFilter } from "../../utils/uploadFilters.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),

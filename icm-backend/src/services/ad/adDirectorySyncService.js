@@ -1,27 +1,27 @@
-import { applyCsvImportMappingToRows } from "./delimitedApplicationUserSync.js";
-import { ingestApplicationUsersWithReconciliation } from "./reconciliation/ingestWithReconciliation.js";
+import { applyCsvImportMappingToRows } from "../application/delimitedApplicationUserSync.js";
+import { ingestApplicationUsersWithReconciliation } from "../reconciliation/ingestWithReconciliation.js";
 import { upsertAggregationsFromAdUserDocs } from "./adAccountAggregationService.js";
 import {
   buildAdEntitlementRows,
   ensureDefaultAdEntitlementMappings,
   upsertApplicationEntitlementsFromRows,
-} from "./applicationEntitlementIngestService.js";
+} from "../application/applicationEntitlementIngestService.js";
 import { refreshDerivedApplicationsFromAdDirectory } from "./adDerivedApplicationService.js";
 import {
   incrementalAdConnectorAccountEntitlementCorrelation,
   scheduleCorrelationStatsRebuild,
 } from "./adConnectorCorrelationService.js";
-import { mergeMappedAdUserDoc } from "../utils/mergeMappedAdUserDoc.js";
-import { incrementalGraphUpdateFromDirectory } from "./graph/graphIncrementalUpdateService.js";
-import { normalizePrimaryKeyValue } from "./applicationUserIngestService.js";
-import { resolveStableSyncKey } from "./sync/accountHashService.js";
+import { mergeMappedAdUserDoc } from "../../utils/mergeMappedAdUserDoc.js";
+import { incrementalGraphUpdateFromDirectory } from "../graph/graphIncrementalUpdateService.js";
+import { normalizePrimaryKeyValue } from "../application/applicationUserIngestService.js";
+import { resolveStableSyncKey } from "../sync/accountHashService.js";
 import {
   createPipelineMetrics,
   recordPipelineStage,
   schedulePostSyncBackgroundWork,
   timeSyncStage,
-} from "./sync/identitySyncBackground.js";
-import { createIngestDetailTracker } from "./sync/adSyncProfiler.js";
+} from "../sync/identitySyncBackground.js";
+import { createIngestDetailTracker } from "../sync/adSyncProfiler.js";
 
 function mapIdentityKeysToUserIds(userDocs, identityKeys, userIdByIdentityKey) {
   const ids = [];
@@ -504,7 +504,7 @@ export async function syncSourceApplicationAndDerivedFromDirectory(
     application: sourceApplication,
     snapshotRetentionFn: async () => {
       const { purgeStaleReconciliationSnapshots } = await import(
-        "./reconciliation/snapshotRetentionService.js"
+        "../reconciliation/snapshotRetentionService.js"
       );
       return purgeStaleReconciliationSnapshots(sourceApplication);
     },

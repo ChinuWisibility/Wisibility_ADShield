@@ -679,7 +679,14 @@ export default function AppRegistry() {
       if (syncAdOnCreate && created?._id) {
         try {
           if (usesAdLdapConnector(formData.connectorType)) {
-            await applicationAPI.waitForAdSyncJob(created._id, {});
+            // Do NOT sync yet — open Map AD fields wizard first.
+            // Sync starts only after the user saves the mapping (ApplicationSchemaTab).
+            handleClose();
+            fetchApplications();
+            navigate(
+              `/applications/${created._id || created.id}?tab=schema&onestep=connector`,
+            );
+            return;
           } else if (
             formData.connectorType &&
             connectorFamily &&

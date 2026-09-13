@@ -1,5 +1,5 @@
-import { normalizeAdConfig, mapAdEntryToUserDoc } from "../adLdapService.js";
-import { fetchPagedSearchEntries } from "../ldapNormalizer.js";
+import { normalizeAdConfig, mapAdEntryToUserDoc } from "../ad/adLdapService.js";
+import { fetchPagedSearchEntries } from "../ad/ldapNormalizer.js";
 import { Client } from "ldapts";
 import { validateLdapFilterDetailed } from "../posture/ldapFilterValidator.js";
 

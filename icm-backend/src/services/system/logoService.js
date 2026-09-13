@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import Logo from "../models/branding/Logo.js";
-import Branding from "../models/branding/Branding.js";
-import { AppError } from "../middleware/errorHandler.js";
+import Logo from "../../models/branding/Logo.js";
+import Branding from "../../models/branding/Branding.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 export async function listLogos() {
   return Logo.find().sort({ createdAt: -1 });

@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import { blockLegacyRemediationApi } from "../middleware/legacyRemediation.js";
-import * as remediation from "../controllers/remediationController.js";
-import * as tickets from "../controllers/remediationTicketController.js";
-import * as queue from "../controllers/remediationQueueController.js";
-import * as validations from "../controllers/remediationValidationController.js";
-import * as tracking from "../controllers/remediationTrackingController.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import { blockLegacyRemediationApi } from "../../middleware/legacyRemediation.js";
+import * as remediation from "../../controllers/remediation/remediationController.js";
+import * as tickets from "../../controllers/remediation/remediationTicketController.js";
+import * as queue from "../../controllers/remediation/remediationQueueController.js";
+import * as validations from "../../controllers/remediation/remediationValidationController.js";
+import * as tracking from "../../controllers/remediation/remediationTrackingController.js";
 
 const router = Router();
 

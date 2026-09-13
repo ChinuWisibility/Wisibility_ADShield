@@ -7,7 +7,7 @@
 
 import Application from "../../models/application/Application.js";
 import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 import { getConnectorDefinition } from "../../config/connectorCatalog.js";
 
 /**

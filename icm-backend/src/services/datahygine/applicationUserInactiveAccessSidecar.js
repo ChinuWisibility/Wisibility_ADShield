@@ -5,7 +5,7 @@ import { isInactiveAppUserWithAccess } from "../../utils/datahygine/appUserInact
 import {
   applicationIdInClause,
   normalizePrimaryKeyValue,
-} from "../applicationUserIngestService.js";
+} from "../application/applicationUserIngestService.js";
 import { normalizeHygieneSearchField } from "./hygieneFindingSearch.js";
 
 /** Bump when {@link isInactiveAppUserWithAccess} semantics change. */

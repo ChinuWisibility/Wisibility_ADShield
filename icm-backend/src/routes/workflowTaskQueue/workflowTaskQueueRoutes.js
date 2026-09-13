@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import * as ctrl from "../controllers/workflowTaskQueueController.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import * as ctrl from "../../controllers/workflowTaskQueue/workflowTaskQueueController.js";
 
 const router = Router();
 

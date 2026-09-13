@@ -1,34 +1,34 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import User from "../models/platform/User.js";
-import UserSession from "../models/platform/UserSession.js";
-import Activity from "../models/platform/Activity.js";
+import User from "../../models/platform/User.js";
+import UserSession from "../../models/platform/UserSession.js";
+import Activity from "../../models/platform/Activity.js";
 import PasswordResetToken, {
   PASSWORD_TOKEN_PURPOSE,
-} from "../models/platform/PasswordResetToken.js";
-import PasswordOtp from "../models/platform/PasswordOtp.js";
-import { generateToken } from "../middleware/auth.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { logActivity } from "./activityService.js";
-import Tenant from "../models/platform/Tenant.js";
-import env from "../config/env.js";
-import { getActivePasswordPolicy, validatePasswordAgainstPolicy } from "../utils/passwordPolicy.js";
+} from "../../models/platform/PasswordResetToken.js";
+import PasswordOtp from "../../models/platform/PasswordOtp.js";
+import { generateToken } from "../../middleware/auth.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { logActivity } from "../system/activityService.js";
+import Tenant from "../../models/platform/Tenant.js";
+import env from "../../config/env.js";
+import { getActivePasswordPolicy, validatePasswordAgainstPolicy } from "../../utils/passwordPolicy.js";
 import { verifyMfaCodeForLogin } from "./mfaService.js";
 import {
   sendEmail,
   buildPasswordResetEmail,
   buildAdminInitiatedResetEmail,
   buildPasswordOtpEmail,
-} from "./emailService.js";
-import { getDeploymentAccess } from "./system/deploymentAccessService.js";
-import { buildActiveUserLoginQuery } from "../utils/loginIdentifier.js";
+} from "../email/appEmailService.js";
+import { getDeploymentAccess } from "../system/deploymentAccessService.js";
+import { buildActiveUserLoginQuery } from "../../utils/loginIdentifier.js";
 import {
   isPortalOnboardingLoginBlocked,
   getIdentityOnboardingTokenTtlMs,
   ONBOARDING_LOGIN_BLOCKED_MESSAGE,
   ONBOARDING_TOKEN_EXPIRED_MESSAGE,
   PASSWORD_STATUS,
-} from "../utils/identityOnboardingState.js";
+} from "../../utils/identityOnboardingState.js";
 
 const USER_ROLES = [
   "admin",

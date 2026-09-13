@@ -1,4 +1,4 @@
-import { normalizeDn } from "../ldapNormalizer.js";
+import { normalizeDn } from "../ad/ldapNormalizer.js";
 import { GRAPH_NODE_TYPES } from "./graphConstants.js";
 
 /**

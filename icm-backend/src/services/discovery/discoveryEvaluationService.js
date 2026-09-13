@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto";
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
-import DiscoveryPolicy from "../models/discovery/DiscoveryPolicy.js";
-import DiscoveryResult from "../models/discovery/DiscoveryResult.js";
+import Application from "../../models/application/Application.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
+import DiscoveryPolicy from "../../models/discovery/DiscoveryPolicy.js";
+import DiscoveryResult from "../../models/discovery/DiscoveryResult.js";
 
 /* ════════════════════════════════════════════════════════════════════
  * CONDITION EVALUATORS

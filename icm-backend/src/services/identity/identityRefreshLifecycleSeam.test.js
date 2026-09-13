@@ -5,7 +5,7 @@
 
 import { describe, expect, test } from "@jest/globals";
 import { enqueueLifecycleTransitionsFromRefresh } from "./identityProfileRefreshService.js";
-import { detectIdentityLifecycleChanges } from "./lifecycle/lifecycleDetectionService.js";
+import { detectIdentityLifecycleChanges } from "../lifecycle/lifecycleDetectionService.js";
 
 describe("P6 identity refresh lifecycle seam", () => {
   test("maps persisted before/after transitions into enqueue payload", async () => {

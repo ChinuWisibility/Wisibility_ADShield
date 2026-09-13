@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import { AppError } from "../middleware/errorHandler.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   getIdentities,
   getIdentityById,
@@ -14,31 +14,31 @@ import {
   getIdentitySchemaFields,
   getIdentityDepartments,
   deleteAllIdentities,
-} from "../controllers/identity/identityController.js";
+} from "../../controllers/identity/identityController.js";
 import {
   getLinksForIdentity,
   manuallyLinkAccount,
   unlinkAccount,
   setIdentityAccountLinkActive,
-} from "../controllers/correlation/identityAccountLinkController.js";
+} from "../../controllers/correlation/identityAccountLinkController.js";
 // --- NEW IMPORT: Identity Mindmap Controller ---
-import { getIdentityGraph } from "../controllers/identity/identityMindmapController.js";
+import { getIdentityGraph } from "../../controllers/identity/identityMindmapController.js";
 // --- Peer Access Comparison ---
-import { peerComparison } from "../controllers/identity/peerComparisonController.js";
+import { peerComparison } from "../../controllers/identity/peerComparisonController.js";
 // --- Identity Posture Dashboard
-import { getIdentityPosture } from "../controllers/identity/identityPostureController.js";
+import { getIdentityPosture } from "../../controllers/identity/identityPostureController.js";
 import {
   getIdentitySod,
   getIdentityCertifications,
   getIdentityHygiene,
   getIdentityPrivileges,
-} from "../controllers/identity/identityCatalogInsightsController.js";
+} from "../../controllers/identity/identityCatalogInsightsController.js";
 import {
   getProfilePhotoImage,
   removeProfilePhoto,
   uploadProfilePhoto,
-} from "../controllers/identity/identityProfilePhotoController.js";
-import { imageFileFilter } from "../utils/uploadFilters.js";
+} from "../../controllers/identity/identityProfilePhotoController.js";
+import { imageFileFilter } from "../../utils/uploadFilters.js";
 
 const profilePhotoUpload = multer({
   storage: multer.memoryStorage(),

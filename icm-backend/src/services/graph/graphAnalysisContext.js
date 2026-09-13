@@ -20,7 +20,7 @@ import {
   resolveGroupNodeFromEntitlement,
   resolveUserNodeFromDoc,
 } from "./graphNodeResolver.js";
-import { normalizeDn } from "../ldapNormalizer.js";
+import { normalizeDn } from "../ad/ldapNormalizer.js";
 import { supplementScanGraphNestingFromEntitlements } from "./graphEdgeBuilder.js";
 
 const YIELD_EVERY = 500;

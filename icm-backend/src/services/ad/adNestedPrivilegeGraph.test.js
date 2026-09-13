@@ -1,15 +1,15 @@
 import { describe, expect, test } from "@jest/globals";
-import { buildAdEntitlementRows } from "./applicationEntitlementIngestService.js";
-import { buildEdgesFromDirectoryPayload } from "./graph/graphIncrementalUpdateService.js";
-import { supplementScanGraphNestingFromEntitlements } from "./graph/graphEdgeBuilder.js";
-import { extractGroupMemberOfDns } from "./graph/graphNodeResolver.js";
-import { GRAPH_EDGE_TYPES } from "./graph/graphConstants.js";
+import { buildAdEntitlementRows } from "../application/applicationEntitlementIngestService.js";
+import { buildEdgesFromDirectoryPayload } from "../graph/graphIncrementalUpdateService.js";
+import { supplementScanGraphNestingFromEntitlements } from "../graph/graphEdgeBuilder.js";
+import { extractGroupMemberOfDns } from "../graph/graphNodeResolver.js";
+import { GRAPH_EDGE_TYPES } from "../graph/graphConstants.js";
 import {
   discoverNestedPrivilegedAccess,
   findPrivilegeEscalationPaths,
-} from "./security/privilegedAccess/privilegedAccessService.js";
-import { bfsTraversal, shortestPath } from "./graph/graphTraversalEngine.js";
-import { buildReverseAdjacency } from "./graph/graphAdjacencyCacheService.js";
+} from "../security/privilegedAccess/privilegedAccessService.js";
+import { bfsTraversal, shortestPath } from "../graph/graphTraversalEngine.js";
+import { buildReverseAdjacency } from "../graph/graphAdjacencyCacheService.js";
 
 describe("AD entitlement rows preserve group nesting attrs", () => {
   test("buildAdEntitlementRows includes memberOf for graph/nest detectors", () => {

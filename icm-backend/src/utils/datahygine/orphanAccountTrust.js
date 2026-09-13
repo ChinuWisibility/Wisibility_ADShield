@@ -19,7 +19,7 @@ import mongoose from "mongoose";
 import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
 import { matchPrivilegedForApplication } from "../privilegeMatchFilter.js";
 import { extractEntitlementTokensFromAppUser } from "../sod/sodAppUserEntitlements.js";
-import { classifyAccountStatusRaw } from "../../services/applicationUserStatusCountsService.js";
+import { classifyAccountStatusRaw } from "../../services/application/applicationUserStatusCountsService.js";
 import { isAppUserInactiveForHygiene } from "./appUserInactiveWithAccess.js";
 import { PRIVILEGED_NAME_TOKENS } from "../../services/graph/graphConstants.js";
 import {

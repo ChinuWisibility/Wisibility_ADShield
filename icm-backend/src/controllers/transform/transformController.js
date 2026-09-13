@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import Transform from "../models/governance/Transform.js";
-import { AppError } from "../middleware/errorHandler.js";
+import Transform from "../../models/governance/Transform.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   isPlatformPlaneUser,
-} from "../middleware/auth.js";
-import { executeTransform } from "../services/transform/transformEngine.js";
-import { validateTransformDocument } from "../services/transform/validateTransform.js";
-import { getAllowedFieldNamesForApplication } from "../services/transform/schemaService.js";
+} from "../../middleware/auth.js";
+import { executeTransform } from "../../services/transform/transformEngine.js";
+import { validateTransformDocument } from "../../services/transform/validateTransform.js";
+import { getAllowedFieldNamesForApplication } from "../../services/transform/schemaService.js";
 
 function enforceTenantWrite(req) {
   if (isPlatformPlaneUser(req.user)) return;

@@ -1,6 +1,6 @@
-import NotificationTemplate from "../models/platform/NotificationTemplate.js";
-import { sendEmail } from "./emailService.js";
-import { resetTemplate } from "./notificationTemplateService.js";
+import NotificationTemplate from "../../models/platform/NotificationTemplate.js";
+import { sendEmail } from "../email/appEmailService.js";
+import { resetTemplate } from "../system/notificationTemplateService.js";
 
 function renderWithVariables(text, data) {
   if (!text) return "";

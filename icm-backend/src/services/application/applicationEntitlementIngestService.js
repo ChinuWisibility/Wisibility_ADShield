@@ -1,6 +1,6 @@
-import { getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
+import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
 import { buildEntitlementDocsFromMappedRows } from "./delimitedApplicationUserSync.js";
-import { validateEntitlementMappings } from "../utils/applicationMappingValidation.js";
+import { validateEntitlementMappings } from "../../utils/applicationMappingValidation.js";
 
 const DEFAULT_AD_ENTITLEMENT_MAPPING_DRAFT = [
   {

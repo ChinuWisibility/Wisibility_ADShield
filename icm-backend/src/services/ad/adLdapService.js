@@ -1,5 +1,5 @@
 import { Client } from "ldapts";
-import env from "../config/env.js";
+import env from "../../config/env.js";
 import {
   buildRawDataFromEntry,
   getAttrFirst,
@@ -7,8 +7,8 @@ import {
   LDAP_SEARCH_SCOPE_BASE,
   LDAP_SEARCH_SCOPE_SUBTREE,
   objectGuidToString,
-} from "../utils/ldapEntryAttributes.js";
-import { escapeLdapFilterValue } from "../utils/ldapDn.js";
+} from "../../utils/ldapEntryAttributes.js";
+import { escapeLdapFilterValue } from "../../utils/ldapDn.js";
 import {
   AD_USER_SEARCH_ATTRIBUTES,
   AD_GROUP_SEARCH_ATTRIBUTES,
@@ -40,7 +40,7 @@ export {
   normalizeUser,
   normalizeGroup,
 } from "./ldapNormalizer.js";
-export { getAttrValues, getAttrFirst, objectGuidToString } from "../utils/ldapEntryAttributes.js";
+export { getAttrValues, getAttrFirst, objectGuidToString } from "../../utils/ldapEntryAttributes.js";
 
 const DEFAULT_GENERIC_LDAP_FILTER =
   "(|(objectClass=inetOrgPerson)(objectClass=person)(objectClass=organizationalPerson))";

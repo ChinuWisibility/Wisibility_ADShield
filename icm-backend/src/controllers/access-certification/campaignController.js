@@ -16,9 +16,9 @@ import {
   buildEntitlementProgressMaps,
   enrichReviewerNamesForReviewItems,
   getReviewItemsByCampaign,
-} from "../../services/reviewItemService.js";
+} from "../../services/access-certification/reviewItemService.js";
 import { generateReviewerToken } from "../../services/access-certification/certificationTokenService.js";
-import { buildCertificationAssignmentEmail } from "../../services/emailService.js";
+import { buildCertificationAssignmentEmail } from "../../services/email/appEmailService.js";
 import { enqueueCertificationEmail } from "../../services/email/emailJobService.js";
 import { buildReviewerAssignmentMap, buildReviewerEmailTokens, loadScopeRowsForCampaign } from "../../services/access-certification/certificationScopeService.js";
 import { ingestRevokeAccessFromCampaign } from "../../services/remediation/remediationQueueIngestionService.js";
@@ -34,7 +34,7 @@ import { getDynamicEntitlementModelForTenantId } from "../../models/application/
 import { tokenizeAndNormalize } from "../../utils/accessMemberOfTokens.js";
 import { resolveMappedUserModel } from "../../utils/access-certification/mappedUserResolver.js";
 import { pickFromRawData } from "../../utils/access-certification/certificationUserDisplay.js";
-import { applicationIdInClause } from "../../services/applicationUserIngestService.js";
+import { applicationIdInClause } from "../../services/application/applicationUserIngestService.js";
 import { getAppCorrelationCollectionName } from "../../utils/applicationDynamicCollections.js";
 import { extractEntitlementTokensFromAppUser } from "../../utils/sod/sodAppUserEntitlements.js";
 

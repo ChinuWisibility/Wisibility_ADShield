@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import MFAConfiguration from '../models/platform/MFAConfiguration.js';
-import User from '../models/platform/User.js';
-import { AppError } from '../middleware/errorHandler.js';
+import MFAConfiguration from '../../models/platform/MFAConfiguration.js';
+import User from '../../models/platform/User.js';
+import { AppError } from '../../middleware/errorHandler.js';
 
 function generateSecret() {
   return crypto.randomBytes(20).toString('hex');

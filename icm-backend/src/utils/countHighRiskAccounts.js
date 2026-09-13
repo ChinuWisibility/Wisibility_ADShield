@@ -3,7 +3,7 @@ import { extractEntitlementTokensFromAppUser } from "./sod/sodAppUserEntitlement
 import { getAppCorrelationCollectionName } from "./applicationDynamicCollections.js";
 import { getIdentityEntitlementModelForTenantId } from "../models/identityEntitlementModel.js";
 import { matchPrivilegedForApplication } from "./privilegeMatchFilter.js";
-import { applicationIdInClause } from "../services/applicationUserIngestService.js";
+import { applicationIdInClause } from "../services/application/applicationUserIngestService.js";
 import SodUserEntitlement from "../models/sod/SodUserEntitlement.js";
 
 function normalizeToken(value) {

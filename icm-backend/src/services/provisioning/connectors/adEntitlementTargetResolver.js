@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { getDynamicEntitlementModelForTenantId } from "../../../models/application/Entitlements.js";
-import { normalizeDn } from "../../ldapNormalizer.js";
+import { normalizeDn } from "../../ad/ldapNormalizer.js";
 
 const text = (value) =>
   value === undefined || value === null ? "" : String(value).trim();

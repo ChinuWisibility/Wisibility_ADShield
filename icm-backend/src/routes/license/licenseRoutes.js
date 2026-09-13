@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
 import {
   getLicenseStatus,
   licenseUploadMiddleware,
   reloadLicense,
   uploadLicense,
-} from "../controllers/licenseController.js";
+} from "../../controllers/license/licenseController.js";
 
 const router = Router();
 

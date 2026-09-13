@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-import User from '../models/platform/User.js';
-import { AppError } from '../middleware/errorHandler.js';
-import { runCorrelationEngine } from '../services/correlationEngineService.js';
-import { recomputeTenantCorrelationStats } from '../services/tenantCorrelationStatsService.js';
-import { scheduleDataHygieneSummaryRecompute } from '../services/datahygine/dataHygieneSummaryCacheService.js';
+import User from '../../models/platform/User.js';
+import { AppError } from '../../middleware/errorHandler.js';
+import { runCorrelationEngine } from '../../services/discovery/correlationEngineService.js';
+import { recomputeTenantCorrelationStats } from '../../services/tenant/tenantCorrelationStatsService.js';
+import { scheduleDataHygieneSummaryRecompute } from '../../services/datahygine/dataHygieneSummaryCacheService.js';
 
 async function resolveTenantId(req) {
   const user = await User.findById(req.user.id).select('tenantId role').lean();
@@ -36,7 +36,7 @@ export async function runCorrelation(req, res, next) {
     });
     scheduleDataHygieneSummaryRecompute(tenantId);
     if (applicationId) {
-      void import("../services/datahygine/hygieneRollupService.js").then((mod) =>
+      void import("../../services/datahygine/hygieneRollupService.js").then((mod) =>
         mod.emitHygieneDirty({
           tenantId,
           applicationId,
@@ -44,12 +44,12 @@ export async function runCorrelation(req, res, next) {
           reason: "identity_cube_correlation",
         }),
       );
-      void import("../services/datahygine/applicationManagerMismatchSidecar.js").then((mod) => {
+      void import("../../services/datahygine/applicationManagerMismatchSidecar.js").then((mod) => {
         mod.scheduleManagerMismatchSidecarRebuild(applicationId, tenantId, {
           skipDirtyEmit: true,
         });
       });
-      void import("../services/datahygine/applicationStatusMismatchSidecar.js").then((mod) => {
+      void import("../../services/datahygine/applicationStatusMismatchSidecar.js").then((mod) => {
         mod.scheduleStatusMismatchSidecarRebuild(applicationId, tenantId, {
           skipDirtyEmit: true,
         });

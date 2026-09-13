@@ -3,7 +3,7 @@
  */
 import {
   buildProjectionRow,
-} from "../identityEntitlementSyncService.js";
+} from "../identity/identityEntitlementSyncService.js";
 import mongoose from "mongoose";
 
 describe("identityEntitlementSyncService helpers", () => {

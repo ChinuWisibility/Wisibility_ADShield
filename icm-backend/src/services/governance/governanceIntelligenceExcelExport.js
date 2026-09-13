@@ -10,7 +10,7 @@ import {
   controlComplianceSummary,
   buildPostureProgressRows,
   riskBandRowsForExport,
-} from "../utils/governanceReportUiPresentation.js";
+} from "../../utils/governanceReportUiPresentation.js";
 
 function styleHeaderRow(row) {
   row.font = { bold: true };

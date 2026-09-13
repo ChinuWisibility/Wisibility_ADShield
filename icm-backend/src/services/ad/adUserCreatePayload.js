@@ -3,7 +3,7 @@
  * No Mongo, LDAP, or workflow side effects.
  */
 
-import { buildCnDn } from "../utils/ldapDn.js";
+import { buildCnDn } from "../../utils/ldapDn.js";
 
 /** NORMAL_ACCOUNT (512) + ACCOUNTDISABLE (2) — usable create without unicodePwd. */
 export const AD_UAC_DISABLED_NORMAL = 514;

@@ -1,4 +1,4 @@
-import * as mfaService from '../services/mfaService.js';
+import * as mfaService from '../../services/auth/mfaService.js';
 
 export async function getMfaStatus(req, res, next) {
   try {

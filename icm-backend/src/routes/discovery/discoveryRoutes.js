@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import * as discovery from '../controllers/discoveryController.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import * as discovery from '../../controllers/discovery/discoveryController.js';
 
 const router = Router();
 

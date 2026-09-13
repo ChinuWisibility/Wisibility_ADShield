@@ -17,7 +17,7 @@ import {
   resolveTenantSlugFromTenantId,
   toTenantObjectId,
 } from "../src/utils/applicationDynamicCollections.js";
-import { applicationIdInClause } from "../src/services/applicationUserIngestService.js";
+import { applicationIdInClause } from "../src/services/application/applicationUserIngestService.js";
 import { runReconciliation } from "../src/services/reconciliation/reconciliationOrchestrator.js";
 import { clearReconciliationIndexCache } from "../src/utils/reconciliationCollections.js";
 

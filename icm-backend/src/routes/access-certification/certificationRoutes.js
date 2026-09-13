@@ -53,7 +53,7 @@ import {
   postReviewBulkDecision,
   postEntitlementDecision,
   postBulkEntitlementDecision,
-} from "../../controllers/reviewPortalController.js";
+} from "../../controllers/access-certification/reviewPortalController.js";
 import {
   pauseSchedule,
   resumeSchedule,

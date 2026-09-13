@@ -1,24 +1,24 @@
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
+import Application from "../../models/application/Application.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
 import {
   getAppEntitlementsCollectionName,
   getAppUsersCollectionName,
   resolveTenantSlugFromTenantId,
-} from "../utils/applicationDynamicCollections.js";
+} from "../../utils/applicationDynamicCollections.js";
 import {
   appNameToCorrelationSlug,
   clearApplicationAccountEntitlementCorrelation,
   correlationStatsCollectionName,
   rebuildCorrelationEntitlementStats,
   runAccountEntitlementCorrelation,
-} from "../utils/accountEntitlementCorrelation.js";
-import { scheduleSyncAllForApplication } from "../utils/identityEntitlementSyncTrigger.js";
+} from "../../utils/accountEntitlementCorrelation.js";
+import { scheduleSyncAllForApplication } from "../../utils/identityEntitlementSyncTrigger.js";
 import {
   isAdAutoAccountEntitlementCorrelationApp,
   rebuildAdConnectorAccountEntitlementCorrelation,
-} from "../services/adConnectorCorrelationService.js";
-import { runAppManagerCorrelation } from "../utils/appManagerCorrelation.js";
+} from "../../services/ad/adConnectorCorrelationService.js";
+import { runAppManagerCorrelation } from "../../utils/appManagerCorrelation.js";
 import {
   MANAGER_CORR_FACET_CACHE_MS,
   alternateKeysForUserField,
@@ -29,12 +29,12 @@ import {
   projectStageNarrowForManagerCoalesce,
   stagesEffectiveManagerFields,
   withManagerFacetCache,
-} from "../utils/managerCorrelationQuery.js";
+} from "../../utils/managerCorrelationQuery.js";
 import {
   createManagerCorrelationJob,
   patchManagerCorrelationJob,
   getManagerCorrelationJobForApplication,
-} from "../services/managerCorrelationJobStore.js";
+} from "../../services/identity/managerCorrelationJobStore.js";
 
 /**
  * @param {unknown} id

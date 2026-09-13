@@ -7,7 +7,7 @@ import { loadScopeRowsForCampaign } from "../../services/access-certification/ce
 import { resolveUserName } from "../../utils/access-certification/certificationUserDisplay.js";
 import { resolveMappedUserModel } from "../../utils/access-certification/mappedUserResolver.js";
 import { resolveCertificationAccessTenantId } from "../../utils/access-certification/resolveCertificationAccessTenantId.js";
-import { getTenantConfigByTenantId } from "../../services/tenantService.js";
+import { getTenantConfigByTenantId } from "../../services/tenant/tenantService.js";
 import {
   ISO_REPORT_ACCESS_SCOPED_CATEGORIES,
   ISO_REPORT_CAMPAIGN_SELECT_FIELDS,

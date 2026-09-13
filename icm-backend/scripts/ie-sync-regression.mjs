@@ -48,7 +48,7 @@ const {
   syncAllForApplication,
   syncForIdentity,
   syncForIdentities,
-} = await import("../src/services/identityEntitlementSyncService.js");
+} = await import("../src/services/identity/identityEntitlementSyncService.js");
 
 const report = {
   measuredAt: new Date().toISOString(),

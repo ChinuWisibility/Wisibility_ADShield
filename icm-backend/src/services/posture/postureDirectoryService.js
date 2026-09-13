@@ -2,8 +2,8 @@ import {
   fetchAdComputerLdapEntries,
   fetchAdUserLdapEntries,
   normalizeAdConfig,
-} from "../adLdapService.js";
-import { normalizeComputer } from "../ldapNormalizer.js";
+} from "../ad/adLdapService.js";
+import { normalizeComputer } from "../ad/ldapNormalizer.js";
 import { getAttrValues } from "../../utils/ldapEntryAttributes.js";
 import { toPostureUserFromEntry } from "./userAccountSecurity.js";
 

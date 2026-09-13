@@ -1,4 +1,4 @@
-import * as templateService from '../services/notificationTemplateService.js';
+import * as templateService from '../../services/system/notificationTemplateService.js';
 
 export async function listTemplates(req, res, next) {
   try {

@@ -4,7 +4,7 @@
  * AD connectors use direct group-DN FK matching via rawData.ad_memberOf_dns (no display-name token matching).
  */
 
-import { normalizeDn } from "../services/ldapNormalizer.js";
+import { normalizeDn } from "../services/ad/ldapNormalizer.js";
 import {
   getAppEntitlementsCollectionName,
   getAppUsersCollectionName,

@@ -10,7 +10,7 @@ import { resolveTenantSlugFromTenantId } from "../../utils/applicationDynamicCol
 import {
   applicationIdInClause,
   normalizePrimaryKeyValue,
-} from "../applicationUserIngestService.js";
+} from "../application/applicationUserIngestService.js";
 
 function stableStringify(value) {
   if (value == null) return null;

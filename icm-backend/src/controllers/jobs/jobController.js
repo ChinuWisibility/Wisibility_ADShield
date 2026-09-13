@@ -1,5 +1,5 @@
-import SchedulerJob from '../models/scheduler/SchedulerJob.js';
-import DistributedLock from '../models/scheduler/DistributedLock.js';
+import SchedulerJob from '../../models/scheduler/SchedulerJob.js';
+import DistributedLock from '../../models/scheduler/DistributedLock.js';
 
 // ─── List Jobs ────────────────────────────────────────────────────────────────
 export async function listJobs(req, res) {

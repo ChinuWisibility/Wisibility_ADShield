@@ -1,6 +1,6 @@
-import UserSession from "../models/platform/UserSession.js";
-import { AppError } from "../middleware/errorHandler.js";
-import User from "../models/platform/User.js";
+import UserSession from "../../models/platform/UserSession.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import User from "../../models/platform/User.js";
 
 function isPlatformPlaneActor(actor) {
   return (

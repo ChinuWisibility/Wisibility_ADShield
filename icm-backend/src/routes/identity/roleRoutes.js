@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import Role from '../models/access/Role.js';
-import RoleEntitlement from '../models/access/RoleEntitlement.js';
-import { createCrudController } from '../utils/crudFactory.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import Role from '../../models/access/Role.js';
+import RoleEntitlement from '../../models/access/RoleEntitlement.js';
+import { createCrudController } from '../../utils/crudFactory.js';
 
 const router = Router();
 const ctrl = createCrudController(Role, { searchFields: ['name', 'displayName', 'description'] });

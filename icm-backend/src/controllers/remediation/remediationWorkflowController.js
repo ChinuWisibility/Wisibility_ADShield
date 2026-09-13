@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import env from "../config/env.js";
-import { AppError } from "../middleware/errorHandler.js";
+import env from "../../config/env.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   getWorkflows,
   getGlobalWorkflowTemplates,
@@ -14,44 +14,44 @@ import {
   deleteWorkflow,
   toApiWorkflow,
   workflowNameExists,
-} from "../workflows/persistence/workflowStore.js";
-import { listRuns, getRunById } from "../workflows/persistence/runStore.js";
-import RemediationWorkflowRun from "../models/workflow/RemediationWorkflowRun.js";
+} from "../../workflows/persistence/workflowStore.js";
+import { listRuns, getRunById } from "../../workflows/persistence/runStore.js";
+import RemediationWorkflowRun from "../../models/workflow/RemediationWorkflowRun.js";
 import {
   buildIamOrphanProgressTrace,
-} from "../services/workflow/orphanIamProgressTrace.js";
+} from "../../services/workflow/orphanIamProgressTrace.js";
 import {
   listNodeExecutionsByExecutionId,
   listNodeExecutionsByRunId,
   nodeExecutionsToTimelineSteps,
-} from "../workflows/persistence/nodeExecutionStore.js";
-import { formatWorkflowExecution } from "../workflows/engine/executionFormat.js";
-import RemediationWorkflowDefinition from "../models/workflow/RemediationWorkflowDefinition.js";
-import RemediationWorkflowExecution from "../models/workflow/RemediationWorkflowExecution.js";
-import TaskExecution from "../models/compliance/TaskExecution.js";
-import { validateWorkflow, getStepCatalog } from "../workflows/workflow/validator.js";
-import { repairWorkflowDefinition } from "../workflows/workflow/repairDefinition.js";
-import { STEP_CONFIG_CATALOG_EXPORT } from "../workflows/workflow/stepConfigExport.js";
-import { executeWorkflow } from "../workflows/engine/executor.js";
-import { formatTestRunResult } from "../workflows/engine/testRunFormat.js";
+} from "../../workflows/persistence/nodeExecutionStore.js";
+import { formatWorkflowExecution } from "../../workflows/engine/executionFormat.js";
+import RemediationWorkflowDefinition from "../../models/workflow/RemediationWorkflowDefinition.js";
+import RemediationWorkflowExecution from "../../models/workflow/RemediationWorkflowExecution.js";
+import TaskExecution from "../../models/compliance/TaskExecution.js";
+import { validateWorkflow, getStepCatalog } from "../../workflows/workflow/validator.js";
+import { repairWorkflowDefinition } from "../../workflows/workflow/repairDefinition.js";
+import { STEP_CONFIG_CATALOG_EXPORT } from "../../workflows/workflow/stepConfigExport.js";
+import { executeWorkflow } from "../../workflows/engine/executor.js";
+import { formatTestRunResult } from "../../workflows/engine/testRunFormat.js";
 import {
   getTriggerTemplate,
   getSampleTriggerScenarios,
   getEmptyTriggerTemplate,
   getOrphanIamTriggerTemplate,
   getOrphanIamSampleScenarios,
-} from "../workflows/engine/sampleTriggers.js";
-import { createDemoAdapter } from "../workflows/adapters/demoAdapter.js";
-import { buildWorkflowTenantReadFilter } from "../workflows/persistence/workflowTenantScope.js";
-import { recordOrphanIamDecisionAndResume } from "../services/workflow/orphanIamWorkflowService.js";
-import { manualEnqueueOrphanAccount } from "../services/workflowRemediation/workflowRemediationManualEnqueueService.js";
+} from "../../workflows/engine/sampleTriggers.js";
+import { createDemoAdapter } from "../../workflows/adapters/demoAdapter.js";
+import { buildWorkflowTenantReadFilter } from "../../workflows/persistence/workflowTenantScope.js";
+import { recordOrphanIamDecisionAndResume } from "../../services/workflow/orphanIamWorkflowService.js";
+import { manualEnqueueOrphanAccount } from "../../services/workflowRemediation/workflowRemediationManualEnqueueService.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TEMPLATE_PATH = path.join(__dirname, "../workflows/templates/cert-revoke-flow.json");
-const IAM_ORPHAN_TEMPLATE_PATH = path.join(__dirname, "../workflows/templates/iam-orphan-review-flow.json");
+const TEMPLATE_PATH = path.join(__dirname, "../../workflows/templates/cert-revoke-flow.json");
+const IAM_ORPHAN_TEMPLATE_PATH = path.join(__dirname, "../../workflows/templates/iam-orphan-review-flow.json");
 const ACCESS_REVOKE_DUAL_NOTIFY_PATH = path.join(
   __dirname,
-  "../workflows/templates/access-revoke-dual-notify-flow.json",
+  "../../workflows/templates/access-revoke-dual-notify-flow.json",
 );
 
 function readTemplate() {
@@ -527,10 +527,9 @@ export async function triggerIAMOrphanWorkflow(req, res, next) {
   try {
     let { workflowId } = req.body || {};
     if (!workflowId) {
-      const { resolveWorkflowForAction } = await import(
-        "../services/workflowTaskQueue/remediationWorkflowRuleService.js"
+      const { resolveWorkflowForAction } = await import("../../services/workflowTaskQueue/remediationWorkflowRuleService.js"
       );
-      const { WORKFLOW_TASK_ACTIONS } = await import("../constants/workflowTaskQueue.js");
+      const { WORKFLOW_TASK_ACTIONS } = await import("../../constants/workflowTaskQueue.js");
       const mapping = await resolveWorkflowForAction(
         req.scopedTenantId,
         WORKFLOW_TASK_ACTIONS.IAM_ORPHAN_REVIEW,

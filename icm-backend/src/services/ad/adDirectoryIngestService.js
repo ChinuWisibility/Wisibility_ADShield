@@ -3,7 +3,7 @@ import {
   buildAdEntitlementRows,
   ensureDefaultAdEntitlementMappings,
   replaceApplicationEntitlementsFromRows,
-} from "./applicationEntitlementIngestService.js";
+} from "../application/applicationEntitlementIngestService.js";
 
 /**
  * AD security group → dynamic entitlement document.
@@ -89,7 +89,7 @@ export function enrichUserDocsWithMembership(userDocs, userToGroups, groupDnToNa
 
 /**
  * Replace application entitlements with AD group catalog using the shared mapped-row ingestion path.
- * @param {import('../models/application/Application.js').default} application
+ * @param {import('../../models/application/Application.js').default} application
  * @param {object[]} groups
  */
 export async function ingestAdEntitlements(application, groups, options = {}) {

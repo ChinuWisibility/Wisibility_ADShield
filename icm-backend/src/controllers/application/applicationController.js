@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import { normalizeSecurityScanSettingsInput } from "../services/posture/postureFeatureSettings.js";
-import { ensureDelimitedHrmsStubApplicationsOnce } from "../utils/ensureDelimitedHrmsStubs.js";
-import User from "../models/platform/User.js";
+import Application from "../../models/application/Application.js";
+import { normalizeSecurityScanSettingsInput } from "../../services/posture/postureFeatureSettings.js";
+import { ensureDelimitedHrmsStubApplicationsOnce } from "../../utils/ensureDelimitedHrmsStubs.js";
+import User from "../../models/platform/User.js";
 import csv from "csv-parser";
 import streamifier from "streamifier";
-import { getDynamicUserModel, getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { getDynamicEntitlementModel, getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
+import { getDynamicUserModel, getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { getDynamicEntitlementModel, getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
 import {
   getDeletionImpactSummary,
   executeScopedApplicationDeletion,
-} from "../services/applicationDeletionService.js";
+} from "../../services/application/applicationDeletionService.js";
 import {
   buildUserDocsFromMappedRowsWithStats,
-} from "../services/delimitedApplicationUserSync.js";
-import { ingestApplicationUsersWithReconciliation } from "../services/reconciliation/ingestWithReconciliation.js";
-import { runCsvMappedReconciliation } from "../services/reconciliation/strategies/index.js";
-import { runCsvImportEngine } from "../services/csvImport/csvImportEngine.js";
-import { replaceApplicationEntitlementsFromRows } from "../services/applicationEntitlementIngestService.js";
+} from "../../services/application/delimitedApplicationUserSync.js";
+import { ingestApplicationUsersWithReconciliation } from "../../services/reconciliation/ingestWithReconciliation.js";
+import { runCsvMappedReconciliation } from "../../services/reconciliation/strategies/index.js";
+import { runCsvImportEngine } from "../../services/csvImport/csvImportEngine.js";
+import { replaceApplicationEntitlementsFromRows } from "../../services/application/applicationEntitlementIngestService.js";
 import {
   validateUserMappings,
   validateEntitlementMappings,
@@ -27,46 +27,46 @@ import {
   validateEntitlementCsvHeadersAgainstSchema,
   buildUserMappingsFromDetectedHeaders,
   ensureUserMappingsFromCompleteSchema,
-} from "../utils/applicationMappingValidation.js";
+} from "../../utils/applicationMappingValidation.js";
 import {
   buildAccountStatusFilterClause,
   countApplicationUserStatuses,
-} from "../services/applicationUserStatusCountsService.js";
+} from "../../services/application/applicationUserStatusCountsService.js";
 import {
   parseIsPrivilegedQuery,
   buildPrivilegeOrClause,
   buildPrivilegeLevelClause,
   matchPrivilegedForApplication,
   mergeFilterAnd,
-} from "../utils/privilegeMatchFilter.js";
-import SodPolicy from "../models/sod/SodPolicy.js";
-import SodViolation from "../models/sod/SodViolation.js";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import Identity from "../models/identity/Identity.js";
-import OrphanAccount from "../models/identity/OrphanAccount.js";
-import ApplicationUserDuplicate from "../models/application/ApplicationUserDuplicate.js";
-import DiscoveryResult from "../models/discovery/DiscoveryResult.js";
-import { applicationIdInClause } from "../services/applicationUserIngestService.js";
-import { countStaleApplicationUsers } from "../utils/applicationViewStaleAccounts.js";
-import { countHighRiskAccountsForApplication } from "../utils/countHighRiskAccounts.js";
-import { getAppCorrelationCollectionName } from "../utils/applicationDynamicCollections.js";
-import { extractEntitlementTokensFromAppUser } from "../utils/sod/sodAppUserEntitlements.js";
-import { isDerivedAdApplication } from "../services/adDerivedApplicationService.js";
+} from "../../utils/privilegeMatchFilter.js";
+import SodPolicy from "../../models/sod/SodPolicy.js";
+import SodViolation from "../../models/sod/SodViolation.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import Identity from "../../models/identity/Identity.js";
+import OrphanAccount from "../../models/identity/OrphanAccount.js";
+import ApplicationUserDuplicate from "../../models/application/ApplicationUserDuplicate.js";
+import DiscoveryResult from "../../models/discovery/DiscoveryResult.js";
+import { applicationIdInClause } from "../../services/application/applicationUserIngestService.js";
+import { countStaleApplicationUsers } from "../../utils/applicationViewStaleAccounts.js";
+import { countHighRiskAccountsForApplication } from "../../utils/countHighRiskAccounts.js";
+import { getAppCorrelationCollectionName } from "../../utils/applicationDynamicCollections.js";
+import { extractEntitlementTokensFromAppUser } from "../../utils/sod/sodAppUserEntitlements.js";
+import { isDerivedAdApplication } from "../../services/ad/adDerivedApplicationService.js";
 import {
   resolveApplicationIconAssignment,
   applyAuthoritativeDefaultIcon,
   ensureApplicationAuthoritativeIcon,
   ensureAuthoritativeIconsForApplications,
   ensureBuiltinPackIconsForApplications,
-} from "../services/application/applicationIconService.js";
+} from "../../services/application/applicationIconService.js";
 import Papa from "papaparse";
-import { DEFAULT_MAX_CSV_ROWS } from "../utils/csvUploadPerformance.js";
-import Tenant from "../models/platform/Tenant.js";
+import { DEFAULT_MAX_CSV_ROWS } from "../../utils/csvUploadPerformance.js";
+import Tenant from "../../models/platform/Tenant.js";
 import {
   getAppSchemaCollectionName,
   resolveTenantSlugFromTenantId,
   slugIgaSegment,
-} from "../utils/applicationDynamicCollections.js";
+} from "../../utils/applicationDynamicCollections.js";
 
 /**
  * One flattened document: `primaryKey` + each `standardField` → mapped CSV header string.
@@ -2034,7 +2034,7 @@ export const getModelFields = async (req, res) => {
     if (type === "entitlements") {
       Model = getDynamicEntitlementModel("schema_reader");
     } else if (type === "identities") {
-      const Identity = await import("../models/identity/Identity.js");
+      const Identity = await import("../../models/identity/Identity.js");
       Model = { schema: Identity.identitySchema };
     } else {
       Model = getDynamicUserModel("schema_reader");

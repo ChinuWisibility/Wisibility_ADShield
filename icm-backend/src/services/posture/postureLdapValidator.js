@@ -1,5 +1,5 @@
-import { normalizeAdConfig, createLdapClient } from "../adLdapService.js";
-import { DEFAULT_USER_FILTER } from "../ldapNormalizer.js";
+import { normalizeAdConfig, createLdapClient } from "../ad/adLdapService.js";
+import { DEFAULT_USER_FILTER } from "../ad/ldapNormalizer.js";
 import { LDAP_SEARCH_SCOPE_SUBTREE } from "../../utils/ldapEntryAttributes.js";
 
 /**

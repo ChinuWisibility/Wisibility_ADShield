@@ -1,4 +1,4 @@
-import { sendEmail } from "../emailService.js";
+import { sendEmail } from "../email/appEmailService.js";
 
 function formatDate(value) {
   if (!value) return "—";

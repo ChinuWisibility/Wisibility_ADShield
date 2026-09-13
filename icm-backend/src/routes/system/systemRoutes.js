@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import { collectDiagnostics } from "../services/system/diagnosticsService.js";
-import { getProductAbout } from "../services/system/productAboutService.js";
-import { isLicenseRequiredMode, isProductLicensed } from "../licensing/licenseRuntime.js";
-import { getMaintenanceState } from "../services/system/platformSettingsService.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import { collectDiagnostics } from "../../services/system/diagnosticsService.js";
+import { getProductAbout } from "../../services/system/productAboutService.js";
+import { isLicenseRequiredMode, isProductLicensed } from "../../licensing/licenseRuntime.js";
+import { getMaintenanceState } from "../../services/system/platformSettingsService.js";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import * as templateCtrl from '../controllers/notificationTemplateController.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import * as templateCtrl from '../../controllers/notification/notificationTemplateController.js';
 
 const router = Router();
 

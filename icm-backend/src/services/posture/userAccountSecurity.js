@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
-import { classifyAccountStatusRaw } from "../applicationUserStatusCountsService.js";
+import { classifyAccountStatusRaw } from "../application/applicationUserStatusCountsService.js";
 import {
   fetchAdUserLdapEntries,
   mapAdEntryToUserDoc,
   normalizeAdConfig,
-} from "../adLdapService.js";
-import { normalizeUser } from "../ldapNormalizer.js";
+} from "../ad/adLdapService.js";
+import { normalizeUser } from "../ad/ldapNormalizer.js";
 import { getAttrFirst, getAttrValues } from "../../utils/ldapEntryAttributes.js";
 import {
   buildUserRiskFinding,

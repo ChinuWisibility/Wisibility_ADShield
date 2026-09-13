@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import ProvisioningRequest from '../models/provisioning/ProvisioningRequest.js';
-import ProvisioningPlan from '../models/provisioning/ProvisioningPlan.js';
-import ProvisioningTask from '../models/provisioning/ProvisioningTask.js';
-import ProvisioningResult from '../models/provisioning/ProvisioningResult.js';
-import DeprovisioningRecord from '../models/provisioning/DeprovisioningRecord.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import ProvisioningRequest from '../../models/provisioning/ProvisioningRequest.js';
+import ProvisioningPlan from '../../models/provisioning/ProvisioningPlan.js';
+import ProvisioningTask from '../../models/provisioning/ProvisioningTask.js';
+import ProvisioningResult from '../../models/provisioning/ProvisioningResult.js';
+import DeprovisioningRecord from '../../models/provisioning/DeprovisioningRecord.js';
 import {
   listRules,
   createRule,
@@ -17,11 +17,11 @@ import {
   runProvisioningTask,
   retryProvisioningTask,
   listRecentJoinerCandidates,
-} from '../controllers/provisioning/joinerProvisioningController.js';
+} from '../../controllers/provisioning/joinerProvisioningController.js';
 import {
   listLifecycleRequests,
   listRecentLifecycleEvents,
-} from '../controllers/provisioning/provisioningOverviewController.js';
+} from '../../controllers/provisioning/provisioningOverviewController.js';
 
 const router = Router();
 

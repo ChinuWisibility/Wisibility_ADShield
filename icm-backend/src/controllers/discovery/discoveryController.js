@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
-import DiscoveryPolicy from "../models/discovery/DiscoveryPolicy.js";
-import DiscoveryResult from "../models/discovery/DiscoveryResult.js";
-import Entitlement from "../models/access/Entitlement.js";
-import Account from "../models/access/Account.js";
-import { getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import Application from "../models/application/Application.js";
+import DiscoveryPolicy from "../../models/discovery/DiscoveryPolicy.js";
+import DiscoveryResult from "../../models/discovery/DiscoveryResult.js";
+import Entitlement from "../../models/access/Entitlement.js";
+import Account from "../../models/access/Account.js";
+import { getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import Application from "../../models/application/Application.js";
 import {
   runDiscoveryPolicy,
   runAllDiscoveryPolicies,
   nextDiscoveryPolicyId,
-} from "../services/discoveryEvaluationService.js";
-import { getAvailableFields } from "../services/discoveryFieldService.js";
-import { AppError } from "../middleware/errorHandler.js";
+} from "../../services/discovery/discoveryEvaluationService.js";
+import { getAvailableFields } from "../../services/discovery/discoveryFieldService.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 /* ── Tenant scoping helper ─────────────────────────────────────────── */
 

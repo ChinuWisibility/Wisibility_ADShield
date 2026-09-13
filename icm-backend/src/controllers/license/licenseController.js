@@ -1,16 +1,16 @@
 import fs from "fs/promises";
 import path from "path";
 import multer from "multer";
-import env from "../config/env.js";
-import { ensureDirSync } from "../config/productPaths.js";
+import env from "../../config/env.js";
+import { ensureDirSync } from "../../config/productPaths.js";
 import {
   getLicenseManager,
   isLicenseRequiredMode,
   isProductLicensed,
   setLicenseRequiredMode,
-} from "../licensing/licenseRuntime.js";
-import { LicenseException } from "../licensing/exceptions/index.js";
-import { AppError } from "../middleware/errorHandler.js";
+} from "../../licensing/licenseRuntime.js";
+import { LicenseException } from "../../licensing/exceptions/index.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),

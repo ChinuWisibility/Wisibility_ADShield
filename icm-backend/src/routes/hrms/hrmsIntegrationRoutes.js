@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { csvFileFilter } from '../utils/uploadFilters.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { csvFileFilter } from '../../utils/uploadFilters.js';
 import {
   getHrmsConfig,
   putHrmsConfig,
@@ -15,7 +15,7 @@ import {
   deleteHrmsSource,
   uploadHrmsDelimitedCsv,
   getHrmsDelimitedSchema,
-} from '../controllers/hrmsIntegrationController.js';
+} from '../../controllers/hrms/hrmsIntegrationController.js';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate, authorize, ROLES } from "../middleware/auth.js";
-import * as wr from "../controllers/workflowRemediationController.js";
+import { authenticate, authorize, ROLES } from "../../middleware/auth.js";
+import * as wr from "../../controllers/workflowRemediation/workflowRemediationController.js";
 
 const router = Router();
 

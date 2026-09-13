@@ -1,5 +1,5 @@
-import Audit from "../models/platform/Audit.js";
-import { AppError } from "../middleware/errorHandler.js";
+import Audit from "../../models/platform/Audit.js";
+import { AppError } from "../../middleware/errorHandler.js";
 
 function isPlatformPlaneActor(actor) {
   return (

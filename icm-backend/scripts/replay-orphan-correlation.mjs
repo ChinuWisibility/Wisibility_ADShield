@@ -25,7 +25,7 @@ import { connectDB } from "../src/config/database.js";
 import Application from "../src/models/application/Application.js";
 import OrphanAccount from "../src/models/identity/OrphanAccount.js";
 import { runCorrelationForApp } from "../src/controllers/correlation/correlationController.js";
-import { recomputeTenantCorrelationStats } from "../src/services/tenantCorrelationStatsService.js";
+import { recomputeTenantCorrelationStats } from "../src/services/tenant/tenantCorrelationStatsService.js";
 
 dotenv.config();
 

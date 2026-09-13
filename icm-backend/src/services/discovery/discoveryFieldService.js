@@ -1,6 +1,6 @@
-import Application from '../models/application/Application.js';
-import { getDynamicUserModelForTenantId } from '../models/application/Users.js';
-import { getDynamicEntitlementModelForTenantId } from '../models/application/Entitlements.js';
+import Application from '../../models/application/Application.js';
+import { getDynamicUserModelForTenantId } from '../../models/application/Users.js';
+import { getDynamicEntitlementModelForTenantId } from '../../models/application/Entitlements.js';
 
 /**
  * Discover available fields for a given application + entity type.

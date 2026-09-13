@@ -1,5 +1,5 @@
-import { normalizePrimaryKeyValue } from "../applicationUserIngestService.js";
-import { classifyAccountStatusRaw } from "../applicationUserStatusCountsService.js";
+import { normalizePrimaryKeyValue } from "../application/applicationUserIngestService.js";
+import { classifyAccountStatusRaw } from "../application/applicationUserStatusCountsService.js";
 
 const ENTITLEMENT_FIELD_HINTS = [
   "entitlement",

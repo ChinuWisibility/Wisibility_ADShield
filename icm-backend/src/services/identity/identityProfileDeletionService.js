@@ -2,20 +2,20 @@ import mongoose from "mongoose";
 import {
   getDynamicIdentityModelForTenantId,
   getLegacyIdentityModel,
-} from "../models/identity/Identity.js";
-import IdentityProfile from "../models/identity/IdentityProfile.js";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import CorrelationResult from "../models/correlation/CorrelationResult.js";
-import RoleAssignment from "../models/access/RoleAssignment.js";
-import EntitlementHygieneFinding from "../models/dataHygiene/EntitlementHygieneFinding.js";
-import ManagerHierarchy from "../models/identity/ManagerHierarchy.js";
-import LifecycleEvent from "../models/identity/LifecycleEvent.js";
-import IdentitySnapshot from "../models/identity/IdentitySnapshot.js";
-import AccessRecommendation from "../models/accessIntelligence/AccessRecommendation.js";
-import AccessOutlier from "../models/accessIntelligence/AccessOutlier.js";
-import RiskTrendSnapshot from "../models/accessIntelligence/RiskTrendSnapshot.js";
+} from "../../models/identity/Identity.js";
+import IdentityProfile from "../../models/identity/IdentityProfile.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import CorrelationResult from "../../models/correlation/CorrelationResult.js";
+import RoleAssignment from "../../models/access/RoleAssignment.js";
+import EntitlementHygieneFinding from "../../models/dataHygiene/EntitlementHygieneFinding.js";
+import ManagerHierarchy from "../../models/identity/ManagerHierarchy.js";
+import LifecycleEvent from "../../models/identity/LifecycleEvent.js";
+import IdentitySnapshot from "../../models/identity/IdentitySnapshot.js";
+import AccessRecommendation from "../../models/accessIntelligence/AccessRecommendation.js";
+import AccessOutlier from "../../models/accessIntelligence/AccessOutlier.js";
+import RiskTrendSnapshot from "../../models/accessIntelligence/RiskTrendSnapshot.js";
 import { recomputeIdentityTenantStats, toTenantObjectId } from "./identityTenantStatsService.js";
-import { resolveTenantIdForLock } from "./tenantMaterializationLockService.js";
+import { resolveTenantIdForLock } from "../tenant/tenantMaterializationLockService.js";
 
 function profileOid(profileId) {
   if (!mongoose.Types.ObjectId.isValid(String(profileId))) return null;

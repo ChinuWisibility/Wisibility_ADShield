@@ -1,4 +1,4 @@
-import { safeErrorString } from '../utils/safeString.js';
+import { safeErrorString } from '../../utils/safeString.js';
 
 /**
  * Shared JSON parse for OrangeHRM token responses (errors may be objects).

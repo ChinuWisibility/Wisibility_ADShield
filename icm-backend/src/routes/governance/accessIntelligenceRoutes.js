@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import AccessOutlier from '../models/accessIntelligence/AccessOutlier.js';
-import PeerGroupAnalysis from '../models/accessIntelligence/PeerGroupAnalysis.js';
-import AccessRecommendation from '../models/accessIntelligence/AccessRecommendation.js';
-import RiskTrendSnapshot from '../models/accessIntelligence/RiskTrendSnapshot.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import AccessOutlier from '../../models/accessIntelligence/AccessOutlier.js';
+import PeerGroupAnalysis from '../../models/accessIntelligence/PeerGroupAnalysis.js';
+import AccessRecommendation from '../../models/accessIntelligence/AccessRecommendation.js';
+import RiskTrendSnapshot from '../../models/accessIntelligence/RiskTrendSnapshot.js';
 
 const router = Router();
 const outlierCtrl = createCrudController(AccessOutlier, { searchFields: ['status', 'recommendedAction'] });

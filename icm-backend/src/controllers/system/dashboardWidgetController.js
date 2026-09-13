@@ -1,4 +1,4 @@
-import * as widgetService from '../services/dashboardWidgetService.js';
+import * as widgetService from '../../services/system/dashboardWidgetService.js';
 
 export async function getWidgets(req, res, next) {
   try {

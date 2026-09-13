@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import TenantMaterializationLock from "../models/identity/TenantMaterializationLock.js";
-import { toTenantObjectId } from "./identityTenantStatsService.js";
-import { getScopedTenantId, isPlatformPlaneUser } from "../middleware/auth.js";
+import TenantMaterializationLock from "../../models/identity/TenantMaterializationLock.js";
+import { toTenantObjectId } from "../identity/identityTenantStatsService.js";
+import { getScopedTenantId, isPlatformPlaneUser } from "../../middleware/auth.js";
 
 export const MATERIALIZATION_LOCK_KEY = "IDENTITY_MATERIALIZATION";
 

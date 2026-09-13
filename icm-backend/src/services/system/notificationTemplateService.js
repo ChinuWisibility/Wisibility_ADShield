@@ -1,5 +1,5 @@
-import NotificationTemplate from '../models/platform/NotificationTemplate.js';
-import { AppError } from '../middleware/errorHandler.js';
+import NotificationTemplate from '../../models/platform/NotificationTemplate.js';
+import { AppError } from '../../middleware/errorHandler.js';
 
 const DEFAULT_TEMPLATES = {
   'password-reset': {

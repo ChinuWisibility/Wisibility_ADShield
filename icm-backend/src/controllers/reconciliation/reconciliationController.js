@@ -1,8 +1,8 @@
-import Application from "../models/application/Application.js";
+import Application from "../../models/application/Application.js";
 import {
   resolveTenantSlugFromTenantId,
   getReconciliationModels,
-} from "../utils/applicationDynamicCollections.js";
+} from "../../utils/applicationDynamicCollections.js";
 
 async function loadApplication(req) {
   const application = await Application.findById(req.params.id).lean();

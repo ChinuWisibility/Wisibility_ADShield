@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import EmailConfiguration from '../models/notifications/EmailConfiguration.js';
-import NotificationQueue from '../models/notifications/NotificationQueue.js';
-import NotificationDeliveryLog from '../models/notifications/NotificationDeliveryLog.js';
-import { encryptString } from '../utils/crypto.js';
-import { sendEmail } from '../services/emailService.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import EmailConfiguration from '../../models/notifications/EmailConfiguration.js';
+import NotificationQueue from '../../models/notifications/NotificationQueue.js';
+import NotificationDeliveryLog from '../../models/notifications/NotificationDeliveryLog.js';
+import { encryptString } from '../../utils/crypto.js';
+import { sendEmail } from '../../services/email/appEmailService.js';
 
 const router = Router();
 const ctrl = createCrudController(EmailConfiguration, { searchFields: ['provider', 'fromAddress', 'fromName', 'testStatus'] });

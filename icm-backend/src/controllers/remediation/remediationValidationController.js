@@ -1,5 +1,5 @@
-import { AppError } from "../middleware/errorHandler.js";
-import { listValidations, respondToValidation } from "../services/remediation/remediationValidationService.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { listValidations, respondToValidation } from "../../services/remediation/remediationValidationService.js";
 
 export async function listValidationsHandler(req, res, next) {
   try {

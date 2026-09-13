@@ -4,7 +4,7 @@ import ReviewItem from "../../models/certification/ReviewItem.js";
 import CertificationReviewerAssignment from "../../models/certification/CertificationReviewerAssignment.js";
 import UnifiedAuditEvent from "../../models/compliance/UnifiedAuditEvent.js";
 import CertificationReviewerActionLog from "../../models/certification/CertificationReviewerActionLog.js";
-import { getProgress, buildEntitlementProgressMaps } from "../reviewItemService.js";
+import { getProgress, buildEntitlementProgressMaps } from "./reviewItemService.js";
 import {
   itemIdsMatch,
   resolveCanonicalItemKey,

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import OrphanAccount from "../models/identity/OrphanAccount.js";
-import TenantCorrelationStats from "../models/identity/TenantCorrelationStats.js";
-import Account from "../models/access/Account.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import OrphanAccount from "../../models/identity/OrphanAccount.js";
+import TenantCorrelationStats from "../../models/identity/TenantCorrelationStats.js";
+import Account from "../../models/access/Account.js";
 
 function toOid(tenantId) {
   const s = String(tenantId);

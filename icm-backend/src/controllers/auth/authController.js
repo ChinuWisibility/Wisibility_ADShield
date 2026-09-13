@@ -1,8 +1,8 @@
-import * as authService from "../services/authService.js";
-import { logActivity } from "../services/activityService.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { hashSessionToken } from "../middleware/auth.js";
-import UserSession from "../models/platform/UserSession.js";
+import * as authService from "../../services/auth/authService.js";
+import { logActivity } from "../../services/system/activityService.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { hashSessionToken } from "../../middleware/auth.js";
+import UserSession from "../../models/platform/UserSession.js";
 
 function requestMeta(req) {
   return {

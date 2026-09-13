@@ -26,7 +26,7 @@ import {
 import {
   evaluateEntity,
   mergeEntityForDiscoveryEval,
-} from '../../discoveryEvaluationService.js';
+} from '../../discovery/discoveryEvaluationService.js';
 import { cloneDefaultRules, DEFAULT_IDENTITY_POSTURE_RULES, suggestResolvePaths } from './postureRuleDefaults.js';
 import { PRIVILEGED_NAME_TOKENS } from '../../graph/graphConstants.js';
 

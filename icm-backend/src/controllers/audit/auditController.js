@@ -1,4 +1,4 @@
-import * as auditService from "../services/auditService.js";
+import * as auditService from "../../services/system/auditService.js";
 
 export async function listAuditLogs(req, res, next) {
   try {

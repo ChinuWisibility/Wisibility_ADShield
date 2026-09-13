@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import CorrelationRule from '../models/correlation/CorrelationRule.js';
-import CorrelationResult from '../models/correlation/CorrelationResult.js';
+import { authenticate } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import CorrelationRule from '../../models/correlation/CorrelationRule.js';
+import CorrelationResult from '../../models/correlation/CorrelationResult.js';
 
 // --- IMPORT THE ENGINE WE JUST BUILT ---
 import {
@@ -13,7 +13,7 @@ import {
   getOrphanAccountsIsoSummary,
   getOrphanAccountsIsoFull,
   remediateOrphan,
-} from '../controllers/correlation/correlationController.js';
+} from '../../controllers/correlation/correlationController.js';
 
 const router = Router();
 

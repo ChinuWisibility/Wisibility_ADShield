@@ -4,7 +4,7 @@ import {
 } from "../../graph/graphConstants.js";
 import { buildGraphRiskFinding } from "../../graph/graphFindingBuilder.js";
 import { resolveUserNodeFromDoc } from "../../graph/graphNodeResolver.js";
-import { classifyAccountStatusRaw } from "../../applicationUserStatusCountsService.js";
+import { classifyAccountStatusRaw } from "../../application/applicationUserStatusCountsService.js";
 import { isOlderThanDays } from "../../posture/utils/adSecurityHelpers.js";
 import {
   isAdObjectInSearchScope,

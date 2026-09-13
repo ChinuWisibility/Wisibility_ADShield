@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
-import Application from "../models/application/Application.js";
-import ApplicationUserDuplicate from "../models/application/ApplicationUserDuplicate.js";
-import { getDynamicUserModel } from "../models/application/Users.js";
+import Application from "../../models/application/Application.js";
+import ApplicationUserDuplicate from "../../models/application/ApplicationUserDuplicate.js";
+import { getDynamicUserModel } from "../../models/application/Users.js";
 import {
   resolveTenantSlugFromTenantId,
   toTenantObjectId,
-} from "../utils/applicationDynamicCollections.js";
+} from "../../utils/applicationDynamicCollections.js";
 import {
   getPrimaryKeyValueFromAccountDoc,
-} from "../utils/identityProfileMappingUtils.js";
-import { resolveStableSyncKey } from "./sync/accountHashService.js";
+} from "../../utils/identityProfileMappingUtils.js";
+import { resolveStableSyncKey } from "../sync/accountHashService.js";
 
 const MANAGED_PK_INDEX_PREFIX = "uniq_app_users_pk_";
 
@@ -275,7 +275,7 @@ export async function syncApplicationUserDuplicateSidecar(
         upsert: true,
       },
     }));
-    const { bulkWriteChunkedParallel } = await import("../utils/csvUploadPerformance.js");
+    const { bulkWriteChunkedParallel } = await import("../../utils/csvUploadPerformance.js");
     await run("duplicateSidecar.bulkWriteChunkedParallel", () =>
       bulkWriteChunkedParallel(ApplicationUserDuplicate, ops, {
         chunkSize: BULK_CHUNK,
@@ -327,7 +327,7 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
     skipDedupeScan = false,
   } = applyOptions;
 
-  const { createExclusiveSpanTimer } = await import("../utils/exclusiveSpanTimer.js");
+  const { createExclusiveSpanTimer } = await import("../../utils/exclusiveSpanTimer.js");
   const timer = applyOptions.exclusiveTimer || createExclusiveSpanTimer("applyCanonicalUsers");
   const ownedTimer = !applyOptions.exclusiveTimer;
 
@@ -337,7 +337,7 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
   const appIdClause = applicationIdInClause(appId);
   const reconTime = new Date();
   const userIdByIdentityKey = new Map();
-  const { bulkWriteChunkedParallel } = await import("../utils/csvUploadPerformance.js");
+  const { bulkWriteChunkedParallel } = await import("../../utils/csvUploadPerformance.js");
 
   if (replaceAll) {
     await timer.span("apply.replaceAll.deleteMany", () =>
@@ -413,11 +413,11 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
 
   if (tenantId) {
     const { scheduleDataHygieneSummaryRecompute } = await import(
-      "./datahygine/dataHygieneSummaryCacheService.js"
+      "../datahygine/dataHygieneSummaryCacheService.js"
     );
     try {
       const { emitHygieneDirty, DEFAULT_APP_DIRTY_WIDGETS } = await import(
-        "./datahygine/hygieneRollupService.js"
+        "../datahygine/hygieneRollupService.js"
       );
       await emitHygieneDirty({
         tenantId,
@@ -586,7 +586,7 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
       const {
         rebuildInactiveAccessSidecar,
         patchInactiveAccessSidecar,
-      } = await import("./datahygine/applicationUserInactiveAccessSidecar.js");
+      } = await import("../datahygine/applicationUserInactiveAccessSidecar.js");
       if (skipFullReRead && !replaceAll) {
         await patchInactiveAccessSidecar({
           applicationId: application._id,
@@ -612,7 +612,7 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
 
     try {
       const { scheduleManagerMismatchSidecarRebuild } = await import(
-        "./datahygine/applicationManagerMismatchSidecar.js"
+        "../datahygine/applicationManagerMismatchSidecar.js"
       );
       scheduleManagerMismatchSidecarRebuild(application._id, tenantId, {
         skipDirtyEmit: true,
@@ -626,7 +626,7 @@ export async function applyCanonicalUsers(application, tenantSlug, payload, appl
 
     try {
       const { scheduleStatusMismatchSidecarRebuild } = await import(
-        "./datahygine/applicationStatusMismatchSidecar.js"
+        "../datahygine/applicationStatusMismatchSidecar.js"
       );
       scheduleStatusMismatchSidecarRebuild(application._id, tenantId, {
         skipDirtyEmit: true,

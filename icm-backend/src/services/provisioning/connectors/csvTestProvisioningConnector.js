@@ -15,7 +15,7 @@ import {
   getPrimaryKeyMappingOrThrow,
   normalizePrimaryKeyValue,
   applicationIdInClause,
-} from "../../applicationUserIngestService.js";
+} from "../../application/applicationUserIngestService.js";
 import { provisioningResult } from "./provisioningConnectorContract.js";
 
 function toStr(v) {

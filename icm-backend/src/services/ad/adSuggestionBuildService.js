@@ -1,5 +1,5 @@
 import { normalizeDn } from "./ldapNormalizer.js";
-import { clusterGroupsByPrefix } from "./groupPatternEngine.js";
+import { clusterGroupsByPrefix } from "../discovery/groupPatternEngine.js";
 import {
   evaluateRuleSet,
   normalizeRuleDefinitions,

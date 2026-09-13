@@ -1,5 +1,5 @@
-import UserPreference from '../models/branding/UserPreference.js';
-import { normalizeSecurityDashboardPrefs } from '../constants/securityDashboardPrefs.js';
+import UserPreference from '../../models/branding/UserPreference.js';
+import { normalizeSecurityDashboardPrefs } from '../../constants/securityDashboardPrefs.js';
 
 function serializePrefs(prefs, userId) {
   if (!prefs) {

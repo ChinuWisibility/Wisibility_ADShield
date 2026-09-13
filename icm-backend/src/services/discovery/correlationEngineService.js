@@ -2,16 +2,16 @@ import mongoose from 'mongoose';
 import {
   getDynamicIdentityModelForTenantId,
   getLegacyIdentityModel,
-} from '../models/identity/Identity.js';
-import AccountAggregation from '../models/access/AccountAggregation.js';
-import CorrelationRule from '../models/correlation/CorrelationRule.js';
-import CorrelationResult from '../models/correlation/CorrelationResult.js';
-import IdentityAccountLink from '../models/identity/IdentityAccountLink.js';
-import Application from '../models/application/Application.js';
-import { evaluateGovernanceOrphan } from '../utils/correlationGovernance.js';
-import { classifyIdentityIdMatches } from '../utils/correlationMatchOutcome.js';
-import { getIdentityFieldValue } from '../utils/correlationIdentityFields.js';
-import { scheduleSyncAllForApplication } from '../utils/identityEntitlementSyncTrigger.js';
+} from '../../models/identity/Identity.js';
+import AccountAggregation from '../../models/access/AccountAggregation.js';
+import CorrelationRule from '../../models/correlation/CorrelationRule.js';
+import CorrelationResult from '../../models/correlation/CorrelationResult.js';
+import IdentityAccountLink from '../../models/identity/IdentityAccountLink.js';
+import Application from '../../models/application/Application.js';
+import { evaluateGovernanceOrphan } from '../../utils/correlationGovernance.js';
+import { classifyIdentityIdMatches } from '../../utils/correlationMatchOutcome.js';
+import { getIdentityFieldValue } from '../../utils/correlationIdentityFields.js';
+import { scheduleSyncAllForApplication } from '../../utils/identityEntitlementSyncTrigger.js';
 
 /** Max identities loaded for CONTAINS/REGEX rules (linear scan per account). */
 const MAX_IDENTITIES_FOR_SLOW_RULES = Number(

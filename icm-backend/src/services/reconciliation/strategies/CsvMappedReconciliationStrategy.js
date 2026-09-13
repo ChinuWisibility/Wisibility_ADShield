@@ -14,7 +14,7 @@ import {
   normalizePrimaryKeyValue,
   ensureManagedUserPkUniqueIndex,
   syncApplicationUserDuplicateSidecar,
-} from "../../applicationUserIngestService.js";
+} from "../../application/applicationUserIngestService.js";
 import { compareAccountMaps } from "../deltaComparisonService.js";
 import {
   buildAccountMap,

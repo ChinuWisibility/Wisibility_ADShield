@@ -1,5 +1,5 @@
-import { AppError } from "../middleware/errorHandler.js";
-import { ROLES } from "../middleware/auth.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { ROLES } from "../../middleware/auth.js";
 import {
   createWorkflowRemediationEvent,
   createTicketForEvent,
@@ -8,21 +8,21 @@ import {
   listEventItems,
   listEvents,
   listEventSummary,
-} from "../services/workflowRemediation/workflowRemediationEventService.js";
-import { triggerWorkflowForEvent, immediatelyLaunchEvent } from "../services/workflowRemediation/workflowRemediationTriggerService.js";
+} from "../../services/workflowRemediation/workflowRemediationEventService.js";
+import { triggerWorkflowForEvent, immediatelyLaunchEvent } from "../../services/workflowRemediation/workflowRemediationTriggerService.js";
 import {
   getOpenEventByTarget,
   listWorkflowsForRemediation,
   manualEnqueueToWorkflowQueue,
   checkQueuedTargets,
   TRIGGER_TYPE_BY_EVENT,
-} from "../services/workflowRemediation/workflowRemediationManualEnqueueService.js";
+} from "../../services/workflowRemediation/workflowRemediationManualEnqueueService.js";
 import {
   WORKFLOW_REMEDIATION_EVENT_TYPES,
   WORKFLOW_REMEDIATION_EVENT_SOURCES,
   WORKFLOW_REMEDIATION_QUEUE_SOURCES,
   defaultQueueSourceForEventType,
-} from "../constants/workflowRemediation.js";
+} from "../../constants/workflowRemediation.js";
 
 export async function getSummary(req, res, next) {
   try {

@@ -5,7 +5,7 @@ import { memberGroupDnsForAdUser } from "../../utils/accountEntitlementCorrelati
 import {
   applicationIdInClause,
   normalizePrimaryKeyValue,
-} from "../applicationUserIngestService.js";
+} from "../application/applicationUserIngestService.js";
 import { bulkWriteChunkedParallel } from "../../utils/csvUploadPerformance.js";
 
 const BULK_CHUNK = 1000;

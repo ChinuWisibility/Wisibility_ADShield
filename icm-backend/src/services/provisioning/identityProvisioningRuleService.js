@@ -5,7 +5,7 @@
 import mongoose from "mongoose";
 import IdentityProvisioningRule from "../../models/provisioning/IdentityProvisioningRule.js";
 import IdentityProfile from "../../models/identity/IdentityProfile.js";
-import { evaluateCondition } from "../discoveryEvaluationService.js";
+import { evaluateCondition } from "../discovery/discoveryEvaluationService.js";
 import { buildIdentityCreateSchema } from "../identity/identityCreateSchemaService.js";
 
 function toOid(value) {

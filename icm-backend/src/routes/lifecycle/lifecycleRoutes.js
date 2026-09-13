@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth.js";
-import LifecycleEvent from "../models/identity/LifecycleEvent.js";
-import { createCrudController } from "../utils/crudFactory.js";
+import { authenticate } from "../../middleware/auth.js";
+import LifecycleEvent from "../../models/identity/LifecycleEvent.js";
+import { createCrudController } from "../../utils/crudFactory.js";
 
 /**
  * Lifecycle events are system-generated. Expose read-only APIs only —

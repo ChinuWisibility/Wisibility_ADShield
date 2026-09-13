@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import NHIProfile from '../models/detectionNhi/NHIProfile.js';
-import PrivilegedAccessRecord from '../models/detectionNhi/PrivilegedAccessRecord.js';
-import SecurityAlert from '../models/detectionNhi/SecurityAlert.js';
-import AIEntitlementDescription from '../models/detectionNhi/AIEntitlementDescription.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import NHIProfile from '../../models/detectionNhi/NHIProfile.js';
+import PrivilegedAccessRecord from '../../models/detectionNhi/PrivilegedAccessRecord.js';
+import SecurityAlert from '../../models/detectionNhi/SecurityAlert.js';
+import AIEntitlementDescription from '../../models/detectionNhi/AIEntitlementDescription.js';
 
 const router = Router();
 

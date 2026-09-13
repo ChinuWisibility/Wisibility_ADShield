@@ -1,31 +1,31 @@
 import mongoose from "mongoose";
-import { getDB } from "../config/database.js";
-import Application from "../models/application/Application.js";
-import { getDynamicUserModel, getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { getDynamicEntitlementModel, getDynamicEntitlementModelForTenantId } from "../models/application/Entitlements.js";
-import { getDynamicCorrelationModel } from "../models/application/AppCorrelation.js";
-import UploadHistory from "../models/application/UploadHistory.js";
-import IntegrationLog from "../models/application/IntegrationLog.js";
-import ConnectorConfig from "../models/application/ConnectorConfig.js";
+import { getDB } from "../../config/database.js";
+import Application from "../../models/application/Application.js";
+import { getDynamicUserModel, getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { getDynamicEntitlementModel, getDynamicEntitlementModelForTenantId } from "../../models/application/Entitlements.js";
+import { getDynamicCorrelationModel } from "../../models/application/AppCorrelation.js";
+import UploadHistory from "../../models/application/UploadHistory.js";
+import IntegrationLog from "../../models/application/IntegrationLog.js";
+import ConnectorConfig from "../../models/application/ConnectorConfig.js";
 
-import SchemaMap from "../models/schema/SchemaMap.js";
-import SchemaBuilder from "../models/schema/SchemaBuilder.js";
-import ApplicationSchema from "../models/application/ApplicationSchema.js";
-import AppSchemaMapping from "../models/application/AppSchemaMapping.js";
-import ApplicationRiskProfile from "../models/application/ApplicationRiskProfile.js";
-import CorrelationRule from "../models/correlation/CorrelationRule.js";
-import CorrelationResult from "../models/correlation/CorrelationResult.js";
-import IdentityAccountLink from "../models/identity/IdentityAccountLink.js";
-import IdentityProfile from "../models/identity/IdentityProfile.js";
-import IdentityProfileMapping from "../models/identity/IdentityProfileMapping.js";
+import SchemaMap from "../../models/schema/SchemaMap.js";
+import SchemaBuilder from "../../models/schema/SchemaBuilder.js";
+import ApplicationSchema from "../../models/application/ApplicationSchema.js";
+import AppSchemaMapping from "../../models/application/AppSchemaMapping.js";
+import ApplicationRiskProfile from "../../models/application/ApplicationRiskProfile.js";
+import CorrelationRule from "../../models/correlation/CorrelationRule.js";
+import CorrelationResult from "../../models/correlation/CorrelationResult.js";
+import IdentityAccountLink from "../../models/identity/IdentityAccountLink.js";
+import IdentityProfile from "../../models/identity/IdentityProfile.js";
+import IdentityProfileMapping from "../../models/identity/IdentityProfileMapping.js";
 import {
   getDynamicIdentityModelForTenantId,
   getLegacyIdentityModel,
-} from "../models/identity/Identity.js";
+} from "../../models/identity/Identity.js";
 import {
   resolveTenantSlugFromTenantId,
   dropReconciliationCollections,
-} from "../utils/applicationDynamicCollections.js";
+} from "../../utils/applicationDynamicCollections.js";
 import {
   getReconciliationRunsCollectionName,
   getAccountsSnapshotCollectionName,
@@ -34,17 +34,17 @@ import {
   getStagingAccountsCollectionName,
   dropReconciliationCollectionByScope,
   RECONCILIATION_DELETION_SCOPE_KEYS,
-} from "../utils/reconciliationCollections.js";
+} from "../../utils/reconciliationCollections.js";
 import { applicationIdInClause } from "./applicationUserIngestService.js";
-import OrphanAccount from "../models/identity/OrphanAccount.js";
-import QuarantineProfile from "../models/identity/QuarantineProfile.js";
-import Account from "../models/access/Account.js";
-import AccountAggregation from "../models/access/AccountAggregation.js";
-import ApplicationUserDuplicate from "../models/application/ApplicationUserDuplicate.js";
-import Entitlement from "../models/access/Entitlement.js";
-import SodQueue from "../models/sod/SodQueue.js";
-import SodEntitlement from "../models/sod/SodEntitlement.js";
-import SodUserEntitlement from "../models/sod/SodUserEntitlement.js";
+import OrphanAccount from "../../models/identity/OrphanAccount.js";
+import QuarantineProfile from "../../models/identity/QuarantineProfile.js";
+import Account from "../../models/access/Account.js";
+import AccountAggregation from "../../models/access/AccountAggregation.js";
+import ApplicationUserDuplicate from "../../models/application/ApplicationUserDuplicate.js";
+import Entitlement from "../../models/access/Entitlement.js";
+import SodQueue from "../../models/sod/SodQueue.js";
+import SodEntitlement from "../../models/sod/SodEntitlement.js";
+import SodUserEntitlement from "../../models/sod/SodUserEntitlement.js";
 
 /** @typedef {Record<string, boolean>} DeletionScopes */
 
@@ -714,21 +714,21 @@ export async function executeScopedApplicationDeletion(applicationId, scopes = {
   );
   await run("applicationUserInactiveAccess", async () => {
     const { deleteInactiveAccessSidecarForApplication } = await import(
-      "./datahygine/applicationUserInactiveAccessSidecar.js"
+      "../datahygine/applicationUserInactiveAccessSidecar.js"
     );
     await deleteInactiveAccessSidecarForApplication(oid);
     return true;
   });
   await run("applicationManagerMismatches", async () => {
     const { deleteManagerMismatchSidecarForApplication } = await import(
-      "./datahygine/applicationManagerMismatchSidecar.js"
+      "../datahygine/applicationManagerMismatchSidecar.js"
     );
     await deleteManagerMismatchSidecarForApplication(oid);
     return true;
   });
   await run("applicationStatusMismatches", async () => {
     const { deleteStatusMismatchSidecarForApplication } = await import(
-      "./datahygine/applicationStatusMismatchSidecar.js"
+      "../datahygine/applicationStatusMismatchSidecar.js"
     );
     await deleteStatusMismatchSidecarForApplication(oid);
     return true;
@@ -737,12 +737,12 @@ export async function executeScopedApplicationDeletion(applicationId, scopes = {
   // Always clear hygiene V2 rollups/jobs for this app (not client-scoped).
   try {
     const { deleteHygieneRollupsForApplication, invalidateHygieneTenantSummary } =
-      await import("./datahygine/hygieneRollupService.js");
+      await import("../datahygine/hygieneRollupService.js");
     await deleteHygieneRollupsForApplication(oid);
     if (app.tenantId) {
       await invalidateHygieneTenantSummary(app.tenantId);
       const { scheduleDataHygieneSummaryRecompute } = await import(
-        "./datahygine/dataHygieneSummaryCacheService.js"
+        "../datahygine/dataHygieneSummaryCacheService.js"
       );
       scheduleDataHygieneSummaryRecompute(app.tenantId);
     }
@@ -751,7 +751,7 @@ export async function executeScopedApplicationDeletion(applicationId, scopes = {
     console.error("[applicationDeletion] hygiene rollup cleanup failed", e?.message || e);
   }
   try {
-    const HygieneJob = (await import("../models/dataHygiene/HygieneJob.js")).default;
+    const HygieneJob = (await import("../../models/dataHygiene/HygieneJob.js")).default;
     const r = await HygieneJob.deleteMany({ applicationId: oid });
     results.hygieneJobs = r.deletedCount;
   } catch (e) {

@@ -1,4 +1,4 @@
-import { buildApplicationCertificationInsights } from "../services/application/applicationCatalogInsightsService.js";
+import { buildApplicationCertificationInsights } from "../../services/application/applicationCatalogInsightsService.js";
 
 function sendError(res, err, fallback) {
   const status = err.statusCode || 500;

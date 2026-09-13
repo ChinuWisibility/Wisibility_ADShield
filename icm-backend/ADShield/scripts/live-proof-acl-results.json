@@ -1,0 +1,66 @@
+{
+  "discoverOk": true,
+  "success": true,
+  "results": [
+    {
+      "featureId": "broken_acls",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    },
+    {
+      "featureId": "unknown_sid_bindings",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    },
+    {
+      "featureId": "orphan_sids",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    },
+    {
+      "featureId": "shadow_admins",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    },
+    {
+      "featureId": "sid_history_analysis",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    },
+    {
+      "featureId": "foreign_security_principals",
+      "result": "NOT_SAFE_TO_TEST_LIVE",
+      "discoveryCount": 0,
+      "sample": null,
+      "notes": [
+        "Controlled reversible ACE/SIDHistory/FSP injection (AddDaclAce) not available in harness yet; refuse to mutate Domain Admins / production ACLs.",
+        "No existing finding under OU=wisibility for this feature in this scan."
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import EmailJob from "../../models/email/EmailJob.js";
 import CampaignReminderLog from "../../models/certification/CampaignReminderLog.js";
 import EmailService from "./EmailService.js";
-import { prepareCertificationEmailForSend } from "../certificationEmailTemplates.js";
+import { prepareCertificationEmailForSend } from "../access-certification/certificationEmailTemplates.js";
 import { emailRateLimiter } from "./utils/emailRateLimiter.js";
 import {
   getRetryDelayMs,

@@ -1,4 +1,4 @@
-import { classifyAccountStatusRaw } from "../services/applicationUserStatusCountsService.js";
+import { classifyAccountStatusRaw } from "../services/application/applicationUserStatusCountsService.js";
 
 /**
  * After csvImportMapping, re-attach LDAP fields dropped when mapping used rawData-only rows.

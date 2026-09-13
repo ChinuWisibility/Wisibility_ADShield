@@ -1,0 +1,337 @@
+[
+  {
+    "featureId": "inactive_users",
+    "testObject": null,
+    "result": "NOT_SAFE_TO_TEST_LIVE",
+    "notes": [
+      "AD returns WILL_NOT_PERFORM when setting lastLogonTimestamp; cannot create authentic inactive condition without waiting 90+ days of no logon."
+    ]
+  },
+  {
+    "featureId": "disabled_users",
+    "testObject": "WIS-Sd-DisUsr",
+    "dn": "CN=WIS-Seed-Disabled-User,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "disabled_users",
+      "dn": "CN=WIS-Seed-Disabled-User,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "disabled",
+      "findingType": "DISABLED_USER",
+      "findingSignals": [
+        "DISABLED_USER"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 514,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-DisUsr"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "enable_account: userAccountControl 514 → 512 on CN=WIS-Seed-Disabled-User,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "enable_account: userAccountControl 514 → 512 on CN=WIS-Seed-Disabled-User,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "userAccountControl": 512,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "locked_accounts",
+    "testObject": "WIS-Sd-LockUsr",
+    "dn": "CN=WIS Seed Locked User,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "locked_accounts",
+      "dn": "CN=WIS Seed Locked User,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "locked",
+      "findingType": "LOCKED_ACCOUNT",
+      "findingSignals": [
+        "LOCKED_ACCOUNT"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 512,
+        "lastLogonTimestamp": null,
+        "lockoutTime": "134282420252917462",
+        "sAMAccountName": "WIS-Sd-LockUsr"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "Clear lockoutTime on CN=WIS Seed Locked User,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "Clear lockoutTime on CN=WIS Seed Locked User,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "lockoutTime": "0",
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "password_never_expires",
+    "testObject": "WIS-Sd-PwdNx",
+    "dn": "CN=WIS-Seed-Pwd-Never-Expires,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "password_never_expires",
+      "dn": "CN=WIS-Seed-Pwd-Never-Expires,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "password_never_expires",
+      "findingType": "PASSWORD_NEVER_EXPIRES",
+      "findingSignals": [
+        "PASSWORD_NEVER_EXPIRES"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 66048,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-PwdNx"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "clear_password_never_expires: userAccountControl 66048 → 512 on CN=WIS-Seed-Pwd-Never-Expires,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "clear_password_never_expires: userAccountControl 66048 → 512 on CN=WIS-Seed-Pwd-Never-Expires,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "userAccountControl": 512,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "password_not_required",
+    "testObject": "WIS-Sd-PwdNr",
+    "dn": "CN=WIS-Seed-Pwd-Not-Required,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "password_not_required",
+      "dn": "CN=WIS-Seed-Pwd-Not-Required,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "password_not_required",
+      "findingType": "PASSWORD_NOT_REQUIRED",
+      "findingSignals": [
+        "PASSWORD_NOT_REQUIRED"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 544,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-PwdNr"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "clear_password_not_required: userAccountControl 544 → 512 on CN=WIS-Seed-Pwd-Not-Required,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "clear_password_not_required: userAccountControl 544 → 512 on CN=WIS-Seed-Pwd-Not-Required,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "userAccountControl": 512,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "reversible_encryption_enabled",
+    "testObject": "WIS-Sd-RevEnc",
+    "dn": "CN=WIS-Seed-Reversible-Encryption,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "reversible_encryption_enabled",
+      "dn": "CN=WIS-Seed-Reversible-Encryption,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "reversible_encryption",
+      "findingType": "REVERSIBLE_ENCRYPTION_ENABLED",
+      "findingSignals": [
+        "REVERSIBLE_ENCRYPTION_ENABLED"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 640,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-RevEnc"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "clear_reversible_encryption: userAccountControl 640 → 512 on CN=WIS-Seed-Reversible-Encryption,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "clear_reversible_encryption: userAccountControl 640 → 512 on CN=WIS-Seed-Reversible-Encryption,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "userAccountControl": 512,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "smartcard_not_required",
+    "testObject": "WIS-Sd-NoSc",
+    "dn": "CN=WIS-Seed-Smartcard-Not-Required,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "smartcard_not_required",
+      "dn": "CN=WIS-Seed-Smartcard-Not-Required,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "smartcard_not_required",
+      "findingType": "SMARTCARD_NOT_REQUIRED",
+      "findingSignals": [
+        "SMARTCARD_NOT_REQUIRED"
+      ],
+      "evidence": {},
+      "attributes": {
+        "userAccountControl": 512,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-NoSc"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "require_smartcard: userAccountControl 512 → 262656 on CN=WIS-Seed-Smartcard-Not-Required,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "require_smartcard: userAccountControl 512 → 262656 on CN=WIS-Seed-Smartcard-Not-Required,OU=wisibility,DC=wisibility,DC=lcl"
+      ],
+      "verification": {
+        "userAccountControl": 262656,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  },
+  {
+    "featureId": "service_accounts",
+    "testObject": "WIS-Sd-SvcAcc",
+    "dn": "CN=WIS-Seed-Service-Account,OU=wisibility,DC=wisibility,DC=lcl",
+    "result": "PASS",
+    "notes": [],
+    "apiFlow": {
+      "discover": "POST /api/v1/security/account-analysis",
+      "remediate": "POST /api/v1/security/remediate"
+    },
+    "discovery": {
+      "feature": "service_accounts",
+      "dn": "CN=WIS-Seed-Service-Account,OU=wisibility,DC=wisibility,DC=lcl",
+      "status": "has_spn",
+      "findingType": "SERVICE_ACCOUNT",
+      "findingSignals": [
+        "SERVICE_ACCOUNT"
+      ],
+      "evidence": {
+        "spnCount": 1,
+        "servicePrincipalNames": [
+          "HTTP/WIS-Sd-SvcAcc.wisibility.lcl"
+        ]
+      },
+      "attributes": {
+        "userAccountControl": 66048,
+        "lastLogonTimestamp": null,
+        "lockoutTime": null,
+        "sAMAccountName": "WIS-Sd-SvcAcc"
+      }
+    },
+    "preview": {
+      "success": true,
+      "changes": [
+        "Remove 1 servicePrincipalName value(s) on CN=WIS-Seed-Service-Account,OU=wisibility,DC=wisibility,DC=lcl: HTTP/WIS-Sd-SvcAcc.wisibility.lcl"
+      ],
+      "errors": []
+    },
+    "apply": {
+      "success": true,
+      "changes": [
+        "Remove 1 servicePrincipalName value(s) on CN=WIS-Seed-Service-Account,OU=wisibility,DC=wisibility,DC=lcl: HTTP/WIS-Sd-SvcAcc.wisibility.lcl"
+      ],
+      "verification": {
+        "spnCountRemaining": 0,
+        "verified": true
+      },
+      "errors": []
+    },
+    "rescanClear": true
+  }
+]

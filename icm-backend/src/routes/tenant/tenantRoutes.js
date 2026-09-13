@@ -3,8 +3,8 @@ import {
   authenticate,
   requirePermission,
   PERMISSIONS,
-} from "../middleware/auth.js";
-import * as tenantCtrl from "../controllers/tenantController.js";
+} from "../../middleware/auth.js";
+import * as tenantCtrl from "../../controllers/tenant/tenantController.js";
 
 const router = Router();
 

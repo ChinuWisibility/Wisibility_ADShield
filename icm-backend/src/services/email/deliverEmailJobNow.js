@@ -1,6 +1,6 @@
 import EmailJob from "../../models/email/EmailJob.js";
 import EmailService from "../email/EmailService.js";
-import { prepareCertificationEmailForSend } from "../certificationEmailTemplates.js";
+import { prepareCertificationEmailForSend } from "../access-certification/certificationEmailTemplates.js";
 import { jobTypeToReminderLogType } from "./reminderSchedulerService.js";
 import {
   markReminderLogSent,

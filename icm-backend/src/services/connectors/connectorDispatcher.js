@@ -5,7 +5,7 @@ import {
   fetchAdUsers,
   testGenericLdapConnection,
   fetchGenericLdapUsers,
-} from '../adLdapService.js';
+} from '../ad/adLdapService.js';
 import { testJdbcConnection, fetchJdbcUsers } from './jdbcConnectorService.js';
 import {
   testRestBearer,

@@ -1,6 +1,6 @@
 import env from "../../config/env.js";
 import RemediationEvent from "../../models/remediation/RemediationEvent.js";
-import { sendRemediationEmail } from "../remediationNotificationService.js";
+import { sendRemediationEmail } from "../remediation/remediationNotificationService.js";
 
 const REVOKE_ACCESS_TEMPLATE = "remediation-revoke-access";
 

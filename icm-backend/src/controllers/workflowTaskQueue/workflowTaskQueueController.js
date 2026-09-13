@@ -1,6 +1,6 @@
-import * as ruleService from "../services/workflowTaskQueue/remediationWorkflowRuleService.js";
-import * as queueService from "../services/workflowTaskQueue/workflowTaskQueueService.js";
-import { WORKFLOW_TASK_ACTIONS } from "../constants/workflowTaskQueue.js";
+import * as ruleService from "../../services/workflowTaskQueue/remediationWorkflowRuleService.js";
+import * as queueService from "../../services/workflowTaskQueue/workflowTaskQueueService.js";
+import { WORKFLOW_TASK_ACTIONS } from "../../constants/workflowTaskQueue.js";
 
 function buildEnqueueFailureMessage(action, results = []) {
   const reasons = results.reduce((acc, row) => {

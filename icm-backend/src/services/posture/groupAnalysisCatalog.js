@@ -1,4 +1,4 @@
-import { normalizeDn } from "../ldapNormalizer.js";
+import { normalizeDn } from "../ad/ldapNormalizer.js";
 
 /** Features that share one in-memory group graph (PowerShell verifier parity). */
 export const GRAPH_CATALOG_GROUP_FEATURES = new Set([

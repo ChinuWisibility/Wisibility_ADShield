@@ -21,11 +21,29 @@ const api = axios.create({
 
 const STARTUP_503_MAX_RETRIES = 8;
 const STARTUP_503_BASE_DELAY_MS = 400;
+const NETWORK_RETRY_MAX = 8;
+const NETWORK_RETRY_BASE_DELAY_MS = 500;
 
 function isStartup503(error) {
   return (
     error?.response?.status === 503 &&
     error?.response?.data?.code !== "MAINTENANCE_MODE"
+  );
+}
+
+/** Transient drop: proxy down, nodemon restart, VPN blip, browser offline, etc. */
+function isRetryableNetworkError(error) {
+  if (!error || error.response) return false;
+  const code = String(error.code || "");
+  const message = String(error.message || "");
+  return (
+    code === "ERR_NETWORK" ||
+    code === "ECONNABORTED" ||
+    code === "ETIMEDOUT" ||
+    code === "ECONNREFUSED" ||
+    code === "ECONNRESET" ||
+    /network error/i.test(message) ||
+    /timeout/i.test(message)
   );
 }
 
@@ -74,6 +92,16 @@ api.interceptors.response.use(
       if (attempt < STARTUP_503_MAX_RETRIES) {
         config.__startup503RetryCount = attempt + 1;
         await sleep(STARTUP_503_BASE_DELAY_MS * (attempt + 1));
+        return api(config);
+      }
+    }
+
+    // Auto-reconnect for brief backend/proxy outages (e.g. nodemon restart).
+    if (config && !config.__skipNetworkRetry && isRetryableNetworkError(err)) {
+      const attempt = Number(config.__networkRetryCount || 0);
+      if (attempt < NETWORK_RETRY_MAX) {
+        config.__networkRetryCount = attempt + 1;
+        await sleep(NETWORK_RETRY_BASE_DELAY_MS * Math.min(attempt + 1, 5));
         return api(config);
       }
     }
@@ -450,8 +478,13 @@ export const applicationAPI = {
   getAdSyncJob: (applicationId, jobId) =>
     api.get(`/applications/${applicationId}/ad-sync-jobs/${jobId}`),
 
+  /** Latest queued/running AD sync job (null data when none). */
+  getActiveAdSyncJob: (applicationId) =>
+    api.get(`/applications/${applicationId}/ad-sync-jobs/active`),
+
   /**
    * Start AD sync and block until completed (polls job status).
+   * Prefer startAdSyncJob + UI progress for Map & import flows.
    * @param {string} id application id
    * @param {object} [data] sync body
    * @param {{ pollMs?: number, maxWaitMs?: number }} [options]
@@ -498,6 +531,37 @@ export const applicationAPI = {
     throw new Error(
       "Timed out waiting for AD sync. The job may still be running — check Sync status or raise maxWaitMs.",
     );
+  },
+
+  /**
+   * Start AD sync (or attach to in-progress job). Does not wait for completion.
+   * @returns {Promise<{ jobId: string, resumed?: boolean, status?: string, phase?: string, percent?: number }>}
+   */
+  startAdSyncJob: async (id, data = {}) => {
+    try {
+      const start = await api.post(`/applications/${id}/ad/sync`, data || {}, {
+        timeout: 30000,
+      });
+      if (start.status === 202 && start.data?.jobId) {
+        return {
+          jobId: start.data.jobId,
+          resumed: false,
+          status: start.data.status || "queued",
+        };
+      }
+      throw new Error(start.data?.message || "AD sync did not return a job id.");
+    } catch (err) {
+      if (err.response?.status === 409 && err.response?.data?.jobId) {
+        return {
+          jobId: err.response.data.jobId,
+          resumed: true,
+          status: err.response.data.status,
+          phase: err.response.data.phase,
+          percent: err.response.data.percent,
+        };
+      }
+      throw err;
+    }
   },
 
   /** Full connector catalog (label → family + payload code) */

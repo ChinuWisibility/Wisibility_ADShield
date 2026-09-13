@@ -3,7 +3,7 @@ import {
   bulkInsertChunked,
 } from "../../utils/reconciliationCollections.js";
 import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
-import { applicationIdInClause } from "../applicationUserIngestService.js";
+import { applicationIdInClause } from "../application/applicationUserIngestService.js";
 import { buildAccountEntryFromDoc } from "./reconciliationAccountUtils.js";
 
 /**

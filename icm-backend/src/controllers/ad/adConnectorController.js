@@ -1,24 +1,44 @@
-import Application from '../models/application/Application.js';
+import Application from '../../models/application/Application.js';
 import {
   normalizeAdConfig,
   testAdConnection as ldapTest,
   fetchAdDirectory,
   createAdUser,
-} from '../services/adLdapService.js';
+} from '../../services/ad/adLdapService.js';
 import {
   syncSourceApplicationAndDerivedFromDirectory,
-} from '../services/adDirectorySyncService.js';
+} from '../../services/ad/adDirectorySyncService.js';
 import {
   createAdSyncJob,
   findActiveAdSyncJobForApplication,
   getAdSyncJobForApplication,
-} from '../services/adSyncJobService.js';
-import { scheduleAdSyncJobRun } from '../services/adSyncPipelineService.js';
+} from '../../services/ad/adSyncJobService.js';
+import {
+  scheduleAdSyncJobRun,
+  reclaimOrphanedAdSyncJobForApplication,
+} from '../../services/ad/adSyncPipelineService.js';
 import {
   resolveUserSearchFilterForSyncScope,
   normalizeAdSyncScope,
-} from '../utils/adSyncScope.js';
+} from '../../utils/adSyncScope.js';
 
+function serializeAdSyncJob(job) {
+  if (!job) return null;
+  return {
+    jobId: job.jobId,
+    applicationId: String(job.applicationId),
+    status: job.status,
+    phase: job.phase,
+    percent: job.percent,
+    message: job.message,
+    error: job.error,
+    result: job.result,
+    stageTimings: job.stageTimings,
+    createdAt: job.createdAt,
+    startedAt: job.startedAt,
+    completedAt: job.completedAt,
+  };
+}
 export async function testAdConnection(req, res) {
   try {
     const result = await ldapTest(req.body);
@@ -138,6 +158,9 @@ export async function syncAdUsersFromAd(req, res) {
     const ldapCfg = { ...cfg, userSearchFilter, userSearchFilters: [userSearchFilter] };
 
     if (!wantsBlockingSync(req)) {
+      // Drop zombie queued/running rows left after nodemon/process restart.
+      await reclaimOrphanedAdSyncJobForApplication(application._id);
+
       const active = await findActiveAdSyncJobForApplication(application._id);
       if (active) {
         return res.status(409).json({
@@ -191,6 +214,23 @@ export async function syncAdUsersFromAd(req, res) {
 }
 
 /**
+ * GET /applications/:id/ad-sync-jobs/active
+ * Latest queued/running job for this application (after reclaiming orphans).
+ */
+export async function getActiveAdSyncJob(req, res) {
+  try {
+    await reclaimOrphanedAdSyncJobForApplication(req.params.id);
+    const job = await findActiveAdSyncJobForApplication(req.params.id);
+    if (!job) {
+      return res.json({ success: true, data: null });
+    }
+    res.json({ success: true, data: serializeAdSyncJob(job) });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message || 'Failed to load active AD sync job.' });
+  }
+}
+
+/**
  * GET /applications/:id/ad-sync-jobs/:jobId
  */
 export async function getAdSyncJobStatus(req, res) {
@@ -201,20 +241,7 @@ export async function getAdSyncJobStatus(req, res) {
     }
     res.json({
       success: true,
-      data: {
-        jobId: job.jobId,
-        applicationId: String(job.applicationId),
-        status: job.status,
-        phase: job.phase,
-        percent: job.percent,
-        message: job.message,
-        error: job.error,
-        result: job.result,
-        stageTimings: job.stageTimings,
-        createdAt: job.createdAt,
-        startedAt: job.startedAt,
-        completedAt: job.completedAt,
-      },
+      data: serializeAdSyncJob(job),
     });
   } catch (e) {
     res.status(500).json({ success: false, message: e.message || 'Failed to load AD sync job.' });

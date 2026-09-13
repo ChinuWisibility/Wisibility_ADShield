@@ -5,7 +5,7 @@ import CampaignAuditLog from "../../models/certification/CampaignAuditLog.js";
 import CampaignReminderLog from "../../models/certification/CampaignReminderLog.js";
 import ReviewItem from "../../models/certification/ReviewItem.js";
 import { recordCertificationEmailAudit } from "./campaignEmailAuditService.js";
-import { getReviewerProgress } from "../reviewItemService.js";
+import { getReviewerProgress } from "../access-certification/reviewItemService.js";
 import Campaign from "../../models/certification/Campaign.js";
 import { buildTenantScopedCampaignFilter } from "./tenantCampaignFilter.js";
 

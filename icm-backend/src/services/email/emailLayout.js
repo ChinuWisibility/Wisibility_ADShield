@@ -1,4 +1,4 @@
-import { getBranding } from "../brandingService.js";
+import { getBranding } from "../system/brandingService.js";
 import env from "../../config/env.js";
 
 /** Branded shell for transactional (non-certification) emails. */

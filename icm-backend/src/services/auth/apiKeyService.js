@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import ApiKey from "../models/platform/ApiKey.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { encryptString } from "../utils/crypto.js";
+import ApiKey from "../../models/platform/ApiKey.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { encryptString } from "../../utils/crypto.js";
 
 function isPlatformPlaneActor(actor) {
   return (

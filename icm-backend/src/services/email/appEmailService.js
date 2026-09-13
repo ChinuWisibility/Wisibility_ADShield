@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
-import env from "../config/env.js";
-import EmailService from "./email/EmailService.js";
-import GmailProvider from "./email/providers/GmailProvider.js";
-import * as certificationLaunch from "./email/templates/certificationLaunch.js";
-import * as certificationReminder from "./email/templates/certificationReminder.js";
-import * as passwordReset from "./email/templates/passwordReset.js";
-import * as adminInitiatedReset from "./email/templates/adminInitiatedReset.js";
-import * as passwordOtp from "./email/templates/passwordOtp.js";
-import * as ownerActionExpired from "./email/templates/ownerActionExpired.js";
-import * as identityOnboarding from "./email/templates/identityOnboarding.js";
+import env from "../../config/env.js";
+import EmailService from "./EmailService.js";
+import GmailProvider from "./providers/GmailProvider.js";
+import * as certificationLaunch from "./templates/certificationLaunch.js";
+import * as certificationReminder from "./templates/certificationReminder.js";
+import * as passwordReset from "./templates/passwordReset.js";
+import * as adminInitiatedReset from "./templates/adminInitiatedReset.js";
+import * as passwordOtp from "./templates/passwordOtp.js";
+import * as ownerActionExpired from "./templates/ownerActionExpired.js";
+import * as identityOnboarding from "./templates/identityOnboarding.js";
 
 dotenv.config();
 

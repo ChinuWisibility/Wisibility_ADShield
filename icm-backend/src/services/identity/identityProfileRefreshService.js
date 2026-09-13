@@ -4,10 +4,10 @@ import {
   getDynamicIdentityModelForTenantId,
   getLegacyIdentityModel,
   mirrorIdentityBulkWriteToLegacy,
-} from "../models/identity/Identity.js";
-import IdentityProfile from "../models/identity/IdentityProfile.js";
-import Application from "../models/application/Application.js";
-import { resolveHrmsIntegrationRecord } from "../utils/hrmsConnectorResolve.js";
+} from "../../models/identity/Identity.js";
+import IdentityProfile from "../../models/identity/IdentityProfile.js";
+import Application from "../../models/application/Application.js";
+import { resolveHrmsIntegrationRecord } from "../../utils/hrmsConnectorResolve.js";
 import {
   normalizeMappingsPayload,
   csvRowToIdentityPayload,
@@ -24,10 +24,10 @@ import {
   canonicalIdentityMappingTargetKey,
   stripStaleManagerAttributeKeys,
   buildAccountUserRowForIdentityRefresh,
-} from "../utils/identityProfileMappingUtils.js";
-import Transform from "../models/governance/Transform.js";
-import { getDynamicUserModelForTenantId } from "../models/application/Users.js";
-import { TRANSFORM_OPTIONS, isValidTargetKey } from "../constants/identityProfileTargets.js";
+} from "../../utils/identityProfileMappingUtils.js";
+import Transform from "../../models/governance/Transform.js";
+import { getDynamicUserModelForTenantId } from "../../models/application/Users.js";
+import { TRANSFORM_OPTIONS, isValidTargetKey } from "../../constants/identityProfileTargets.js";
 
 export async function validateAttributeMappings(tenantId, mappings, options = {}) {
   const mappingSourceMode = options.mappingSourceMode || "delimited_csv";
@@ -324,7 +324,7 @@ export async function enqueueLifecycleTransitionsFromRefresh({
   if (!transitions.length) return { count: 0 };
   const enqueue =
     enqueueBatch ||
-    (await import("./lifecycle/lifecycleEventService.js")).enqueueLifecycleEventsBatch;
+    (await import("../lifecycle/lifecycleEventService.js")).enqueueLifecycleEventsBatch;
   const payload = transitions
     .filter((t) => t?.identityId && t?.after)
     .map((t) => ({
@@ -929,7 +929,7 @@ export async function runOrangeHrmIdentityRefresh(tenantId, applicationId, emplo
     return null;
   }
 
-  const { hrmsEmployeeToSchemaRow } = await import("./hrmsIdentitySyncService.js");
+  const { hrmsEmployeeToSchemaRow } = await import("../hrms/hrmsIdentitySyncService.js");
   return processIdentityRowsUpsert(
     profile,
     employees,

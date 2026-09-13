@@ -1,9 +1,9 @@
-import AccountAggregation from '../models/access/AccountAggregation.js';
+import AccountAggregation from '../../models/access/AccountAggregation.js';
 import {
   loadDuplicatePrimaryKeyNormalizedSet,
   normalizePrimaryKeyValue,
-} from './applicationUserIngestService.js';
-import { getPrimaryKeyValueFromAccountDoc } from '../utils/identityProfileMappingUtils.js';
+} from '../application/applicationUserIngestService.js';
+import { getPrimaryKeyValueFromAccountDoc } from '../../utils/identityProfileMappingUtils.js';
 
 const BULK_CHUNK = 500;
 

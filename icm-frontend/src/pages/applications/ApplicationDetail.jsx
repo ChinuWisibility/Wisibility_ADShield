@@ -121,19 +121,38 @@ export default function ApplicationDetail() {
     const maxWaitMs = 2 * 60 * 60 * 1000;
     const deadline = Date.now() + maxWaitMs;
     while (Date.now() < deadline) {
-      const st = await applicationAPI.getAdSyncJob(syncTargetId, jobId);
-      const job = st.data?.data;
-      if (!job) throw new Error('AD sync job not found.');
-      setAdSyncProgress({
-        percent: typeof job.percent === 'number' ? job.percent : 0,
-        phase: job.phase || job.status,
-        message: job.message || '',
-      });
-      if (job.status === 'completed') {
-        return job;
-      }
-      if (job.status === 'failed') {
-        throw new Error(job.error || job.message || 'AD sync failed.');
+      try {
+        const st = await applicationAPI.getAdSyncJob(syncTargetId, jobId);
+        const job = st.data?.data;
+        if (!job) throw new Error('AD sync job not found.');
+        setAdSyncProgress({
+          percent: typeof job.percent === 'number' ? job.percent : 0,
+          phase: job.phase || job.status,
+          message: job.message || '',
+          reconnecting: false,
+        });
+        if (job.status === 'completed') {
+          return job;
+        }
+        if (job.status === 'failed') {
+          throw new Error(job.error || job.message || 'AD sync failed.');
+        }
+      } catch (err) {
+        const transient =
+          !err.response ||
+          err.code === 'ERR_NETWORK' ||
+          /network error/i.test(String(err.message || ''));
+        if (transient) {
+          setAdSyncProgress((prev) => ({
+            percent: prev?.percent || 0,
+            phase: 'reconnecting',
+            message: 'Connection interrupted — reconnecting…',
+            reconnecting: true,
+          }));
+          await new Promise((resolve) => setTimeout(resolve, Math.min(POLL_MS * 2, 3000)));
+          continue;
+        }
+        throw err;
       }
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
     }
@@ -145,6 +164,7 @@ export default function ApplicationDetail() {
   const runAdSyncJob = async (syncTargetId, syncScope = 'total') => {
     let start;
     try {
+      // Reclaims orphaned jobs from process restarts, then starts or 409s.
       start = await applicationAPI.syncAdUsers(syncTargetId, { syncScope });
     } catch (err) {
       if (err.response?.status === 409 && err.response?.data?.jobId) {
@@ -896,13 +916,17 @@ export default function ApplicationDetail() {
                           <Box sx={{ mb: syncResult ? 1 : 0 }}>
                             <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
                               {adSyncProgress.message || adSyncProgress.phase || 'Syncing…'}
-                              {typeof adSyncProgress.percent === 'number'
+                              {!adSyncProgress.reconnecting && typeof adSyncProgress.percent === 'number'
                                 ? ` (${adSyncProgress.percent}%)`
                                 : ''}
                             </Typography>
                             <LinearProgress
-                              variant="determinate"
-                              value={Math.min(100, Math.max(0, adSyncProgress.percent || 0))}
+                              variant={adSyncProgress.reconnecting ? 'indeterminate' : 'determinate'}
+                              value={
+                                adSyncProgress.reconnecting
+                                  ? undefined
+                                  : Math.min(100, Math.max(0, adSyncProgress.percent || 0))
+                              }
                             />
                           </Box>
                         ) : null}

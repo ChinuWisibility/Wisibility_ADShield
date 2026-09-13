@@ -1,5 +1,5 @@
-import { AppError } from "../middleware/errorHandler.js";
-import { validateTicketReviewToken } from "../services/remediation/remediationTicketTokenService.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { validateTicketReviewToken } from "../../services/remediation/remediationTicketTokenService.js";
 import {
   listApplicationCampaignsPaginated,
   getRevokedUsersForCampaigns,
@@ -9,8 +9,8 @@ import {
   getTicketForItsmReview,
   submitItsmTicketResponses,
   assertTenantTicketAccess,
-} from "../services/remediation/remediationTicketService.js";
-import { executeTicketRemediation } from "../services/remediation/remediationExecutionService.js";
+} from "../../services/remediation/remediationTicketService.js";
+import { executeTicketRemediation } from "../../services/remediation/remediationExecutionService.js";
 
 export async function listCampaignsV2(req, res, next) {
   try {

@@ -50,7 +50,7 @@ const {
   recordMongoCommand,
   recordBulkWriteOps,
   recordDeleteMany,
-} = await import("../src/services/identityEntitlementSyncMetrics.js");
+} = await import("../src/services/identity/identityEntitlementSyncMetrics.js");
 
 setSyncMetricsEnabled(true);
 
@@ -66,7 +66,7 @@ const IdentityAccountLink = (await import("../src/models/identity/IdentityAccoun
 const {
   syncAllForApplication,
   syncForIdentity,
-} = await import("../src/services/identityEntitlementSyncService.js");
+} = await import("../src/services/identity/identityEntitlementSyncService.js");
 const { getIdentityEntitlementModelForTenantId } = await import(
   "../src/models/identityEntitlementModel.js"
 );

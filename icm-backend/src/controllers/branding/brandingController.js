@@ -1,4 +1,4 @@
-import * as brandingService from '../services/brandingService.js';
+import * as brandingService from '../../services/system/brandingService.js';
 
 export async function getBranding(req, res, next) {
   try {

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authenticate, authorize, ROLES } from '../middleware/auth.js';
-import ApplicationConnectionConfig from '../models/application/ApplicationConnectionConfig.js';
-import { createCrudController } from '../utils/crudFactory.js';
-import { encryptString } from '../utils/crypto.js';
+import { authenticate, authorize, ROLES } from '../../middleware/auth.js';
+import ApplicationConnectionConfig from '../../models/application/ApplicationConnectionConfig.js';
+import { createCrudController } from '../../utils/crudFactory.js';
+import { encryptString } from '../../utils/crypto.js';
 
 const router = Router();
 const ctrl = createCrudController(ApplicationConnectionConfig, { searchFields: ['endpointUrl', 'authType', 'testStatus'] });

@@ -36,8 +36,8 @@ export function schedulePostCreateReconciliation(payload = {}) {
         console.log("[postProvision] skip AD sync — application has no AD config");
         return;
       }
-      const { createAdSyncJob } = await import("../adSyncJobService.js");
-      const { scheduleAdSyncJobRun } = await import("../adSyncPipelineService.js");
+      const { createAdSyncJob } = await import("../ad/adSyncJobService.js");
+      const { scheduleAdSyncJobRun } = await import("../ad/adSyncPipelineService.js");
       const job = await createAdSyncJob({
         applicationId,
         syncConfig: {

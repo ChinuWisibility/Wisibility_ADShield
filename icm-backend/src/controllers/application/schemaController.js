@@ -1,4 +1,4 @@
-import { getSchemaForApplication } from "../services/transform/schemaService.js";
+import { getSchemaForApplication } from "../../services/transform/schemaService.js";
 
 export async function getSchemaByAppId(req, res, next) {
   try {

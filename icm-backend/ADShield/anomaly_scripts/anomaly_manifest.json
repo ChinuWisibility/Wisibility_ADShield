@@ -1,0 +1,335 @@
+{
+  "purpose": "ADShield live anomaly creation scripts (WinRM/pypsrp). No ADShield API calls; no auto-remediation.",
+  "lab": {
+    "host": "192.168.68.107",
+    "username": "wisibility\\Administrator",
+    "passwordPlaceholder": "P@ssw0rd",
+    "scopeOu": "OU=wisibility,DC=wisibility,DC=lcl",
+    "testOu": "OU=ADShieldAnomalyTests,OU=wisibility,DC=wisibility,DC=lcl",
+    "objectPrefix": "WIS-T-",
+    "auth": "ntlm",
+    "ssl": false
+  },
+  "skippedFeatureNumbers": [
+    29,
+    30,
+    41
+  ],
+  "skippedFeatureIds": [
+    "missing_os_information",
+    "unsupported_os_versions",
+    "delegation_exposure"
+  ],
+  "usage": {
+    "create": "python3 <script>.py",
+    "status": "python3 <script>.py --status",
+    "reset": "python3 <script>.py --reset",
+    "dependency": "pip3 install pypsrp"
+  },
+  "scripts": [
+    {
+      "number": 1,
+      "script": "01_disabledUsers.py",
+      "featureId": "disabled_users",
+      "featureName": "Disabled Users",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 2,
+      "script": "02_inactiveUsers.py",
+      "featureId": "inactive_users",
+      "featureName": "Inactive Users",
+      "expectedSafety": "NOT_SAFE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 3,
+      "script": "03_lockedAccounts.py",
+      "featureId": "locked_accounts",
+      "featureName": "Locked Accounts",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 4,
+      "script": "04_passwordNeverExpires.py",
+      "featureId": "password_never_expires",
+      "featureName": "Password Never Expires",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 5,
+      "script": "05_passwordNotRequired.py",
+      "featureId": "password_not_required",
+      "featureName": "Password Not Required",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 6,
+      "script": "06_reversibleEncryption.py",
+      "featureId": "reversible_encryption_enabled",
+      "featureName": "Reversible Encryption",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 7,
+      "script": "07_smartcardNotRequired.py",
+      "featureId": "smartcard_not_required",
+      "featureName": "Smartcard Not Required",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 8,
+      "script": "08_serviceAccounts.py",
+      "featureId": "service_accounts",
+      "featureName": "Service Accounts",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 9,
+      "script": "09_emptyGroups.py",
+      "featureId": "empty_groups",
+      "featureName": "Empty Groups",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 10,
+      "script": "10_groupsWithoutOwners.py",
+      "featureId": "groups_without_owners",
+      "featureName": "Groups Without Owners",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 11,
+      "script": "11_nestedGroups.py",
+      "featureId": "nested_groups",
+      "featureName": "Nested Groups",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 12,
+      "script": "12_circularMembership.py",
+      "featureId": "circular_memberships",
+      "featureName": "Circular Membership",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 13,
+      "script": "13_unusedGroups.py",
+      "featureId": "unused_groups",
+      "featureName": "Unused Groups",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 14,
+      "script": "14_orphanGroups.py",
+      "featureId": "orphan_groups",
+      "featureName": "Orphan Groups",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 15,
+      "script": "15_duplicateGroups.py",
+      "featureId": "duplicate_groups",
+      "featureName": "Duplicate Groups",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 16,
+      "script": "16_toxicPrivilegeCombinations.py",
+      "featureId": "toxic_privilege_combinations",
+      "featureName": "Toxic Privilege Combinations",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 17,
+      "script": "17_nestedPrivilegedAccess.py",
+      "featureId": "nested_privileged_access",
+      "featureName": "Nested Privileged Access",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 18,
+      "script": "18_dormantPrivilegedUsers.py",
+      "featureId": "dormant_privileged_users",
+      "featureName": "Dormant Privileged Users",
+      "expectedSafety": "NOT_SAFE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 19,
+      "script": "19_excessivePrivileges.py",
+      "featureId": "excessive_privileges",
+      "featureName": "Excessive Privileges",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 20,
+      "script": "20_privilegeEscalationPaths.py",
+      "featureId": "privilege_escalation_paths",
+      "featureName": "Privilege Escalation Paths",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 21,
+      "script": "21_orphanSids.py",
+      "featureId": "orphan_sids",
+      "featureName": "Orphan SIDs",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 22,
+      "script": "22_shadowAdmins.py",
+      "featureId": "shadow_admins",
+      "featureName": "Shadow Admins",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 23,
+      "script": "23_sidHistoryAnalysis.py",
+      "featureId": "sid_history_analysis",
+      "featureName": "SID History Analysis",
+      "expectedSafety": "NOT_SAFE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 24,
+      "script": "24_foreignSecurityPrincipals.py",
+      "featureId": "foreign_security_principals",
+      "featureName": "Foreign Security Principals",
+      "expectedSafety": "NOT_SAFE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 25,
+      "script": "25_unknownSidBindings.py",
+      "featureId": "unknown_sid_bindings",
+      "featureName": "Unknown SID Bindings",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 26,
+      "script": "26_brokenAcls.py",
+      "featureId": "broken_acls",
+      "featureName": "Broken ACLs",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 27,
+      "script": "27_disabledComputers.py",
+      "featureId": "disabled_computers",
+      "featureName": "Disabled Computers",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 28,
+      "script": "28_inactiveComputers.py",
+      "featureId": "inactive_computers",
+      "featureName": "Inactive Computers",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 31,
+      "script": "31_serversInWorkstationOU.py",
+      "featureId": "servers_in_wrong_ou",
+      "featureName": "Servers in Workstation OU",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 32,
+      "script": "32_duplicateSPNs.py",
+      "featureId": "duplicate_spns",
+      "featureName": "Duplicate SPNs",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 33,
+      "script": "33_computersWithoutOwners.py",
+      "featureId": "computers_without_owners",
+      "featureName": "Computers Without Owners",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 34,
+      "script": "34_kerberoastableAccounts.py",
+      "featureId": "kerberoastable_accounts",
+      "featureName": "Kerberoastable Accounts",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 35,
+      "script": "35_asrepRoastableUsers.py",
+      "featureId": "asrep_roastable_users",
+      "featureName": "AS-REP Roastable Users",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 36,
+      "script": "36_preauthDisabled.py",
+      "featureId": "preauth_disabled",
+      "featureName": "Pre-authentication Disabled",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 37,
+      "script": "37_spnMisconfigurations.py",
+      "featureId": "spn_misconfigurations",
+      "featureName": "SPN Misconfigurations",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 38,
+      "script": "38_unconstrainedDelegation.py",
+      "featureId": "unconstrained_delegation",
+      "featureName": "Unconstrained Delegation",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 39,
+      "script": "39_constrainedDelegation.py",
+      "featureId": "constrained_delegation",
+      "featureName": "Constrained Delegation",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    },
+    {
+      "number": 40,
+      "script": "40_rbcd.py",
+      "featureId": "rbcd",
+      "featureName": "Resource-Based Constrained Delegation",
+      "expectedSafety": "SAFE_TO_CREATE",
+      "skippedFeatures": null
+    }
+  ]
+}
