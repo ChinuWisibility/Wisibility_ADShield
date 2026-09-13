@@ -10,6 +10,7 @@ import {
   runApplicationSecurityScan,
   getApplicationSecurityRemediationSummary,
   getSecurityRemediationApplicationsSummary,
+  remediateApplicationSecurityFinding,
   listApplicationAssessments,
   createApplicationAssessment,
   getApplicationAssessment,
@@ -68,6 +69,11 @@ router.get(
   "/applications/:applicationId/remediation-summary",
   authenticate,
   getApplicationSecurityRemediationSummary,
+);
+router.post(
+  "/applications/:applicationId/remediate",
+  authenticate,
+  remediateApplicationSecurityFinding,
 );
 router.get(
   "/applications/:applicationId/findings",

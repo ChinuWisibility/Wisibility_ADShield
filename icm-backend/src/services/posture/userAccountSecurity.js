@@ -272,6 +272,44 @@ export async function runUserAccountSecurityScan({
   const featureList = normalizeSelectedFeatures(features);
   const queryOverrides = options.queryOverrides || {};
 
+  // When ADShield is enabled, account features run in .NET (live AD), not Node LDAP detectors.
+  const { isAdShieldEnabled } = await import("../security/adShield/adShieldClient.js");
+  if (isAdShieldEnabled()) {
+    const { runAdShieldAccountFeatures } = await import(
+      "../security/adShield/adShieldAccountAdapter.js"
+    );
+    const adShieldResult = await runAdShieldAccountFeatures({
+      adConfig: cfg,
+      features: featureList,
+      scanId,
+      queryOverrides,
+      inactiveDays,
+      maxUsers: options.maxUsers ?? cfg.maxUsers,
+    });
+
+    return {
+      scanId,
+      module: "user_account_security",
+      applicationId: String(applicationId),
+      startedAt,
+      completedAt: new Date().toISOString(),
+      userCount: adShieldResult.diagnostics?.objectsScanned || 0,
+      features: featureList,
+      counts: adShieldResult.counts,
+      findings: adShieldResult.findings,
+      featureDiagnostics: adShieldResult.featureDiagnostics,
+      featureSettings: {
+        inactive_users: { inactiveDays },
+      },
+      summary: {
+        totalFindings: adShieldResult.findings.length,
+        byFeature: adShieldResult.counts,
+      },
+      source: "adshield",
+      errors: adShieldResult.errors || [],
+    };
+  }
+
   const result = await runLdapFeatureScanLoop({
     moduleId: "user_account_security",
     featureList,

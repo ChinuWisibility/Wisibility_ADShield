@@ -14,6 +14,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IActiveDirectoryClientFactory, LdapActiveDirectoryClientFactory>();
         services.AddScoped<IConnectivityTestService, ConnectivityTestService>();
         services.AddScoped<IAclAnalysisService, AclAnalysisService>();
+        services.AddScoped<IAccountAnalysisService, AccountAnalysisService>();
+        services.AddScoped<IPostureAnalysisService, PostureAnalysisService>();
         services.AddScoped<ISecurityRemediationService, SecurityRemediationService>();
         return services;
     }

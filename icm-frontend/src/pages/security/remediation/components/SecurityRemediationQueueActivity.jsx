@@ -62,10 +62,10 @@ export default function SecurityRemediationQueueActivity({ limit = 8 }) {
       >
         <Box>
           <Typography variant="subtitle2" fontWeight={800}>
-            Recent queue activity
+            Recent fixes
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Workflow task queue — Completed · Running · Waiting · Failed
+            Remediation tasks you have started
           </Typography>
         </Box>
         <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
@@ -96,7 +96,7 @@ export default function SecurityRemediationQueueActivity({ limit = 8 }) {
       )}
       {!query.isLoading && !(query.data || []).length && (
         <Typography variant="body2" color="text.secondary">
-          No recent queue tasks. Remediate findings from feature detail or Findings Explorer.
+          No remediation tasks yet. Open a finding and choose Remediate to start.
         </Typography>
       )}
       <Stack spacing={1}>

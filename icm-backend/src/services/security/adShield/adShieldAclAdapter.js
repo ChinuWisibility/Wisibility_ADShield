@@ -7,6 +7,7 @@ import {
 import {
   ADSHIELD_ACL_FEATURES,
   isAdShieldAclFeature,
+  isAdShieldAccountFeature,
   isAdShieldFindingFeature,
   isAdShieldFullyDelegatedFeature,
 } from "./adShieldFeatures.js";
@@ -47,6 +48,7 @@ export function resolveAdShieldSearch(ctx, featureIds = []) {
   const firstFeature = featureIds.find(
     (f) =>
       isAdShieldAclFeature(f) ||
+      isAdShieldAccountFeature(f) ||
       f === "shadow_admins" ||
       f === "shadow_admins_acl",
   );

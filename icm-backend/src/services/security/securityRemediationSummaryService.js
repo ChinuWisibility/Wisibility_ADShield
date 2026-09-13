@@ -390,7 +390,7 @@ export async function getTenantRemediationApplicationTiles(tenantId) {
         percentLabel: "Progress",
         primaryColumnLabel: "Feature",
         countColumnLabel: "Remaining",
-        tip: "Need at least two executions of the same Assessment Version to measure remediation progress",
+        tip: "Run a second scan to compare progress",
         progressPercent: 0,
         rows: [],
       });

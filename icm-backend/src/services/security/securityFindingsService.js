@@ -440,7 +440,7 @@ export async function compareSecurityScans(applicationId, leftScanId, rightScanI
       newItems: [],
       unchangedItems: [],
       remainingItems: [],
-      message: "Need at least two assessments to compare.",
+      message: "Run a second security scan to compare progress.",
     };
   }
 

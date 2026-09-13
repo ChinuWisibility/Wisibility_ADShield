@@ -89,6 +89,8 @@ export async function createAssessment({
 
   const workingConfiguration = await buildConfigurationFromApplication(appId, {
     source: "seeded_on_create",
+    // Assessments are opt-in: only features the admin enables are executed.
+    forceAllDisabled: true,
   });
   workingConfiguration.updatedAt = new Date().toISOString();
 

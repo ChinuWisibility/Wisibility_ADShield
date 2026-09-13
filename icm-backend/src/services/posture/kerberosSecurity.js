@@ -161,6 +161,39 @@ export async function runKerberosSecurityScan({
   const featureList = normalizeFeatures(features);
   const queryOverrides = options.queryOverrides || {};
 
+  const { isAdShieldEnabled } = await import("../security/adShield/adShieldClient.js");
+  if (isAdShieldEnabled()) {
+    const { runAdShieldPostureFeatures } = await import(
+      "../security/adShield/adShieldPostureAdapter.js"
+    );
+    const adShieldResult = await runAdShieldPostureFeatures({
+      adConfig: cfg,
+      features: featureList,
+      scanId,
+      queryOverrides,
+      maxObjects: options.maxUsers ?? cfg.maxUsers,
+    });
+    return {
+      scanId,
+      module: "kerberos_security",
+      applicationId: String(applicationId),
+      startedAt,
+      completedAt: new Date().toISOString(),
+      userCount: adShieldResult.diagnostics?.usersScanned || 0,
+      computerCount: adShieldResult.diagnostics?.computersScanned || 0,
+      features: featureList,
+      counts: adShieldResult.counts,
+      findings: adShieldResult.findings,
+      featureDiagnostics: adShieldResult.featureDiagnostics,
+      summary: {
+        totalFindings: adShieldResult.findings.length,
+        byFeature: adShieldResult.counts,
+      },
+      source: "adshield",
+      errors: adShieldResult.errors || [],
+    };
+  }
+
   const result = await runLdapFeatureScanLoop({
     moduleId: "kerberos_security",
     featureList,

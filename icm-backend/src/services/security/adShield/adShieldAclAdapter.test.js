@@ -83,7 +83,7 @@ describe("ADShield ACL integration", () => {
     expect(
       adapter.mapAdShieldFinding(
         {
-          feature: "orphan_sids",
+          feature: "not_a_real_feature",
           objectType: "user",
           objectName: "u",
           status: "orphan_sid",
@@ -93,6 +93,23 @@ describe("ADShield ACL integration", () => {
         "s1",
       ),
     ).toBeNull();
+  });
+
+  test("mapAdShieldFinding accepts valid orphan_sids finding", async () => {
+    const { adapter } = await loadModules();
+    const mapped = adapter.mapAdShieldFinding(
+      {
+        feature: "orphan_sids",
+        objectType: "user",
+        objectName: "u",
+        status: "orphan_sid",
+        findingSignals: ["ORPHAN_SID"],
+        findingType: "ORPHAN_SID",
+      },
+      "s1",
+    );
+    expect(mapped?.feature).toBe("orphan_sids");
+    expect(mapped?.findingSignals).toContain("ORPHAN_SID");
   });
 
   test("mapAdShieldFinding accepts valid broken_acls finding", async () => {
@@ -196,7 +213,7 @@ describe("ADShield ACL integration", () => {
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(result.results.find((r) => r.feature === "orphan_sids")?.source).toBe(
-      "node",
+      "adshield",
     );
     expect(result.results.find((r) => r.feature === "broken_acls")?.source).toBe(
       "adshield",

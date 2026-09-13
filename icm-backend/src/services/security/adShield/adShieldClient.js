@@ -4,6 +4,9 @@
  */
 
 const ACL_ANALYSIS_PATH = "/api/v1/security/acl-analysis";
+const ACCOUNT_ANALYSIS_PATH = "/api/v1/security/account-analysis";
+const POSTURE_ANALYSIS_PATH = "/api/v1/security/posture-analysis";
+const REMEDIATE_PATH = "/api/v1/security/remediate";
 
 function parseBool(value, fallback = false) {
   if (value === undefined || value === null || value === "") return fallback;
@@ -49,13 +52,14 @@ export function sanitizeAdShieldErrorMessage(value) {
 }
 
 /**
- * POST ACL analysis to ADShield.
- * @param {object} body - request payload (may include connection.bindPassword)
- * @param {{ timeoutMs?: number, signal?: AbortSignal }} [opts]
+ * @param {string} path
+ * @param {object} body
+ * @param {{ timeoutMs?: number, signal?: AbortSignal, label?: string }} [opts]
  * @returns {Promise<object>}
  */
-export async function postAclAnalysis(body, opts = {}) {
+async function postAdShieldJson(path, body, opts = {}) {
   const cfg = getAdShieldConfig();
+  const label = opts.label || "ADShield request";
   if (!cfg.enabled) {
     const err = new Error("ADShield is disabled.");
     err.code = "ADSHIELD_DISABLED";
@@ -67,7 +71,7 @@ export async function postAclAnalysis(body, opts = {}) {
     throw err;
   }
 
-  const url = `${cfg.baseUrl}${ACL_ANALYSIS_PATH}`;
+  const url = `${cfg.baseUrl}${path}`;
   const timeoutMs = opts.timeoutMs ?? cfg.timeoutMs;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -111,7 +115,7 @@ export async function postAclAnalysis(body, opts = {}) {
         (data && typeof data === "object" && (data.message || data.errors?.[0])) ||
         `HTTP ${res.status}`;
       const err = new Error(
-        sanitizeAdShieldErrorMessage(`ADShield ACL analysis failed: ${detail}`),
+        sanitizeAdShieldErrorMessage(`${label} failed: ${detail}`),
       );
       err.code = "ADSHIELD_HTTP_ERROR";
       err.status = res.status;
@@ -120,7 +124,7 @@ export async function postAclAnalysis(body, opts = {}) {
     }
 
     if (!data || typeof data !== "object") {
-      const err = new Error("ADShield returned an empty ACL analysis payload.");
+      const err = new Error(`ADShield returned an empty ${label} payload.`);
       err.code = "ADSHIELD_BAD_RESPONSE";
       throw err;
     }
@@ -129,9 +133,7 @@ export async function postAclAnalysis(body, opts = {}) {
   } catch (err) {
     if (err?.code?.startsWith?.("ADSHIELD_")) throw err;
     if (err?.name === "AbortError") {
-      const timeoutErr = new Error(
-        `ADShield ACL analysis timed out after ${timeoutMs} ms.`,
-      );
+      const timeoutErr = new Error(`${label} timed out after ${timeoutMs} ms.`);
       timeoutErr.code = "ADSHIELD_TIMEOUT";
       throw timeoutErr;
     }
@@ -144,10 +146,57 @@ export async function postAclAnalysis(body, opts = {}) {
       /ECONNREFUSED|ENOTFOUND|EHOSTUNREACH|fetch failed/i.test(String(err?.message))
         ? "ADSHIELD_UNAVAILABLE"
         : "ADSHIELD_ERROR";
-    // Do not attach raw cause — it may contain credential substrings from lower layers.
     throw wrapped;
   } finally {
     clearTimeout(timer);
     if (opts.signal) opts.signal.removeEventListener("abort", onAbort);
   }
+}
+
+/**
+ * POST ACL analysis to ADShield.
+ * @param {object} body
+ * @param {{ timeoutMs?: number, signal?: AbortSignal }} [opts]
+ */
+export async function postAclAnalysis(body, opts = {}) {
+  return postAdShieldJson(ACL_ANALYSIS_PATH, body, {
+    ...opts,
+    label: "ADShield ACL analysis",
+  });
+}
+
+/**
+ * POST account analysis to ADShield.
+ * @param {object} body
+ * @param {{ timeoutMs?: number, signal?: AbortSignal }} [opts]
+ */
+export async function postAccountAnalysis(body, opts = {}) {
+  return postAdShieldJson(ACCOUNT_ANALYSIS_PATH, body, {
+    ...opts,
+    label: "ADShield account analysis",
+  });
+}
+
+/**
+ * POST posture analysis (groups / privileged / computers / kerberos / delegation).
+ * @param {object} body
+ * @param {{ timeoutMs?: number, signal?: AbortSignal }} [opts]
+ */
+export async function postPostureAnalysis(body, opts = {}) {
+  return postAdShieldJson(POSTURE_ANALYSIS_PATH, body, {
+    ...opts,
+    label: "ADShield posture analysis",
+  });
+}
+
+/**
+ * POST remediation (preview via dryRun=true, or apply).
+ * @param {object} body
+ * @param {{ timeoutMs?: number, signal?: AbortSignal }} [opts]
+ */
+export async function postRemediate(body, opts = {}) {
+  return postAdShieldJson(REMEDIATE_PATH, body, {
+    ...opts,
+    label: "ADShield remediation",
+  });
 }

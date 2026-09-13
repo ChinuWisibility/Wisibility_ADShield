@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useParams, useSearchParams, Link as RouterLink } from "react-router-dom";
+import { useParams, useSearchParams, Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,23 +8,38 @@ import {
   Button,
   Alert,
   Chip,
-  Grid,
+  Checkbox,
+  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataGrid } from "@mui/x-data-grid";
 import AssessmentContextBar from "../../../components/security/AssessmentContextBar";
-import FindingsTable from "../../../components/security/FindingsTable";
 import RiskDrilldownDrawer from "../../../components/security/RiskDrilldownDrawer";
 import SecurityExportMenu from "../../../components/security/SecurityExportMenu";
-import SecurityRemediationStatusChip from "./components/SecurityRemediationStatusChip";
+import RiskSeverityChip from "../../../components/security/RiskSeverityChip";
 import EmptyStateSecurity from "../../../components/security/EmptyStateSecurity";
 import SecurityFindingRemediateButton from "../../../components/security/SecurityFindingRemediateButton";
 import { useSecurityWorkspace } from "../SecurityWorkspaceContext";
 import { securityAPI } from "../../../services/securityApi";
-import { featureLabel } from "../securityFeatureMeta";
 import { securityPageHeaderSx } from "../securityTheme";
 import useQueueTaskPageStatus from "../../../hooks/useQueueTaskPageStatus";
+import {
+  featureDisplayName,
+  humanFindingType,
+  remediationAvailability,
+  remediationAvailabilityLabel,
+  recommendedActionLabel,
+  whatAdShieldWillChange,
+  SAFE_BULK_FEATURES,
+  findingHasDn,
+  normalizeSeverity,
+  maxSeverity,
+} from "./adShieldRemediationMeta";
 
 function findingTargetId(finding) {
   return (
@@ -39,10 +54,12 @@ function findingTargetId(finding) {
 }
 
 /**
- * Feature-level remediation drill-down — reuses FindingsTable + Compare buckets.
+ * Feature-level remediation detail — action-centered, not scan-comparison-first.
  */
 export default function SecurityRemediationFeatureDetail() {
   const { featureId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const { applicationId: workspaceAppId, buildPath, setApplicationId } = useSecurityWorkspace();
 
@@ -51,14 +68,37 @@ export default function SecurityRemediationFeatureDetail() {
   const currentScanId = searchParams.get("scanId") || "";
 
   const [selected, setSelected] = useState(null);
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 25 });
-  const [bucket, setBucket] = useState("remaining");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
     if (applicationId && applicationId !== workspaceAppId) {
       setApplicationId(applicationId);
     }
   }, [applicationId, workspaceAppId, setApplicationId]);
+
+  const findingsQuery = useQuery({
+    queryKey: [
+      "security",
+      "remediation-feature-findings",
+      applicationId,
+      currentScanId,
+      featureId,
+    ],
+    queryFn: async () => {
+      const res = await securityAPI.getFindings(applicationId, {
+        scanId: currentScanId || undefined,
+        feature: featureId,
+        page: 1,
+        limit: 2000,
+      });
+      return res.data?.data ?? res.data;
+    },
+    enabled: Boolean(applicationId),
+  });
 
   const compareQuery = useQuery({
     queryKey: [
@@ -79,25 +119,22 @@ export default function SecurityRemediationFeatureDetail() {
     enabled: Boolean(applicationId),
   });
 
-  const featureStats = compareQuery.data?.byFeature?.[featureId] || null;
+  const findings = useMemo(() => {
+    const data = findingsQuery.data;
+    return data?.items || data?.findings || [];
+  }, [findingsQuery.data]);
 
-  const bucketRows = useMemo(() => {
-    const data = compareQuery.data || {};
-    const pick = (list) =>
-      (list || []).filter((f) => String(f.feature) === String(featureId));
-    if (bucket === "resolved") return pick(data.resolvedItems);
-    if (bucket === "new") return pick(data.newItems);
-    if (bucket === "reopened") return [];
-    return pick(data.remainingItems || data.unchangedItems);
-  }, [bucket, compareQuery.data, featureId]);
+  const featureStats = compareQuery.data?.byFeature?.[featureId] || null;
+  const availability = remediationAvailability(featureId);
+  const severity = maxSeverity(findings.map((f) => f.severity || f.riskLevel));
+  const whyItMatters =
+    findings.find((f) => f.recommendation)?.recommendation ||
+    findings.find((f) => f.description)?.description ||
+    "";
 
   const targetIds = useMemo(
-    () =>
-      bucketRows
-        .map(findingTargetId)
-        .filter(Boolean)
-        .map(String),
-    [bucketRows],
+    () => findings.map(findingTargetId).filter(Boolean).map(String),
+    [findings],
   );
 
   const queueStatus = useQueueTaskPageStatus({
@@ -106,37 +143,57 @@ export default function SecurityRemediationFeatureDetail() {
     enabled: targetIds.length > 0,
   });
 
-  const findingsQuery = useQuery({
-    queryKey: [
-      "security",
-      "remediation-feature-findings",
-      applicationId,
-      currentScanId,
-      featureId,
-      paginationModel.page,
-      paginationModel.pageSize,
-    ],
-    queryFn: async () => {
-      const res = await securityAPI.getFindings(applicationId, {
-        scanId: currentScanId || undefined,
-        feature: featureId,
-        page: paginationModel.page + 1,
-        limit: paginationModel.pageSize,
-      });
-      return res.data?.data ?? res.data;
-    },
-    enabled: Boolean(applicationId) && bucket === "current",
-  });
+  const gridRows = useMemo(
+    () =>
+      findings.map((r, idx) => ({
+        ...r,
+        id: r.id || `${r.dn || r.objectName}-${idx}`,
+      })),
+    [findings],
+  );
 
-  const remediationColumns = useMemo(
+  const remediableRows = useMemo(
+    () =>
+      gridRows.filter(
+        (f) =>
+          SAFE_BULK_FEATURES.has(String(featureId)) &&
+          findingHasDn(f) &&
+          remediationAvailability(featureId, f) === "remediable",
+      ),
+    [gridRows, featureId],
+  );
+
+  const selectedFindings = useMemo(
+    () => gridRows.filter((f) => selectedIds.includes(f.id)),
+    [gridRows, selectedIds],
+  );
+
+  const columns = useMemo(
     () => [
       {
-        field: "compareClass",
-        headerName: "Remediation",
-        width: 120,
-        renderCell: (params) => (
-          <SecurityRemediationStatusChip status={params.value || bucket} />
-        ),
+        field: "__select",
+        headerName: "",
+        width: 48,
+        sortable: false,
+        renderCell: (params) => {
+          const id = params.row.id;
+          const canSelect =
+            SAFE_BULK_FEATURES.has(String(featureId)) && findingHasDn(params.row);
+          return (
+            <Checkbox
+              size="small"
+              disabled={!canSelect}
+              checked={selectedIds.includes(id)}
+              onChange={(e) => {
+                e.stopPropagation();
+                setSelectedIds((prev) =>
+                  e.target.checked ? [...prev, id] : prev.filter((x) => x !== id),
+                );
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          );
+        },
       },
       {
         field: "objectName",
@@ -145,29 +202,33 @@ export default function SecurityRemediationFeatureDetail() {
         minWidth: 140,
       },
       {
-        field: "findingType",
+        field: "objectType",
         headerName: "Type",
-        flex: 1,
-        minWidth: 130,
+        width: 100,
+        valueFormatter: (value) =>
+          String(value || "object").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
       },
       {
-        field: "recommendation",
-        headerName: "Recommendation",
-        flex: 1.5,
-        minWidth: 160,
-      },
-      {
-        field: "queueStatus",
-        headerName: "Queue",
+        field: "severity",
+        headerName: "Severity",
         width: 120,
-        renderCell: (params) => {
-          const tid = findingTargetId(params.row);
-          const info = tid ? queueStatus.getQueuedInfo?.(String(tid)) : null;
-          if (!info?.taskId && !info?.eventId) {
-            return <Typography variant="caption">—</Typography>;
-          }
-          return <SecurityRemediationStatusChip status="queued" />;
-        },
+        renderCell: (params) => (
+          <RiskSeverityChip severity={normalizeSeverity(params.value || params.row.riskLevel)} />
+        ),
+      },
+      {
+        field: "findingType",
+        headerName: "Current State",
+        flex: 1,
+        minWidth: 140,
+        valueGetter: (_v, row) => humanFindingType(row),
+      },
+      {
+        field: "remediationState",
+        headerName: "Remediation State",
+        width: 150,
+        valueGetter: (_v, row) =>
+          remediationAvailabilityLabel(remediationAvailability(featureId, row)),
       },
       {
         field: "action",
@@ -183,26 +244,78 @@ export default function SecurityRemediationFeatureDetail() {
                 : null
             }
             onQueuedRefresh={queueStatus.refresh}
+            onRemediated={() => {
+              queryClient.invalidateQueries({
+                queryKey: ["security", "remediation-feature-findings"],
+              });
+            }}
           />
         ),
       },
     ],
-    [bucket, queueStatus],
-  );
-
-  const gridRows = useMemo(
-    () =>
-      bucketRows.map((r, idx) => ({
-        ...r,
-        id: r.id || `${r.dn || r.objectName}-${idx}`,
-        compareClass: r.compareClass || bucket,
-      })),
-    [bucket, bucketRows],
+    [featureId, selectedIds, queueStatus, queryClient],
   );
 
   const backTo = buildPath("/security/remediation", {
     baselineScanId: baselineScanId || undefined,
+    scanId: currentScanId || undefined,
   });
+
+  const selectAllSafe = () => {
+    setSelectedIds(remediableRows.map((r) => r.id));
+  };
+
+  const runSelectedRemediation = async () => {
+    const targets =
+      selectedFindings.length > 0
+        ? selectedFindings.filter((f) => findingHasDn(f))
+        : remediableRows;
+    if (!targets.length) return;
+
+    setBusy(true);
+    setResult(null);
+    let ok = 0;
+    const failed = [];
+    for (let i = 0; i < targets.length; i += 1) {
+      const finding = targets[i];
+      setProgress({
+        index: i + 1,
+        total: targets.length,
+        current: finding.objectName || finding.dn,
+      });
+      try {
+        const res = await securityAPI.remediateFinding(applicationId, {
+          finding,
+          dryRun: false,
+        });
+        const data = res.data?.data || res.data;
+        if (data?.success) ok += 1;
+        else {
+          failed.push({
+            objectName: finding.objectName,
+            reason: data?.errors?.[0] || "Remediation failed",
+          });
+        }
+      } catch (e) {
+        failed.push({
+          objectName: finding.objectName,
+          reason: e?.response?.data?.message || e?.message || "Remediation failed",
+        });
+      }
+    }
+    setBusy(false);
+    setProgress(null);
+    setResult({ ok, failed, total: targets.length });
+    setConfirmOpen(false);
+    queryClient.invalidateQueries({ queryKey: ["security", "remediation-feature-findings"] });
+    queryClient.invalidateQueries({ queryKey: ["security", "remediation-action-findings"] });
+    queryClient.invalidateQueries({ queryKey: ["security", "overview"] });
+  };
+
+  const targetsForConfirm =
+    selectedFindings.length > 0
+      ? selectedFindings.filter((f) => findingHasDn(f))
+      : remediableRows;
 
   return (
     <Box sx={{ p: 3, maxWidth: 1920, mx: "auto" }}>
@@ -224,11 +337,15 @@ export default function SecurityRemediationFeatureDetail() {
         sx={{ mb: 2 }}
       >
         <Box>
-          <Typography variant="h5" sx={securityPageHeaderSx}>
-            {featureLabel(featureId)}
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+            <RiskSeverityChip severity={severity} />
+            <Typography variant="h5" sx={securityPageHeaderSx}>
+              {featureDisplayName(featureId)}
+            </Typography>
+          </Stack>
           <Typography variant="body2" color="text.secondary">
-            Feature remediation detail — baseline vs current assessment
+            {findings.length} affected {findings.length === 1 ? "object" : "objects"}
+            {featureStats?.resolved != null ? ` · ${featureStats.resolved} resolved vs earlier scan` : ""}
           </Typography>
         </Box>
         {applicationId && (
@@ -245,105 +362,178 @@ export default function SecurityRemediationFeatureDetail() {
         <>
           <AssessmentContextBar />
 
-          {compareQuery.isError && (
+          {findingsQuery.isError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {compareQuery.error?.message || "Failed to load comparison"}
+              {findingsQuery.error?.message || "Failed to load findings"}
             </Alert>
           )}
 
-          <Grid container spacing={1.5} sx={{ mb: 2 }}>
-            {[
-              { key: "baseline", label: "Baseline", value: featureStats?.baseline ?? "—" },
-              { key: "current", label: "Current", value: featureStats?.current ?? "—" },
-              { key: "resolved", label: "Resolved", value: featureStats?.resolved ?? 0 },
-              { key: "remaining", label: "Remaining", value: featureStats?.remaining ?? 0 },
-              { key: "new", label: "New", value: featureStats?.new ?? 0 },
-              { key: "reopened", label: "Reopened", value: featureStats?.reopened ?? 0 },
-            ].map((item) => (
-              <Grid item xs={6} sm={4} md={2} key={item.key}>
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: 1.25,
-                    cursor: ["resolved", "remaining", "new", "current"].includes(item.key)
-                      ? "pointer"
-                      : "default",
-                    borderColor:
-                      bucket === item.key || (bucket === "remaining" && item.key === "remaining")
-                        ? "primary.main"
-                        : "divider",
-                  }}
-                  onClick={() => {
-                    if (["resolved", "remaining", "new", "current"].includes(item.key)) {
-                      setBucket(item.key);
-                      setPaginationModel((m) => ({ ...m, page: 0 }));
-                    }
-                  }}
+          {result && (
+            <Alert
+              severity={result.failed.length ? "warning" : "success"}
+              sx={{ mb: 2 }}
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  sx={{ textTransform: "none" }}
+                  onClick={() => navigate(buildPath("/security/scans"))}
                 >
-                  <Typography variant="caption" color="text.secondary" fontWeight={700}>
-                    {item.label}
-                  </Typography>
-                  <Typography variant="h6" fontWeight={800}>
-                    {item.value}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
+                  Verify with Scan
+                </Button>
+              }
+            >
+              {result.failed.length
+                ? `Remediation partially completed — ${result.ok} of ${result.total} resolved, ${result.failed.length} require attention.`
+                : `Remediation successful — ${result.ok} of ${result.total} issues resolved.`}
+            </Alert>
+          )}
 
-          <Stack direction="row" spacing={1} sx={{ mb: 1.5 }} flexWrap="wrap" useFlexGap>
-            {["remaining", "resolved", "new", "current"].map((key) => (
+          {busy && progress && (
+            <Paper sx={{ p: 2, mb: 2, border: 1, borderColor: "divider" }}>
+              <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1 }}>
+                Remediating…
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                {progress.index} of {progress.total} completed
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={(progress.index / progress.total) * 100}
+                sx={{ mb: 1 }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                Current: {progress.current}
+              </Typography>
+            </Paper>
+          )}
+
+          <Paper sx={{ p: 2, mb: 2, border: 1, borderColor: "divider" }}>
+            <Typography variant="overline" color="text.secondary" fontWeight={800}>
+              Why this matters
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 0.5 }}>
+              {whyItMatters ||
+                "Review this Active Directory finding and remediate when appropriate."}
+            </Typography>
+          </Paper>
+
+          <Paper sx={{ p: 2, mb: 2, border: 1, borderColor: "divider" }}>
+            <Typography variant="overline" color="text.secondary" fontWeight={800}>
+              Recommended action
+            </Typography>
+            <Typography variant="body1" fontWeight={700} sx={{ mt: 0.5, mb: 1.5 }}>
+              {recommendedActionLabel(featureId)}
+            </Typography>
+            <Typography variant="overline" color="text.secondary" fontWeight={800}>
+              What ADShield will change
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 0.5, mb: 2 }}>
+              {whatAdShieldWillChange(featureId)}
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
               <Chip
-                key={key}
                 size="small"
-                label={key === "current" ? "Current findings" : key}
-                color={bucket === key ? "primary" : "default"}
-                variant={bucket === key ? "filled" : "outlined"}
-                onClick={() => setBucket(key)}
-                sx={{ textTransform: "capitalize" }}
+                label={`Remediation: ${remediationAvailabilityLabel(availability)}`}
+                color={availability === "remediable" ? "success" : "default"}
+                variant="outlined"
               />
-            ))}
-          </Stack>
+              {SAFE_BULK_FEATURES.has(String(featureId)) && remediableRows.length > 0 && (
+                <>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ textTransform: "none" }}
+                    onClick={selectAllSafe}
+                  >
+                    Select All Safe Items
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ textTransform: "none" }}
+                    disabled={busy || (selectedIds.length === 0 && remediableRows.length === 0)}
+                    onClick={() => setConfirmOpen(true)}
+                  >
+                    {selectedIds.length
+                      ? `Remediate Selected (${selectedIds.length})`
+                      : `Remediate (${remediableRows.length})`}
+                  </Button>
+                </>
+              )}
+            </Stack>
+          </Paper>
 
+          <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1 }}>
+            Affected objects
+          </Typography>
           <Paper sx={{ p: 1, border: 1, borderColor: "divider" }}>
-            {bucket === "current" ? (
-              <FindingsTable
-                rows={findingsQuery.data?.items || findingsQuery.data?.findings || []}
-                rowCount={findingsQuery.data?.total ?? 0}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
+            <Box sx={{ width: "100%", minHeight: 420 }}>
+              <DataGrid
+                rows={gridRows}
+                columns={columns}
                 loading={findingsQuery.isLoading}
-                onRowClick={setSelected}
+                pageSizeOptions={[25, 50]}
+                initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
+                disableRowSelectionOnClick
+                onRowClick={(params) => setSelected(params.row)}
+                disableColumnMenu
+                density="compact"
+                sx={{
+                  border: "none",
+                  "& .MuiDataGrid-row": { cursor: "pointer" },
+                }}
               />
-            ) : (
-              <Box sx={{ width: "100%", minHeight: 420 }}>
-                <DataGrid
-                  rows={gridRows}
-                  columns={remediationColumns}
-                  loading={compareQuery.isLoading}
-                  pageSizeOptions={[25, 50]}
-                  initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
-                  disableRowSelectionOnClick
-                  onRowClick={(params) => setSelected(params.row)}
-                  disableColumnMenu
-                  density="compact"
-                  sx={{
-                    border: "none",
-                    "& .MuiDataGrid-row": { cursor: "pointer" },
-                  }}
-                />
-              </Box>
-            )}
+            </Box>
           </Paper>
         </>
       )}
+
+      <Dialog open={confirmOpen} onClose={() => !busy && setConfirmOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Remediate {featureDisplayName(featureId)}?</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1.5} sx={{ pt: 0.5 }}>
+            <Typography variant="body2">
+              {targetsForConfirm.length}{" "}
+              {targetsForConfirm.length === 1 ? "object" : "objects"} will be updated in Active
+              Directory.
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              ADShield will:
+            </Typography>
+            <Box component="ul" sx={{ m: 0, pl: 2.5 }}>
+              <Typography component="li" variant="body2">
+                apply the configured remediation ({whatAdShieldWillChange(featureId)})
+              </Typography>
+              <Typography component="li" variant="body2">
+                verify the resulting AD state
+              </Typography>
+              <Typography component="li" variant="body2">
+                update the finding status
+              </Typography>
+            </Box>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)} disabled={busy} sx={{ textTransform: "none" }}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={runSelectedRemediation}
+            disabled={busy || !targetsForConfirm.length}
+            sx={{ textTransform: "none" }}
+          >
+            Remediate
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <RiskDrilldownDrawer
         open={Boolean(selected)}
         finding={selected}
         onClose={() => setSelected(null)}
         remediationContext={{
-          compareClass: selected?.compareClass || bucket,
           baselineScanId,
           currentScanId,
           queuedInfo: findingTargetId(selected)

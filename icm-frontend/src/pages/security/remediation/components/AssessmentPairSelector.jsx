@@ -242,17 +242,17 @@ export default function AssessmentPairSelector({
       >
         <Box>
           <Typography variant="subtitle2" fontWeight={800}>
-            Assessment pair
+            Compare scans
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Baseline vs current — only executions of the {versionLabel} (same Version required)
+            Pick an earlier scan and a later one ({versionLabel})
           </Typography>
         </Box>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="center">
           <TextField
             select
             size="small"
-            label="Baseline execution"
+            label="Earlier scan"
             value={baselineScanId && scans.some((s) => s.scanId === baselineScanId) ? baselineScanId : ""}
             onChange={(e) => onBaselineChange?.(e.target.value)}
             sx={{ minWidth: 200 }}
@@ -267,7 +267,7 @@ export default function AssessmentPairSelector({
           <TextField
             select
             size="small"
-            label="Current execution"
+            label="Later scan"
             value={currentScanId && scans.some((s) => s.scanId === currentScanId) ? currentScanId : ""}
             onChange={(e) => {
               onCurrentChange?.(e.target.value);
@@ -297,19 +297,18 @@ export default function AssessmentPairSelector({
               }
             }}
           >
-            Use latest pair
+            Use latest two
           </Button>
         </Stack>
       </Stack>
       {selectedVersionId && scans.length === 0 && !scansQuery.isLoading && (
         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-          No executions under this Version yet. Execute the Assessment again to build a comparable
-          pair.
+          No scans yet for this version. Run a scan in Scan Center to get started.
         </Typography>
       )}
       {scans.length === 1 && (
         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-          Need a second execution under the same Version to measure remediation progress.
+          Run one more scan to compare progress.
         </Typography>
       )}
     </Paper>

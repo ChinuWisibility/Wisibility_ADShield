@@ -487,6 +487,41 @@ public sealed class LdapActiveDirectoryClient : IActiveDirectoryClient
         _logger.LogInformation("Deleted directory object {Dn}", distinguishedName.Trim());
     }
 
+    public async Task RenameObjectAsync(
+        string distinguishedName,
+        string newParentDn,
+        string? newRdn = null,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureNotDisposed();
+        if (string.IsNullOrWhiteSpace(distinguishedName))
+            throw new ArgumentException("Distinguished name is required.", nameof(distinguishedName));
+        if (string.IsNullOrWhiteSpace(newParentDn))
+            throw new ArgumentException("New parent distinguished name is required.", nameof(newParentDn));
+
+        var dn = distinguishedName.Trim();
+        var parent = newParentDn.Trim();
+        var rdn = string.IsNullOrWhiteSpace(newRdn) ? ExtractRdn(dn) : newRdn.Trim();
+        if (string.IsNullOrWhiteSpace(rdn))
+            throw new ArgumentException("Could not determine RDN for rename/move.", nameof(newRdn));
+
+        await EnsureBoundAsync(cancellationToken).ConfigureAwait(false);
+        var request = new ModifyDNRequest(dn, parent, rdn);
+        await SendDirectoryAsync(request, cancellationToken).ConfigureAwait(false);
+        _logger.LogInformation(
+            "LDAP rename/move succeeded for {Dn} under new parent {ParentDn}",
+            dn,
+            parent);
+    }
+
+    private static string ExtractRdn(string distinguishedName)
+    {
+        var comma = distinguishedName.IndexOf(',');
+        return comma < 0
+            ? distinguishedName.Trim()
+            : distinguishedName[..comma].Trim();
+    }
+
     private static DirectorySearchHit MapSearchHit(SearchResultEntry entry)
     {
         var dn = entry.DistinguishedName ?? string.Empty;

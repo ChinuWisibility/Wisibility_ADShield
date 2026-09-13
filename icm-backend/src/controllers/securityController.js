@@ -41,6 +41,12 @@ import {
 } from "../services/security/assessmentVersionService.js";
 import { validatePostureLdapConnection, friendlyLdapErrorMessage } from "../services/posture/postureLdapValidator.js";
 import { isAdShieldEnabled } from "../services/security/adShield/adShieldClient.js";
+import { remediateSecurityFinding } from "../services/security/adShield/adShieldRemediationService.js";
+import {
+  isAdShieldAccountFeature,
+  isAdShieldAclFeature,
+  isAdShieldPostureFeature,
+} from "../services/security/adShield/adShieldFeatures.js";
 
 function selectedFeaturesNeedLdap(featureIds) {
   return (featureIds || []).some((id) => getPostureFeatureById(id)?.requiresAdLdap);
@@ -48,7 +54,15 @@ function selectedFeaturesNeedLdap(featureIds) {
 
 /** True when any selected feature needs live ADShield (.NET) analysis. */
 function selectedFeaturesNeedAdShield(featureIds) {
-  return (featureIds || []).some((id) => getPostureFeatureById(id)?.requiresAdShield);
+  if (!isAdShieldEnabled()) return false;
+  return (featureIds || []).some(
+    (id) =>
+      getPostureFeatureById(id)?.requiresAdShield ||
+      isAdShieldAccountFeature(id) ||
+      isAdShieldAclFeature(id) ||
+      isAdShieldPostureFeature(id) ||
+      id === "shadow_admins",
+  );
 }
 
 async function loadApplication(req, res) {
@@ -66,6 +80,56 @@ async function loadApplication(req, res) {
     return null;
   }
   return application;
+}
+
+/**
+ * POST /api/security/applications/:applicationId/remediate
+ * Body: { finding, dryRun?, bindPassword?, overrides? }
+ * dryRun=true → preview; dryRun=false → apply + verify via ADShield.
+ */
+export async function remediateApplicationSecurityFinding(req, res) {
+  try {
+    const app = await loadApplication(req, res);
+    if (!app) return;
+
+    const finding = req.body?.finding;
+    if (!finding || typeof finding !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Request body.finding is required.",
+      });
+    }
+
+    const dryRun = req.body?.dryRun !== false;
+    const data = await remediateSecurityFinding({
+      application: app,
+      finding,
+      dryRun,
+      bindPassword: req.body?.bindPassword,
+      overrides: req.body?.overrides || {},
+      correlationId: req.body?.correlationId || req.headers["x-correlation-id"],
+      requester: req.user || null,
+    });
+
+    const status = data.success ? 200 : 400;
+    return res.status(status).json({ success: data.success, data });
+  } catch (e) {
+    const code = e?.code || "";
+    const status =
+      code === "ADSHIELD_DISABLED" ||
+      code === "AD_CONFIG_REQUIRED" ||
+      code === "REMEDIATION_UNSUPPORTED" ||
+      code === "REMEDIATION_MISSING_TARGET"
+        ? 400
+        : code === "ADSHIELD_UNAVAILABLE"
+          ? 503
+          : 500;
+    return res.status(status).json({
+      success: false,
+      message: e.message || "Remediation failed",
+      code: code || undefined,
+    });
+  }
 }
 
 /**

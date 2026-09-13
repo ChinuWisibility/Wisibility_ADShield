@@ -527,6 +527,39 @@ export async function runGroupLdapSecurityScan({
   const featureList = normalizeSelectedFeatures(features);
   const queryOverrides = options.queryOverrides || {};
 
+  const { isAdShieldEnabled } = await import("../security/adShield/adShieldClient.js");
+  if (isAdShieldEnabled()) {
+    const { runAdShieldPostureFeatures } = await import(
+      "../security/adShield/adShieldPostureAdapter.js"
+    );
+    const adShieldResult = await runAdShieldPostureFeatures({
+      adConfig: cfg,
+      features: featureList,
+      scanId,
+      queryOverrides,
+      maxObjects: options.maxGroups ?? cfg.maxGroups,
+    });
+    return {
+      scanId,
+      module: "group_ldap_security",
+      applicationId: String(applicationId),
+      startedAt,
+      completedAt: new Date().toISOString(),
+      groupCount:
+        adShieldResult.diagnostics?.groupsScanned || 0,
+      features: featureList,
+      counts: adShieldResult.counts,
+      findings: adShieldResult.findings,
+      featureDiagnostics: adShieldResult.featureDiagnostics,
+      summary: {
+        totalFindings: adShieldResult.findings.length,
+        byFeature: adShieldResult.counts,
+      },
+      source: "adshield",
+      errors: adShieldResult.errors || [],
+    };
+  }
+
   const allFindings = [];
   const counts = Object.fromEntries(featureList.map((f) => [f, 0]));
   const featureDiagnostics = [];

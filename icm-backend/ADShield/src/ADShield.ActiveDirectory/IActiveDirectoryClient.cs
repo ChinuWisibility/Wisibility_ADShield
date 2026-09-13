@@ -107,6 +107,16 @@ public interface IActiveDirectoryClient : IAsyncDisposable
     Task DeleteObjectAsync(
         string distinguishedName,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Moves (and optionally renames) an object via LDAP Modify DN.
+    /// When <paramref name="newRdn"/> is null, the existing RDN is kept.
+    /// </summary>
+    Task RenameObjectAsync(
+        string distinguishedName,
+        string newParentDn,
+        string? newRdn = null,
+        CancellationToken cancellationToken = default);
 }
 
 public enum SearchScopeKind

@@ -100,6 +100,14 @@ export const securityAPI = {
   getRemediationApplicationsSummary: (params) =>
     api.get("/security/remediation/applications-summary", { params }),
 
+  /**
+   * Preview (dryRun: true) or apply ADShield remediation for a Security Posture finding.
+   */
+  remediateFinding: (applicationId, body) =>
+    api.post(`/security/applications/${applicationId}/remediate`, body, {
+      timeout: 180000,
+    }),
+
   runScan: (applicationId, body) =>
     api.post(`/security/applications/${applicationId}/scans/run`, body, {
       timeout: 600000,

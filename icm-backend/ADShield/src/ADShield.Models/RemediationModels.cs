@@ -22,8 +22,15 @@ public sealed class SecurityRemediationRequest
 public sealed class SecurityRemediationAction
 {
     /// <summary>
-    /// Action id. Supported (ACL phase):
-    /// remove_dacl_ace | clear_sid_history | delete_foreign_security_principal
+    /// Action id. Supported:
+    /// ACL: remove_dacl_ace | clear_sid_history | delete_foreign_security_principal
+    /// Accounts: enable_account | disable_account | unlock_account |
+    /// clear_password_never_expires | clear_password_not_required |
+    /// clear_reversible_encryption | require_smartcard |
+    /// remove_service_principal_names | delete_user_account |
+    /// delete_group | delete_computer | remove_group_member | set_managed_by | move_object |
+    /// clear_dont_require_preauth | clear_trusted_for_delegation |
+    /// clear_constrained_delegation | clear_rbcd
     /// </summary>
     public string Type { get; set; } = string.Empty;
 
@@ -41,6 +48,21 @@ public sealed class SecurityRemediationAction
 
     /// <summary>Optional ACE type filter (0=allow, 1=deny, …).</summary>
     public int? AceType { get; set; }
+
+    /// <summary>
+    /// Optional SPN values for remove_service_principal_names.
+    /// When empty, all SPNs on the target are removed.
+    /// </summary>
+    public IReadOnlyList<string>? SpnValues { get; set; }
+
+    /// <summary>Member DN to remove from the group (required for remove_group_member). TargetDn is the group.</summary>
+    public string? MemberDn { get; set; }
+
+    /// <summary>New managedBy DN (required for set_managed_by).</summary>
+    public string? ManagedByDn { get; set; }
+
+    /// <summary>New parent container DN (required for move_object).</summary>
+    public string? NewParentDn { get; set; }
 }
 
 public sealed class SecurityRemediationResult

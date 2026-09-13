@@ -58,18 +58,25 @@ function deriveMapsFromFeatures(features = []) {
 
 /**
  * Normalize a configuration object into the canonical Working/Version shape.
+ * Feature tiles are the source of truth for enablement and LDAP overrides when present.
+ * (Stale enabledMap/queryOverrides must not override tile toggles — that caused
+ * Execute to "Reused Version N" and run only earlier features.)
  */
 export function normalizeConfiguration(raw = {}, extras = {}) {
   const features = Array.isArray(raw.features) ? raw.features : [];
   const derived = deriveMapsFromFeatures(features);
-  const queryOverrides =
-    raw.queryOverrides && typeof raw.queryOverrides === "object"
-      ? raw.queryOverrides
-      : derived.queryOverrides;
-  const enabledMap =
-    raw.enabledMap && typeof raw.enabledMap === "object"
+
+  const enabledMap = features.length
+    ? derived.enabledMap
+    : raw.enabledMap && typeof raw.enabledMap === "object"
       ? raw.enabledMap
-      : derived.enabledMap;
+      : {};
+
+  const queryOverrides = features.length
+    ? derived.queryOverrides
+    : raw.queryOverrides && typeof raw.queryOverrides === "object"
+      ? raw.queryOverrides
+      : {};
 
   const config = {
     features,
@@ -128,6 +135,9 @@ export function workingConfigurationToApi(config) {
 
 /**
  * Build configuration from application draft overrides (seed / reset source).
+ * @param {string} applicationId
+ * @param {{ source?: string, featureSettings?: object, forceAllDisabled?: boolean }} [extras]
+ *   forceAllDisabled — assessment Working Configuration starts opt-in (all toggles off).
  */
 export async function buildConfigurationFromApplication(applicationId, extras = {}) {
   const appId = toObjectId(applicationId);
@@ -138,9 +148,14 @@ export async function buildConfigurationFromApplication(applicationId, extras = 
     Application.findById(appId).select("securityScanSettings").lean(),
   ]);
 
+  let features = Array.isArray(payload?.features) ? payload.features : [];
+  if (extras.forceAllDisabled) {
+    features = features.map((f) => ({ ...f, enabled: false }));
+  }
+
   return normalizeConfiguration(
     {
-      features: Array.isArray(payload?.features) ? payload.features : [],
+      features,
       securityScanSettings: app?.securityScanSettings || {},
     },
     {
@@ -212,6 +227,7 @@ export async function ensureWorkingConfiguration(assessmentId, { applicationId }
 
   const seeded = await buildConfigurationFromApplication(doc.applicationId, {
     source: "seeded_on_open",
+    forceAllDisabled: true,
   });
   seeded.updatedAt = new Date().toISOString();
 
@@ -348,6 +364,8 @@ export async function resetWorkingConfigurationFromApplication(
   if (!doc) return null;
   const seeded = await buildConfigurationFromApplication(doc.applicationId, {
     source: "reset_from_application",
+    // Reset returns to a blank slate; admin re-enables the features for this assessment.
+    forceAllDisabled: true,
   });
   return replaceWorkingConfiguration(assessmentId, seeded, {
     applicationId: String(doc.applicationId),

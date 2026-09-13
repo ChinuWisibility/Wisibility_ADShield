@@ -177,26 +177,59 @@ export async function runIdentityGraphSecurityScan({
 
   const aclFeatures = selected.filter((f) => ACL_INTELLIGENCE_FEATURES.includes(f));
 
-
+  const { isAdShieldEnabled } = await import("./adShield/adShieldClient.js");
+  const adShieldOn = isAdShieldEnabled();
+  const adShieldPostureFeatures = adShieldOn
+    ? [...groupFeatures, ...privFeatures]
+    : [];
 
   const t2 = Date.now();
 
-  const group = groupFeatures.length
+  let group = { results: [], findings: [] };
+  let priv = { results: [], findings: [] };
+  let adShieldPosture = { findings: [], counts: {}, featureDiagnostics: [], results: [] };
 
-    ? await runGroupIntelligence(ctx, groupFeatures)
+  if (adShieldPostureFeatures.length) {
+    const { runAdShieldPostureFeatures } = await import("./adShield/adShieldPostureAdapter.js");
+    const adConfig =
+      options.adConfig ||
+      (application?.connectionConfig?.ad
+        ? { ...application.connectionConfig.ad }
+        : null);
+    adShieldPosture = await runAdShieldPostureFeatures({
+      adConfig,
+      features: adShieldPostureFeatures,
+      scanId,
+      queryOverrides: options.queryOverrides || {},
+    });
+    // Shape results like graph runners for diagnostics.
+    adShieldPosture.results = adShieldPostureFeatures.map((feature) => ({
+      feature,
+      count: adShieldPosture.counts?.[feature] || 0,
+      findings: (adShieldPosture.findings || []).filter((f) => f.feature === feature),
+      durationMs:
+        adShieldPosture.featureDiagnostics?.find((d) => d.feature === feature)?.durationMs || 0,
+    }));
+    group = {
+      results: adShieldPosture.results.filter((r) => groupFeatures.includes(r.feature)),
+      findings: (adShieldPosture.findings || []).filter((f) => groupFeatures.includes(f.feature)),
+    };
+    priv = {
+      results: adShieldPosture.results.filter((r) => privFeatures.includes(r.feature)),
+      findings: (adShieldPosture.findings || []).filter((f) => privFeatures.includes(f.feature)),
+    };
+  } else {
+    group = groupFeatures.length
+      ? await runGroupIntelligence(ctx, groupFeatures)
+      : { results: [], findings: [] };
 
-    : { results: [], findings: [] };
-
-  const priv = privFeatures.length
-
-    ? await runPrivilegedAccessIntelligence(ctx, privFeatures)
-
-    : { results: [], findings: [] };
+    priv = privFeatures.length
+      ? await runPrivilegedAccessIntelligence(ctx, privFeatures)
+      : { results: [], findings: [] };
+  }
 
   const acl = aclFeatures.length
-
     ? await runAclIntelligence(ctx, aclFeatures)
-
     : { results: [], findings: [] };
 
   timings.analyzeMs = msSince(t2);

@@ -31,6 +31,58 @@ function run() {
   });
   assert(a.contentFingerprint !== c.contentFingerprint, "changed filter must differ");
 
+  // Stale enabledMap must not hide a tile enable toggle (regression: Reused Version).
+  const staleMap = normalizeConfiguration({
+    features: [
+      { featureKey: "disabled_users", enabled: true, implemented: true },
+      { featureKey: "password_never_expires", enabled: true, implemented: true },
+    ],
+    enabledMap: {
+      disabled_users: true,
+      password_never_expires: false,
+    },
+  });
+  assert(
+    staleMap.enabledMap.password_never_expires === true,
+    "tile enabled must win over stale enabledMap",
+  );
+  const beforeToggle = normalizeConfiguration({
+    features: [
+      { featureKey: "disabled_users", enabled: true, implemented: true },
+      { featureKey: "password_never_expires", enabled: false, implemented: true },
+    ],
+    enabledMap: {
+      disabled_users: true,
+      password_never_expires: false,
+    },
+  });
+  assert(
+    staleMap.contentFingerprint !== beforeToggle.contentFingerprint,
+    "enabling a feature via tile must change fingerprint",
+  );
+  const exec = resolveExecutionConfigFromSnapshot(staleMap);
+  assert(
+    exec.features.includes("password_never_expires"),
+    "execution must include newly enabled tile feature",
+  );
+
+  // Opt-in assessments: all tiles disabled → execute nothing.
+  const allOff = normalizeConfiguration({
+    features: [
+      { featureKey: "disabled_users", enabled: false, implemented: true },
+      { featureKey: "inactive_users", enabled: false, implemented: true },
+      { featureKey: "locked_accounts", enabled: false, implemented: true },
+    ],
+  });
+  assert(
+    Object.values(allOff.enabledMap).every((v) => !v),
+    "forceAllDisabled seed shape must yield no enabled features",
+  );
+  assert(
+    resolveExecutionConfigFromSnapshot(allOff).features.length === 0,
+    "all-disabled config must execute zero features",
+  );
+
   const cfg = resolveExecutionConfigFromSnapshot(a);
   assert(cfg.features.includes("disabled_users"), "enabled feature missing");
   assert(!cfg.features.includes("inactive_users"), "disabled feature should be excluded");

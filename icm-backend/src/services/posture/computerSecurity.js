@@ -370,6 +370,44 @@ export async function runComputerSecurityScan({
     workstationOuPatterns: resolveWorkstationOuPatterns(application, options),
   };
 
+  const { isAdShieldEnabled } = await import("../security/adShield/adShieldClient.js");
+  if (isAdShieldEnabled()) {
+    const { runAdShieldPostureFeatures } = await import(
+      "../security/adShield/adShieldPostureAdapter.js"
+    );
+    const adShieldResult = await runAdShieldPostureFeatures({
+      adConfig: cfg,
+      features: featureList,
+      scanId,
+      queryOverrides,
+      inactiveDays: analysisOptions.inactiveComputerDays,
+      maxObjects: options.maxComputers,
+      workstationOuPatterns: analysisOptions.workstationOuPatterns,
+      unsupportedOsTokens: analysisOptions.unsupportedOsTokens,
+    });
+    return {
+      scanId,
+      module: "computer_security",
+      applicationId: String(applicationId),
+      startedAt,
+      completedAt: new Date().toISOString(),
+      computerCount: adShieldResult.diagnostics?.computersScanned || 0,
+      features: featureList,
+      counts: adShieldResult.counts,
+      findings: adShieldResult.findings,
+      featureDiagnostics: adShieldResult.featureDiagnostics,
+      featureSettings: {
+        inactive_computers: { inactiveDays: analysisOptions.inactiveComputerDays },
+      },
+      summary: {
+        totalFindings: adShieldResult.findings.length,
+        byFeature: adShieldResult.counts,
+      },
+      source: "adshield",
+      errors: adShieldResult.errors || [],
+    };
+  }
+
   const allFindings = [];
   const counts = Object.fromEntries(featureList.map((f) => [f, 0]));
   const featureDiagnostics = [];

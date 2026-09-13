@@ -32,6 +32,7 @@ export default function ScanCenterHeader({
   onRunSelectedFeature,
   headerError,
   setHeaderError,
+  enabledFeatureCount = null,
   runDisabled = false,
   runDisabledReason = "Select or create an Assessment first",
 }) {
@@ -41,6 +42,10 @@ export default function ScanCenterHeader({
   const lastScan = overview?.scan?.completedAt;
   const totalFindings = overview?.totals?.findings ?? 0;
   const cannotRun = !applicationId || scanRunning || runDisabled;
+  const executeLabel =
+    enabledFeatureCount != null && enabledFeatureCount > 0
+      ? `Execute Assessment (${enabledFeatureCount})`
+      : "Execute Assessment";
 
   if (!tenantId) {
     return (
@@ -117,7 +122,17 @@ export default function ScanCenterHeader({
         />
 
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap alignItems="center">
-          <Tooltip title={runDisabled ? runDisabledReason : "Execute Assessment (auto-versions)"}>
+          <Tooltip
+            title={
+              runDisabled
+                ? runDisabledReason
+                : enabledFeatureCount != null
+                  ? `Execute Assessment — ${enabledFeatureCount} enabled feature${
+                      enabledFeatureCount === 1 ? "" : "s"
+                    }`
+                  : "Execute Assessment (auto-versions)"
+            }
+          >
             <span>
               <Button
                 size="small"
@@ -132,7 +147,7 @@ export default function ScanCenterHeader({
                 disabled={cannotRun}
                 onClick={onRunFullScan}
               >
-                Execute Assessment
+                {executeLabel}
               </Button>
             </span>
           </Tooltip>

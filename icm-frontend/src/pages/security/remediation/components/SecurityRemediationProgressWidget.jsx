@@ -8,16 +8,16 @@ import "../../../../features/remediation-events/styles/remediation-events.css";
 export default function SecurityRemediationProgressWidget({ progress, pair }) {
   const p = progress || {};
   const items = [
-    { label: "Baseline findings", value: p.baselineFindings ?? 0, hint: "At baseline execution" },
-    { label: "Resolved", value: p.resolved ?? 0, tone: "ok", hint: "Gone since baseline" },
-    { label: "Remaining", value: p.remaining ?? 0, tone: "active", hint: "Still present" },
-    { label: "New", value: p.new ?? 0, tone: "fail", hint: "Appeared since baseline" },
-    { label: "Reopened", value: p.reopened ?? 0, hint: "Requires intermediate run" },
+    { label: "Earlier scan", value: p.baselineFindings ?? 0, hint: "Findings then" },
+    { label: "Fixed", value: p.resolved ?? 0, tone: "ok", hint: "No longer present" },
+    { label: "Still open", value: p.remaining ?? 0, tone: "active", hint: "Still present" },
+    { label: "New", value: p.new ?? 0, tone: "fail", hint: "Found only in the later scan" },
+    { label: "Came back", value: p.reopened ?? 0, hint: "Fixed once, then returned" },
     {
       label: "Overall progress",
       value: `${p.progressPercent ?? 0}%`,
       tone: p.tone || (p.progressPercent >= 70 ? "ok" : p.progressPercent >= 30 ? "active" : "fail"),
-      hint: "Resolved ÷ baseline",
+      hint: "Share of earlier findings fixed",
     },
   ];
 
@@ -35,7 +35,7 @@ export default function SecurityRemediationProgressWidget({ progress, pair }) {
             Progress summary
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            How much safer is Active Directory vs the selected baseline assessment?
+            What changed between your earlier and later scans
           </Typography>
         </Box>
         {pair?.lastComparedAt && (

@@ -83,6 +83,8 @@ export default function ScanCenter() {
   const [historyPage, setHistoryPage] = useState(0);
   const [historyRowsPerPage, setHistoryRowsPerPage] = useState(10);
   const [resetting, setResetting] = useState(false);
+  const [executeConfirmOpen, setExecuteConfirmOpen] = useState(false);
+  const [disablingAll, setDisablingAll] = useState(false);
 
   const featureActionsRef = useRef(null);
   const showWorkspace = Boolean(applicationId && assessmentId);
@@ -280,7 +282,21 @@ export default function ScanCenter() {
     }
   };
 
+  const enabledFeatureCount = useMemo(
+    () => features.filter((f) => f.enabled && f.implemented !== false).length,
+    [features],
+  );
+
+  const enabledFeatureNames = useMemo(
+    () =>
+      features
+        .filter((f) => f.enabled && f.implemented !== false)
+        .map((f) => f.name || f.featureKey),
+    [features],
+  );
+
   const handleRunFullScan = async () => {
+    setExecuteConfirmOpen(false);
     setHeaderError("");
     setActiveScanFeatureKey(null);
     try {
@@ -295,6 +311,28 @@ export default function ScanCenter() {
       });
     } catch (err) {
       setHeaderError(err?.response?.data?.message || err.message || "Full scan failed.");
+    }
+  };
+
+  const handleDisableAllFeatures = async () => {
+    if (!applicationId || !assessmentId || readOnly || !features.length) return;
+    setHeaderError("");
+    setDisablingAll(true);
+    try {
+      await securityAPI.putWorkingConfiguration(applicationId, assessmentId, {
+        features: features.map((f) => ({ ...f, enabled: false })),
+        securityScanSettings: configQuery.data?.securityScanSettings || {},
+        source: "disable_all_features",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["security", "working-config", applicationId, assessmentId],
+      });
+    } catch (err) {
+      setHeaderError(
+        err?.response?.data?.message || err.message || "Failed to disable features.",
+      );
+    } finally {
+      setDisablingAll(false);
     }
   };
 
@@ -358,17 +396,20 @@ export default function ScanCenter() {
         setScanNotice={setScanNotice}
         overview={overview}
         selectedFeature={selectedFeature}
-        onRunFullScan={handleRunFullScan}
+        onRunFullScan={() => setExecuteConfirmOpen(true)}
         onRunSelectedFeature={handleRunSelectedFeature}
         headerError={headerError}
         setHeaderError={setHeaderError}
-        runDisabled={!assessmentId || readOnly}
+        enabledFeatureCount={enabledFeatureCount}
+        runDisabled={!assessmentId || readOnly || enabledFeatureCount === 0}
         runDisabledReason={
           !assessmentId
             ? "Select or create an Assessment first"
             : readOnly
               ? "Return to Working Configuration to execute (or clone this Version first)"
-              : "Cannot execute"
+              : enabledFeatureCount === 0
+                ? "Enable at least one feature before executing"
+                : "Cannot execute"
         }
       />
 
@@ -386,6 +427,19 @@ export default function ScanCenter() {
                   onClick={() => setViewVersionId("")}
                 >
                   Edit Working Configuration
+                </Button>
+              )}
+              {!readOnly && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  disabled={
+                    disablingAll || scanRunning || enabledFeatureCount === 0
+                  }
+                  onClick={handleDisableAllFeatures}
+                  sx={{ textTransform: "none" }}
+                >
+                  {disablingAll ? "Disabling…" : "Disable all features"}
                 </Button>
               )}
               {!readOnly && (
@@ -415,8 +469,8 @@ export default function ScanCenter() {
 
       {showWorkspace && !readOnly && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Editing Working Configuration. Execute Assessment automatically creates a new Version
-          only when configuration has changed since the latest Version.
+          {enabledFeatureCount} feature{enabledFeatureCount === 1 ? "" : "s"} enabled — Execute
+          only runs those toggles. New assessments start with all features off (opt-in).
         </Alert>
       )}
 
@@ -652,6 +706,57 @@ export default function ScanCenter() {
             disabled={deleting}
           >
             {deleting ? "Deleting…" : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={executeConfirmOpen}
+        onClose={() => !scanRunning && setExecuteConfirmOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Execute Assessment?</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 1.5 }}>
+            This run will analyze {enabledFeatureCount} enabled feature
+            {enabledFeatureCount === 1 ? "" : "s"} and freeze a Version if the
+            Working Configuration changed.
+          </DialogContentText>
+          {enabledFeatureCount > 8 && (
+            <Alert severity="warning" sx={{ mb: 1.5 }}>
+              Many features are enabled. Disable ones you do not want before
+              continuing, or use Disable all features then re-enable a subset.
+            </Alert>
+          )}
+          {enabledFeatureNames.length > 0 && (
+            <Box
+              component="ul"
+              sx={{
+                m: 0,
+                pl: 2.5,
+                maxHeight: 220,
+                overflow: "auto",
+                color: "text.secondary",
+                typography: "body2",
+              }}
+            >
+              {enabledFeatureNames.map((name) => (
+                <li key={name}>{name}</li>
+              ))}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setExecuteConfirmOpen(false)} disabled={scanRunning}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleRunFullScan}
+            disabled={scanRunning || enabledFeatureCount === 0}
+          >
+            {scanRunning ? "Running…" : "Execute"}
           </Button>
         </DialogActions>
       </Dialog>
