@@ -142,15 +142,4 @@ docs
 !docs/windows-packaging/
 !docs/windows-packaging/**
 
-# Product licensing — never commit issued licenses or private keys
-icm-backend/config/license.lic.json
-icm-backend/license/license.lic.json
-icm-backend/keys/**/private.pem
-icm-backend/keys/*.pem
-icm-backend/keys/*.key
-icm-backend/keys/*private*
-!icm-backend/keys/README.md
-!icm-backend/keys/.gitkeep
-!icm-backend/keys/**/public.pem
-
 installer/runtime.zip
